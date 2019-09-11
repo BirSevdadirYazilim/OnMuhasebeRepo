@@ -1,0 +1,229 @@
+{% extends 'base.html' %}
+{% block pagetitle %}{{ block.super }} - Bordro Oluştur {% endblock %}
+{% block body  %}
+<div class="container-fluid">
+	<div class="w-box">
+		<div class="w-box-header">
+			<div align="Center">
+				<span>Senet&nbsp;Bordro&nbsp;Oluşturma&nbsp;Ekranı</span>
+			</div>
+		</div>
+		<div class="w-box-content" style="overflow: auto;width: 100%;height: 100%;">
+	 		<table class="table table-bordered">
+	 			<tr>
+	 				<th style="width: 25%;">Bordro No</th>
+	 				<td style="width: 25%;">
+	 					<input type="text" id="bordroNo" value="{{sqlBordroNo.BordroNo}}" class="form-control requiredHg" disabled="">
+	 				</td>
+	 				<th>Bordro Tarihi</th>
+	 				<td>
+	 					<input type="date" id="bordroTarihi" value="{{ suan|date:'Y-m-d' }}" class="form-control requiredHg">
+	 				</td>
+	 			</tr>
+	 			<tr>
+	 				<th>İşlem Türü</th>
+	 				<td>
+	 					<select id="islemTuru" class="form-control requiredHg" key="{{ sqlSenetIsTransferred.Durum }}">
+ 							<option selected="" value="">Seçiniz</option>
+ 							<option value="1">Senet Giriş(Alınan Senet)</option>
+ 							<option value="2">Senet Çıkış(Cari Hesaba)</option>
+	 					</select>
+	 				</td>
+	 				<th style="width: 25%;">Cari Ünvani</th>
+	 				<td style="width: 25%;"  colspan="3">
+	 					<select id="cariUnvani" class="form-control requiredHg">
+	 						<option selected="" value="">Seçiniz</option>
+	 						{% for cari in sqlCari %}
+	 							<option value="{{ cari.CariKodu }}">{{ cari.CariUnvani }}</option>
+	 						{% endfor %}
+	 					</select>
+	 				</td>
+	 			</tr>	
+	 			<tr>
+	 				<th>Senet No</th>
+	 				<td>
+	 					<input type="text" id="senetNo" class="form-control keypress-barrier requiredHg" data-input-type="Number">
+	 				</td>
+	 				<th>Vadesi</th>
+	 				<td>
+	 					<input type="date" id="vade" value="{{ suan|date:'Y-m-d' }}" class="form-control requiredHg">
+	 				</td>
+	 			</tr>
+	 			<tr>
+	 				<th>Döviz</th>
+	 				<td>
+	 					<select id="doviz" class="form-control requiredHg">
+ 							<option selected="" value="">Seçiniz</option>
+ 							<option value="1">TL</option>
+ 							<option value="2">DOLAR</option>
+ 							<option value="3">EURO</option>
+	 					</select>
+	 				</td>	
+	 				<th>Tutar</th>
+	 				<td>
+	 					<input type="text" id="tutar" value="{{ tutar }}" class="form-control keypress-barrier requiredHg" data-input-type="Decimal">
+	 				</td>
+	 			</tr>	
+	 			<tr>
+	 				<th>Ödeme Yeri</th>
+	 				<td>
+	 					<input type="text" id="odemeYeri" class="form-control requiredHg" placeholder="Ödeme Yeri">
+	 				</td>
+	 			</tr>
+	 			<tr>
+	 				<td colspan="2">
+	 					<button class="btn btn-info fa fa-plus" style="width: 100%;" onclick="Ekle();" title="Ekle"></button>
+	 				</td>
+	 				<td colspan="2">
+	 					<button class="btn btn-success fa fa-save" style="width: 100%;" onclick="Kaydet();" title="Kaydet"></button>
+	 				</td>
+	 			</tr>
+	 		</table>
+	 		<table class="table table-bordered" id="eklenenBordroTable" style="display: none;width: 100%;">
+	 			<thead style="width: 100%;">
+		 			<tr style="width: 100%;">
+		 				<th>İşlem Türü</th>
+						<th>Bordro No</th>
+						<th>Bordro Tarihi</th>
+						<th>Cari Ünvani</th>
+						<th>Ödeme Araci No</th>
+						<th>Vadesi</th>
+						<th>Ödeme Yeri</th>
+						<th>Döviz</th>
+						<th>Tutar</th>
+						<th>İşlem</th>
+					</tr>
+				</thead>
+				<tbody id="eklenenBordro" style="width: 100%;"></tbody>
+	 		</table>
+		</div> 	
+	</div>	
+</div>
+<script type="text/javascript">
+$(document).click(function(){
+	if($("#bordroNo").val() == ""){
+		if(confirm("Bordo Numarası Tanımlanmamış ! Tanimlama Sayfasına Yönlendirilsin mi ?") == true){
+			location = "/ceksenet/tanimlamalar";
+		}else{alert("Bordro Numarası Tanımlamadan Kayıt Yapamazsınız !");};
+	};
+});
+$("#islemTuru").change(function(){
+	if($(this).val() == "2"){
+		$("#senetNo").attr("disabled",true);
+		$.ajax({
+	        type: "post",
+	        url: "",
+	        data: {
+	        	"ajaxSenetKontrol" : $("#islemTuru").val(),
+	        csrfmiddlewaretoken: "{{ csrf_token }}"
+	        },
+	        dataType: "json",
+	        success: function(Veri){
+	        	if(Veri.ajaxSenetNoModel != ""){
+	        		$("#senetNo").val(Veri.ajaxSenetNoModel)
+	        	}else{
+	        		if(confirm("Senet Numarası Tanımlanmamış ! Tanimlama Sayfasına Yönlendirilsin mi ?") == true){
+	        			location = "/ceksenet/tanimlamalar";
+	        		}else{alert("Senet Numarası Tanımlamadan Kayıt Yapamazsınız !");};
+	        	};
+	        }, 
+	        error: function(Hata){
+	            alert("Hata");
+	        }
+	    });
+	}else{$("#odemeAraciNo").attr("disabled",false);};
+});
+function Ekle(){
+	Required();
+	$.ajax({
+        type: "post",
+        url: "",
+        data: {
+        	"ajaxDurum"    	   : $("#islemTuru").attr("key"),
+        	"ajaxIslemTuru"    : $("#islemTuru").val(),
+        	"ajaxBordroNo"     : $("#bordroNo").val(),
+        	"ajaxBordroTarihi" : $("#bordroTarihi").val(),
+        	"ajaxCariUnvani"   : $("#cariUnvani").val(),
+        	"ajaxSenetNo"      : $("#senetNo").val(),
+        	"ajaxVade"         : $("#vade").val(),
+        	"ajaxOdemeYeri"    : $("#odemeYeri").val(),
+        	"ajaxDoviz"        : $("#doviz").val(),
+        	"ajaxTutar"        : $("#tutar").val(),
+        csrfmiddlewaretoken: "{{ csrf_token }}"
+        },
+        dataType: "json",
+        success: function(Veri){
+        	if(Veri.ajaxMesaj == "1"){
+        		$("#senetNo").val(Veri.ajaxGuncelSenetNo);
+        		$('#eklenenBordroTable').css("display","block");
+	        	$('#eklenenBordro').append('\
+        		<tr id="'+Veri.ajaxId+'" class="eklenenBordroTr">\
+        			<td>'+Veri.ajaxIslemTuru+'</td>\
+        			<td>'+Veri.ajaxBordroNo+'</td>\
+        			<td>'+Veri.ajaxBordroTarihi+'</td>\
+        			<td>'+Veri.ajaxCariUnvani+'</td>\
+        			<td>'+Veri.ajaxSenetNo+'</td>\
+        			<td>'+Veri.ajaxVade+'</td>\
+        			<td>'+Veri.ajaxOdemeYeri+'</td>\
+        			<td>'+Veri.ajaxDoviz+'</td>\
+        			<td>'+Veri.ajaxTutar+'</td>\
+        			<td>\
+        				<button class="btn btn-danger fa fa-trash" onclick="Sil('+Veri.ajaxId+');" title="Sil"></button>\
+        			</td>\
+        		</tr>');
+        	}else{alert(Veri.ajaxMesaj);};
+        }, 
+        error: function(Hata){
+            alert("Hata !");
+        }
+    });
+};
+function Kaydet(){
+	if(confirm("Kaydedilsin mi ?") == true){
+		if($(".eklenenBordroTr").html() != null){
+			$.ajax({
+		        type: "post",
+		        url: "",
+		        data: {
+		        	"ajaxKaydet"          : $("#bordroNo").val(),
+		        csrfmiddlewaretoken: "{{ csrf_token }}"
+		        },
+		        dataType: "json",
+		        success: function(Veri){
+		        	if(Veri.ajaxMesaj == "1"){
+		        		location = "/ceksenet/senetlerlistele/";
+		        	}else{alert(Veri.ajaxMesaj);};
+		        },
+		        error: function(Hata){
+		            alert("Hata !");
+		        }
+		    });
+		}else{alert("Lütfen Önce Ekleme İşlemini Gerçekleştirin !");};
+	};
+};
+// Ürun Silme
+function Sil(arguman){
+	if(confirm("Silinsin mi ?") == true){
+		$.ajax({
+	        type: "post",
+	        url: "",
+	        data: {
+	        	"ajaxSil" :arguman,
+	        csrfmiddlewaretoken: "{{ csrf_token }}"
+	        },
+	        dataType: "json",
+	        success: function(Veri){ 
+	            $('#'+arguman+'').fadeOut().remove();
+	        },
+	        error: function(Hata){
+	            alert("Hata !");
+	        }
+	    });
+	};
+};
+</script>
+{% endblock %}
+
+
+
+ 

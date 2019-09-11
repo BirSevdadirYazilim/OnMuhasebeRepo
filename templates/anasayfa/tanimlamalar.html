@@ -1,0 +1,240 @@
+{% extends 'base.html' %}
+{% block pagetitle %}{{ block.super }} - AnaSayfa Tanımlamaları {% endblock %}
+{% block body  %}
+<div class="container-fluid">
+	<div class="w-box">
+		<div class="row">
+			<div class="col-md-4">
+				<div class="w-box-header">
+					Duyurular
+				</div>
+				<div class="w-box-content">
+					<table class="table table-bordered">
+						<tr>
+							<th>Duyuru Kodu</th>
+							<td>
+								<input type="text" id="duyuruKodu" class="form-control">
+							</td>
+						</tr>
+						<tr>
+							<th>Başlık</th>
+							<td>
+								<input type="text" id="duyuruBaslik" class="form-control">
+							</td>
+						</tr>
+						<tr>
+							<th>İçerik</th>
+							<td>
+								<textarea id="duyuruIcerik" cols="40" rows="10" class="form-control" maxlength="1000"></textarea>
+							</td>
+						</tr>
+						<tr>
+							<th>Kullanıcı Grubu</th>
+							<td>
+								<select id="duyuruKullaniciG" class="form-control">
+									<option value="" selected="">Seçiniz</option>
+									{% for kullaniciGrubu in sqlKullaniciGrubu %}
+									<option value="{{kullaniciGrubu.KullaniciGrubuKodu}}">{{kullaniciGrubu.KullaniciGrubu}}</option>
+									{% endfor %}
+								</select>
+							</td>
+						</tr>
+						<tr>
+							<th>Kullanıcı</th>
+							<td>
+								<select id="duyuruKullanici" class="form-control">
+									<option value="" selected="">Seçiniz</option>
+									{% for kullanici in sqlKullanicilar %}
+									<option value="{{kullanici.KullaniciKodu}}">{{kullanici.KullaniciAdi}}</option>
+									{% endfor %}
+								</select>
+							</td>
+						</tr>
+						<tr>
+							<th></th>
+							<td>
+								<button class="btn btn-success fa fa-save" style="width: 100%;" onclick="KaydetDuyuru();" title="Kaydet"></button>
+							</td>
+						</tr>
+					</table>		
+				</div>
+			</div>
+			<div class="col-md-4">
+				<div class="w-box-header">
+					Görevler
+				</div>
+				<div class="w-box-content">
+					<table class="table table-bordered">
+						<tr>
+							<th>Görev Kodu</th>
+							<td>
+								<input type="text" id="gorevKodu" class="form-control">
+							</td>
+						</tr>
+						<tr>
+							<th>Başlık</th>
+							<td>
+								<input type="text" id="gorevBaslik" class="form-control">
+							</td>
+						</tr>
+						<tr>
+							<th>İçerik</th>
+							<td>
+								<textarea id="gorevIcerik" cols="40" rows="10" class="form-control" maxlength="1000"></textarea>
+							</td>
+						</tr>
+						<tr>
+							<th>Kullanıcı Grubu</th>
+							<td>
+								<select id="gorevKullaniciG" class="form-control">
+									<option value="" selected="">Seçiniz</option>
+									{% for kullaniciGrubu in sqlKullaniciGrubu %}
+									<option value="{{kullaniciGrubu.KullaniciGrubuKodu}}">{{kullaniciGrubu.KullaniciGrubu}}</option>
+									{% endfor %}
+								</select>
+							</td>
+						</tr>
+						<tr>
+							<th>Kullanıcı</th>
+							<td>
+								<select id="gorevKullanici" class="form-control">
+									<option value="" selected="">Seçiniz</option>
+									{% for kullanici in sqlKullanicilar %}
+									<option value="{{kullanici.KullaniciKodu}}">{{kullanici.KullaniciAdi}}</option>
+									{% endfor %}
+								</select>
+							</td>
+						</tr>
+						<tr>
+							<th></th>
+							<td>
+								<button class="btn btn-success fa fa-save" style="width: 100%;" onclick="KaydetGorev();" title="Kaydet"></button>
+							</td>
+						</tr>
+					</table>
+				</div>
+			</div>
+			<div class="col-md-4">
+				<div class="w-box-header">
+					Hatırlatmalar
+				</div>
+				<div class="w-box-content">
+					<table class="table table-bordered">
+						<tr>
+							<th>Hatırlatma Kodu</th>
+							<td>
+								<input type="text" id="hatirlatmaKodu" class="form-control">
+							</td>
+						</tr>
+						<tr>
+							<th>Başlık</th>
+							<td>
+								<input type="text" id="hatirlatmaBaslik" class="form-control">
+							</td>
+						</tr>
+						<tr>
+							<th>İçerik</th>
+							<td>
+								<textarea id="hatirlatmaIcerik" cols="40" rows="10" class="form-control" maxlength="1000"></textarea>
+							</td>
+						</tr>
+						<tr>
+							<th>Kullanıcı Grubu</th>
+							<td>
+								<select id="hatirlatmaKullaniciG" class="form-control">
+									<option value="" selected="">Seçiniz</option>
+									{% for kullaniciGrubu in sqlKullaniciGrubu %}
+									<option value="{{kullaniciGrubu.KullaniciGrubuKodu}}">{{kullaniciGrubu.KullaniciGrubu}}</option>
+									{% endfor %}
+								</select>
+							</td>
+						</tr>
+						<tr>
+							<th>Kullanıcı</th>
+							<td>
+								<select id="hatirlatmaKullanici" class="form-control">
+									<option value="" selected="">Seçiniz</option>
+									{% for kullanici in sqlKullanicilar %}
+									<option value="{{kullanici.KullaniciKodu}}">{{kullanici.KullaniciAdi}}</option>
+									{% endfor %}
+								</select>
+							</td>
+						</tr>
+						<tr>
+							<th></th>
+							<td>
+								<button class="btn btn-success fa fa-save" style="width: 100%;" onclick="KaydetHatirlatma();" title="Kaydet"></button>
+							</td>
+						</tr>
+					</table>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+<script type="text/javascript">
+function KaydetDuyuru(){
+	$.ajax({
+        type: "post",
+        url: "",
+        data: {
+        	"ajaxDuyuruKodu"       : $("#duyuruKodu").val(),
+        	"ajaxDuyuruBaslik"     : $("#duyuruBaslik").val(),
+        	"ajaxDuyuruIcerik"     : $("#duyuruIcerik").val(),
+        	"ajaxDuyuruKullanici"  : $("#duyuruKullanici").val(),
+        	"ajaxDuyuruKullaniciG" : $("#duyuruKullaniciG").val(),
+        csrfmiddlewaretoken: "{{ csrf_token }}"
+        },
+        dataType: "json",
+        success: function(Veri){
+        	location = "/anasayfa";
+        }, 
+        error: function(Hata){
+            alert("Hata !");
+        }
+    });
+};
+function KaydetGorev(){
+	$.ajax({
+        type: "post",
+        url: "",
+        data: {
+        	"ajaxGorevKodu"       : $("#gorevKodu").val(),
+        	"ajaxGorevBaslik"     : $("#gorevBaslik").val(),
+        	"ajaxGorevIcerik"     : $("#gorevIcerik").val(),
+        	"ajaxGorevKullanici"  : $("#gorevKullanici").val(),
+        	"ajaxGorevKullaniciG" : $("#gorevKullaniciG").val(),
+        csrfmiddlewaretoken: "{{ csrf_token }}"
+        },
+        dataType: "json",
+        success: function(Veri){
+        	location = "/anasayfa";
+        }, 
+        error: function(Hata){
+            alert("Hata !");
+        }
+    });
+};
+function KaydetHatirlatma(){
+	$.ajax({
+        type: "post",
+        url: "",
+        data: {
+        	"ajaxHatirlatmaKodu"       : $("#hatirlatmaKodu").val(),
+        	"ajaxHatirlatmaBaslik"     : $("#hatirlatmaBaslik").val(),
+        	"ajaxHatirlatmaIcerik"     : $("#hatirlatmaIcerik").val(),
+        	"ajaxHatirlatmaKullanici"  : $("#hatirlatmaKullanici").val(),
+        	"ajaxHatirlatmaKullaniciG" : $("#hatirlatmaKullaniciG").val(),
+        csrfmiddlewaretoken: "{{ csrf_token }}"
+        },
+        dataType: "json",
+        success: function(Veri){
+        	location = "/anasayfa";
+        }, 
+        error: function(Hata){
+            alert("Hata !");
+        }
+    });
+};
+</script>
+{% endblock %}

@@ -1,0 +1,301 @@
+{% extends 'base.html' %}
+{% block pagetitle %}{{ block.super }} - Banka Listesi {% endblock %}
+{% block body  %}
+<div id="divListe" class="container-fluid">
+	<div class="w-box">
+		<div class="w-box-header">
+			<div align="Center"><span>Banka Listesi Ekranı</span></div>
+		</div>
+		<div class="w-box-content" style="overflow: auto;width: 100%;height: 100%;">
+			<table class="table table-bordered" id="datatable">
+				<thead>
+					<tr>
+						<th>Banka Adı</th>
+						<th>Açılış Bakiyesi</th>
+						<th>Borc</th>
+						<th>Alacak</th>
+						<th>Banka Bakiye</th>
+						<th>İşlemler</th>
+					</tr>
+				</thead>
+				<tbody align="Center">
+				{% for banka in bakiyeList %}
+					<tr id="{{ banka.BankaId}}">
+						<td>{{ banka.BankaAdi }}</td>
+						<td>{{ banka.BankaAcilisBakiyesi }}</td>
+						<td>{{ banka.BankaBorc }}</td>
+						<td>{{ banka.BankaAlacak }}</td>
+						<td>{{ banka.BankaBakiyesi }}</td>
+						<td>
+							{% if islemlerKontrol.IsBankaDetay == True %}
+							<button class="btn btn-info fa fa-search" onclick="Detay('{{ banka.BankaId }}')" title="Detay"></button>
+							{% endif %}
+							{% if islemlerKontrol.IsBankaGuncelle == True %}
+							<button class="btn btn-warning fa fa-pencil" onclick="Guncelle('{{ banka.BankaId }}')" title="Güncelle"></button>
+							{% endif %}
+							{% if islemlerKontrol.IsBankaSil == True %}
+							<button class="btn btn-danger fa fa-trash" onclick="Sil('{{ banka.BankaId }}')" title="Sil"></button>
+							{% endif %}
+						</td>
+					</tr>
+				{% endfor %}	
+				</tbody>
+			</table>
+		</div>
+	</div>	
+</div>
+<div id="divDetay" class="container-fluid" style="display: none;">
+	<div class="w-box" style="margin-top: 1%; margin-bottom: 1%;">
+		<div align="left">
+			<button class="btn btn-warning fa fa-long-arrow-left" style="margin-bottom:5px; width: 25%;" onclick="Geri();" title="Geri"></button>
+		</div>
+		<div class="w-box-header">
+			<div align="Center"><span>Banka Detay Ekranı</span></div>
+		</div>
+		<div class="w-box-content">
+			<table class="table table-bordered">
+                <tbody>
+					<tr>
+						<th style="width: 25%;">Banka Kodu</th>
+						<td id="bankaKodu" style="width: 75%;"></td>
+					</tr>
+					<tr>	
+						<th>Banka Adı</th>
+						<td id="bankaAdi"></td>
+					</tr>
+					<tr>	
+						<th>Banka Açılış Bakiyesi</th>
+						<td id="bankaAcilisBakiyesi"></td>
+					</tr>
+					<tr>	
+						<th>İl</th>
+						<td id="bankaIl"></td>
+					</tr>
+					<tr>	
+						<th>İlçe</th>
+						<td id="bankaIlce"></td>
+					</tr>
+					<tr>	
+						<th>Adres</th>
+						<td id="bankaAdres"></td>
+					</tr>
+					<tr>	
+						<th>Borc</th>
+						<td id="bankaBorc"></td>
+					</tr>
+					<tr>	
+						<th>Alacak</th>
+						<td id="bankaAlacak"></td>
+					</tr>
+					<tr>	
+						<th>Tel1</th>
+						<td id="bankaTel1"></td>
+					</tr>
+					<tr>	
+						<th>Tel2</th>
+						<td id="bankaTel2"></td>
+					</tr>
+					<tr>	
+						<th>Hesap No</th>
+						<td id="bankaHesapNo"></td>
+					</tr>
+					<tr>	
+						<th>Iban No</th>
+						<td id="bankaIbanNo"></td>
+					</tr>
+					<tr>	
+						<th>Yetkili</th>
+						<td id="bankaYetkilisi"></td>
+					</tr>
+					<tr>	
+						<th>Banka Açılış Tarihi</th>
+						<td id="bankaAcilisTarihi"></td>
+					</tr>
+					<tr>	
+						<th>Banka Kaydı Oluşturan</th>
+						<td id="bankaKaydiOlusturan"></td>
+					</tr>
+					<tr>	
+						<th>Banka Düzenleme Tarihi</th>
+						<td id="bankaDuzenlemeTarihi"></td>
+					</tr>
+					<tr>	
+						<th>Banka Kaydı Düzenleyen</th>
+						<td id="bankaKaydıDuzenleyen"></td>
+					</tr>
+				</tbody>
+            </table>
+		</div>
+	</div>
+</div>
+<div id="divGuncelle" class="container-fluid" style="display: none;">
+	<div class="w-box" style="margin-top: 1%; margin-bottom: 1%;">
+	<div class="w-box-header">
+		<div align="Center">
+			<span>Banka Düzenleme Ekranı</span>
+		</div>
+	</div>
+	<div class="w-box-content">
+		<table class="table table-bordered">	
+			<tr>
+				<th>Adres</th>
+				<td>
+					<input type="text" id="bankaAdresGuncelle" key="" class="form-control requiredHg">
+				</td>
+			</tr>
+			<tr>
+				<th>Tel1</th>
+				<td>
+					<input type="text" id="bankaTel1Guncelle" class="form-control keypress-barrier requiredHg" data-input-type="Phone">
+				</td>
+			</tr>
+			<tr>
+				<th>Tel2</th>	
+				<td>
+					<input type="text" id="bankaTel2Guncelle" class="form-control keypress-barrier" data-input-type="Phone">
+				</td>
+			</tr>
+			<tr>
+				<th>Hesap No</th>	
+				<td>
+					<input type="text" id="bankaHesapNoGuncelle" class="form-control keypress-barrier requiredHg" data-input-type="Number">
+				</td>
+			</tr>
+			<tr>
+				<th>Iban No</th>	
+				<td>
+					<input type="text" id="bankaIbanNoGuncelle" class="form-control requiredHg">
+				</td>
+			</tr>
+			<tr>
+				<th>Yetkili</th>	
+				<td>
+					<input type="text" id="bankaYetkilisiGuncelle" class="form-control">
+				</td>
+			</tr>
+			<tr>
+				<th></th>
+				<td>
+					<button class="btn btn-warning fa fa-long-arrow-left" style="width: 48%" onclick="Geri()" title="Geri"></button>
+					<button class="btn btn-success fa fa-save" style="width: 50%" onclick="Kaydet('{{ sqlBanka.id }}')" title="Kaydet"></button>
+				</td>
+			</tr>	
+		</table>
+	</div>
+</div>
+<script type="text/javascript">
+function Detay(argument){
+	$.ajax({
+        type: "post",
+        url: "",
+        data: {
+        	"ajaxDetay" : argument,
+        csrfmiddlewaretoken: "{{ csrf_token }}"
+        },
+        dataType: "json",
+        success: function(Veri){
+        	$("#divListe").css("display","none");
+        	$("#divDetay").css("display","block");
+        	$("#bankaKodu").html(Veri.ajaxBankaKodu);
+        	$("#bankaAdi").html(Veri.ajaxBankaAdi);
+        	$("#bankaSube").html(Veri.ajaxBankaSube);
+        	$("#bankaAcilisBakiyesi").html(Veri.ajaxBankaAcilisBakiyesi);
+        	$("#bankaAdres").html(Veri.ajaxBankaAdres);
+        	$("#bankaIl").html(Veri.ajaxBankaIl);
+        	$("#bankaBorc").html(Veri.ajaxBankaBorc);
+        	$("#bankaAlacak").html(Veri.ajaxBankaAlacak);
+        	$("#bankaIlce").html(Veri.ajaxBankaIlce);
+        	$("#bankaTel1").html(Veri.ajaxBankaTel1);
+        	$("#bankaTel2").html(Veri.ajaxBankaTel2);
+        	$("#bankaHesapNo").html(Veri.ajaxBankaHesapNo);
+        	$("#bankaIbanNo").html(Veri.ajaxBankaIbanNo);
+        	$("#bankaYetkilisi").html(Veri.ajaxBankaYetkilisi);
+        	$("#bankaAcilisTarihi").html(Veri.ajaxBankaAcilisTarihi);
+        	$("#bankaKaydiOlusturan").html(Veri.ajaxBankaKaydiOlusturan);
+        	$("#bankaKaydıDuzenleyen").html(Veri.ajaxBankaDuzenlemeTarihi);
+        	$("#bankaDuzenlemeTarihi").html(Veri.ajaxBankaKaydıDuzenleyen);
+        }, 
+        error: function(hata) {
+            alert(hata);
+        }
+    });
+};
+function Guncelle(argument){
+	if(confirm("Banka Kaydı Güncellensin mi ?") == true) {
+		$.ajax({
+	        type: "post",
+	        url: "",
+	        data: {
+	        	"ajaxGuncelle" : argument,
+	        csrfmiddlewaretoken: "{{ csrf_token }}"
+	        },
+	        dataType: "json",
+	        success: function(Veri){
+	        	$("#divListe").css("display","none");
+	        	$("#divGuncelle").css("display","block");
+	        	$("#bankaAdresGuncelle").attr("key",Veri.ajaxId);
+	        	$("#bankaAdresGuncelle").val(Veri.ajaxBankaAdresGuncelle);
+	        	$("#bankaTel1Guncelle").val(Veri.ajaxBankaTel1Guncelle);
+	        	$("#bankaTel2Guncelle").val(Veri.ajaxBankaTel2Guncelle);
+	        	$("#bankaHesapNoGuncelle").val(Veri.ajaxBankaHesapNoGuncelle);
+	        	$("#bankaIbanNoGuncelle").val(Veri.ajaxBankaIbanNoGuncelle);
+	        	$("#bankaYetkilisiGuncelle").val(Veri.ajaxBankaYetkilisiGuncelle);
+	        }, 
+	        error: function(hata) {
+	            alert(hata);
+	        }
+        });
+	};
+};
+function Kaydet(){
+	if(confirm("Kaydedilsin mi ?") == true) {
+		$.ajax({
+	        type: "post",
+	        url: "",
+	        data: {
+	        	"ajaxIdGuncelle"      		 : $("#bankaAdresGuncelle").attr("key"),
+	        	"ajaxBankaAdresGuncelle"     : $("#bankaAdresGuncelle").val(),
+	        	"ajaxBankaTel1Guncelle"      : $("#bankaTel1Guncelle").val(),
+	        	"ajaxBankaTel2Guncelle"      : $("#bankaTel2Guncelle").val(),
+	        	"ajaxBankaHesapNoGuncelle"   : $("#bankaHesapNoGuncelle").val(),
+	        	"ajaxBankaIbanNoGuncelle"    : $("#bankaIbanNoGuncelle").val(),
+	        	"ajaxBankaYetkilisiGuncelle" : $("#bankaYetkilisiGuncelle").val(),
+	        csrfmiddlewaretoken: "{{ csrf_token }}"
+	        },
+	        dataType: "json",
+	        success: function(Veri){
+	        	$("#divGuncelle").css("display","none");
+	        	$("#divListe").css("display","block");
+	        }, 
+	        error: function(hata) {
+	            alert(hata);
+	        }
+        });
+	};
+};
+function Sil(argument){
+	if(confirm("Banka Kaydı Silinsin mi ?") == true) {
+		$.ajax({
+	        type: "post",
+	        url: "",
+	        data: {
+	        	"ajaxSil" : argument,
+	        csrfmiddlewaretoken: "{{ csrf_token }}"
+	        },
+	        dataType: "json",
+	        success: function(Veri){
+	        	$("#"+argument+"").fadeOut().delete()
+	        }, 
+	        error: function(hata) {
+	            alert(hata);
+	        }
+        });
+	};
+};
+function Geri(){
+	$("#divDetay").css("display","none");
+	$("#divGuncelle").css("display","none");
+	$("#divListe").css("display","block");
+};
+</script>
+{% endblock %}

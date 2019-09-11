@@ -1,0 +1,92 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" http-equiv="Content-Type" content="text/html; charset=iso-8859-9;width=device-width, inital scale=1">
+    <title>{% block pagetitle %} HGMuhasebe {% endblock %}</title>
+    <!-- Ana Stil -->
+    <link rel="stylesheet" href='{% static "css/style.css" %}'/>
+    <!-- Bootstrap-->
+    <link rel="stylesheet" href='{% static "bootstrap/bootstrap.css" %}'>
+    <!-- Font Awasome Icon -->
+    <link rel="stylesheet" href='{% static "fa/css/font-awesome.css" %}' />
+    
+    <script src= '{% static "js/jquery.min.js" %}'></script>
+    <script src= '{% static "bootstrap/bootstrap.js" %}'></script>
+    <script src= '{% static "datatables/js/jquery.datatables.min.js" %}'></script>
+    <script src= '{% static "datatables/js/datatables.bootstrap.js" %}'></script>
+</head>
+<body style="background-color: #f4f4f4;margin-top: 75px;margin-bottom: 1%;">
+    {% include 'header.html' %}
+    {% include 'messages.html' %}
+    {% block body %}
+    {% endblock %}
+<script type="text/javascript">
+dataTableOptions = {
+    language: {
+        info: "_TOTAL_ kayıttan _START_ - _END_ kayıt gösteriliyor.",
+        infoEmpty:      "Gösterilecek hiç kayıt yok.",
+        loadingRecords: "Kayıtlar yükleniyor.",
+        zeroRecords: "Kayıt Bulunamadı!",
+        search: "Arama:",
+        infoFiltered:   "(toplam _MAX_ kayıttan filtrelenenler)",
+        lengthMenu: "_MENU_ Satir Filtre",
+        buttons: {
+            copyTitle: "Panoya kopyalandı.", copySuccess:"Panoya %d satır kopyalandı", copy: "Kopyala", print: "Yazdır", },
+            paginate: { first: "İlk", previous: "Önceki", next: "Sonraki", last: "Son" 
+        }
+    },
+};
+$("#datatable").DataTable(dataTableOptions);
+$("#datatable2").DataTable(dataTableOptions);
+function Required(){
+    $(".requiredHg").each(function(){
+        if($(this).val() == ""){
+            $(this).css("border-color","#ff0505");
+            $(this).attr("placeholder","Zorunlu Alan !");
+            var thisObjectOffset = $(this).offset();
+            $( "html, body" ).animate({ scrollLeft: thisObjectOffset.left, scrollTop:thisObjectOffset.top-80}, "slow" );
+            return false;
+        };
+    });
+};
+$(".requiredHg").click(function(){
+    $(this).css("border-color","");
+    $(this).attr("placeholder","");
+});
+$(' input.keypress-barrier ').bind('cut copy paste',function(){
+    return false;
+});
+$(' input.keypress-barrier ').on( ' keypress ', function (key) {
+    var thisObject = $(this);
+    var thisObjectType = thisObject.data('input-type');
+    var keyWhichCode = key.which;
+    var thisObjectDontBarrierList = new Array()
+    thisObjectDontBarrierList['textCodeKey'] = [32];
+    thisObjectDontBarrierList['phoneKey'] = [32,0,8,40,41,43,48,49,50,51,52,53,54,55,56,57];
+    thisObjectDontBarrierList['numberKey'] = [0,8,48,49,50,51,52,53,54,55,56,57];
+    thisObjectDontBarrierList['decimalKey'] = [0,8,44,46,48,49,50,51,52,53,54,55,56,57];
+    if(thisObjectType == "TextCode"){
+        if (thisObjectDontBarrierList.textCodeKey.indexOf(keyWhichCode) >= 0){
+            return false;
+        };
+    }
+    else if(thisObjectType == "Phone"){
+        if(thisObjectDontBarrierList.phoneKey.indexOf(keyWhichCode) < 0){
+            return false;
+        };
+    }
+    else if(thisObjectType == "Number"){
+        if(thisObjectDontBarrierList.numberKey.indexOf(keyWhichCode) < 0){
+            return false;
+        };
+    }
+    else if(thisObjectType == "Decimal"){
+        if(thisObjectDontBarrierList.decimalKey.indexOf(keyWhichCode) < 0){
+            return false;
+        };
+    };
+});
+</script>
+</body>
+</html>

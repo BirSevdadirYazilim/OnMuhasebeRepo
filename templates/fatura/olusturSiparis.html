@@ -1,0 +1,238 @@
+{% extends 'base.html' %}
+{% block pagetitle %}{{ block.super }} - Fatura Oluştur {% endblock %}
+{% block body  %}
+<div class="container-fluid" id="key" key="{{ key }}" key1="{{ sqlSiparis.SiparisFisiNo }}" key2="{{ sqlIrsaliye.IrsaliyeNo }}">
+	<div class="w-box">
+		<div class="w-box-header">
+			<div align="Center">
+				<span>Fatura Oluşturma Ekranı</span>
+			</div>
+		</div>
+		<div class="w-box-content">
+			<div style="overflow: auto;width: 100%;height: 100%;">
+				<table class="table table-bordered">
+					<thead>
+						<tr>
+							<th>Cari Seç</th>
+							<th>Tarih</th>
+							<th>Fatura Tipi</th>
+							<th>Fatura Seri</th>
+							<th>Fatura Sıra</th>
+						</tr>
+					</thead>
+					<tbody>
+					<tr>
+						<td> 
+							<select id="cariKodu" class="form-control requiredHg">
+								<option selected value="{{ sqlSiparis.CariKodu }}">{{ sqlSiparis.CariKodu }}</option>
+						    </select>
+						</td>
+						<td>
+							<input type="date" id="islemTarihi" value="{{ suan|date:'Y-m-d' }}" class="form-control requiredHg">
+						</td>
+						<td>
+							<select id="faturaTipi" class="form-control requiredHg">
+								{% if sqlSiparis.SiparisTipi == "1" %}
+								<option selected="" value="2">Alış Faturası</option>
+								{% endif %}
+								{% if sqlSiparis.SiparisTipi == "2" %}
+								<option selected="" value="1">Satış Faturası</option>
+								{% endif %}
+							</select>
+						</td>
+						<td>
+							<input type="text" id="faturaSeri" value="{{ varFaturaSeriSiparis }}" class="form-control requiredHg">
+						</td>
+						<td>
+							<input type="text" id="faturaSira" value="{{ varFaturaSiraSiparis }}" class="form-control keypress-barrier requiredHg" data-input-type="Number">
+						</td>
+					</tr>
+					</tbody>			
+				</table>
+			</div>
+			<div style="overflow: auto;width: 100%;height: 100%; margin-top: 10px;">
+				<table class="table table-bordered">
+					<thead>
+						<tr>
+							<th>Brüt Toplam Tutar</th>
+							<th>Toplam Kdv</th>
+							<th>Ödenecek Tutar</th>
+							<th style="width: 25%;"></th>
+						</tr>
+					</thead>
+					<tbody>
+						<tr>	
+							<td>
+								<input type="text" id="toplamBrutTutar" value="{{ sqlSiparis.ToplamBrutTutar }}" class="form-control" disabled="">
+							</td>
+							<td>
+								<input type="text" id="toplamKdv" value="{{ sqlSiparis.ToplamKdv }}" class="form-control" disabled="">
+							</td>
+							<td>
+								<input type="text" id="odenecekTutar" value="{{ varOdenecekTutar }}" class="form-control" disabled="">
+							</td>
+							<td style="width: 25%;">
+								<button class="btn btn-success fa fa-save" align="Center" style="width: 100%;" title="Kaydet" onclick="Kaydet();"></button>
+							</td>
+						</tr>
+					</tbody>
+				</table>
+			</div>
+			<div style="overflow: auto;width: 100%;height: 100%; margin-top: 10px;">
+				<table id="idTablo" class="table table-bordered">
+					<thead>	
+						<tr>
+							<th>Stok&nbsp;Adı</th>
+							<th>Miktar</th>
+						    <th>Nitelik</th>	
+							<th>Birim&nbsp;Fiyat</th>	
+							<th>İsk.&nbsp;Orani&nbsp;%</th>
+							<th>İsk.&nbsp;Tutari</th>
+							<th>Kdv&nbsp;Orani&nbsp;%</th>
+							<th>Kdv&nbsp;Tutari</th>
+							<th>Brüt&nbsp;Tutar</th>
+						</tr>
+					</thead>
+					<tbody>
+						{% for siparisHareketleri in sqlSiparisHareketleri %}
+							<tr id="{{ faturaHareketleriFilter.id }}" class="trClass">
+								<td class="stokKodu">{{ siparisHareketleri.StokKodu }}</td>
+								<td class="miktar">{{ siparisHareketleri.Miktar }}</td>
+								<td class="nitelik">{{ siparisHareketleri.Nitelik }}</td>
+								<td class="birimFiyat">{{ siparisHareketleri.BirimFiyat }}</td>
+								<td class="iskOrani">{{ siparisHareketleri.IskontoOrani }}</td>
+								<td class="iskTutari"></td>
+								<td class="kdvOrani">{{ siparisHareketleri.KdvOrani }}</td>
+								<td class="kdvTutari"></td>
+								<td class="brutTutar"></td>
+							</tr>
+						{% endfor %}
+					</tbody>
+				</table>
+			</div>
+		</div>
+	</div>
+</div>
+<script type="text/javascript">
+// Fatura Tipi Secimi
+$(document).ready(function(){
+	if($("#faturaTipi").val() == "1"){
+		$("#faturaSeri").attr("disabled",true);
+		$("#faturaSira").attr("disabled",true);     
+	}else{
+		$("#faturaSeri").attr("disabled",false);
+		$("#faturaSira").attr("disabled",false);
+	};
+	if($("#faturaTipi").val() == "1" && $("#faturaSeri").val() == "" && $("#faturaSira").val() == ""){
+		if(confirm("Fatura Seri Ve Sıra Numarası Tanımlanmamış ! Tanımlama Sayfasına Yönlendirilsin mi ?") == true){
+			location = "/fatura/tanimlamalar";
+		}else{alert("Fatura Seri Ve Sıra Numarası Tanımlamadan Kayıt Yapamazsınız !")};
+	};	
+});
+// Fatura Tipi Secimi
+// Fatura Olusturma
+function Kaydet(){
+	if(confirm("Kaydedilsin mi ?") == true){
+		Required();
+		$.ajax({
+	        type: "post",
+	        url: "",
+	        data: {
+	        	"ajaxKey"             : $("#key").attr("key"),
+	        	"ajaxKey1"            : $("#key").attr("key1"),
+	        	"ajaxKey2"            : $("#key").attr("key2"),
+	        	"ajaxCariKodu"        : $("#cariKodu").val(),
+	        	"ajaxFaturaSeri"      : $("#faturaSeri").val(),
+	        	"ajaxFaturaSira"      : $("#faturaSira").val(),
+	        	"ajaxFaturaTipi"      : $("#faturaTipi").val(),
+	        	"ajaxIslemTarihi"     : $("#islemTarihi").val(),
+	        	"ajaxToplamBrutTutar" : $("#toplamBrutTutar").val(),
+	        	"ajaxToplamKdv"       : $("#toplamKdv").val(),
+	        csrfmiddlewaretoken: "{{ csrf_token }}"
+	        },
+	        dataType: "json",
+	        success: function(Veri){
+	        	if(Veri.ajaxMesaj == "1"){
+	        		location = "/fatura/listele/";
+	        	}else{alert(Veri.ajaxMesaj);};
+	        }, 
+	        error: function(Hata) {
+	            alert("Hata !");
+	        }
+	    });
+	};
+};
+// Fatura Olusturma
+// Hesaplamalar
+/*
+$("#miktar").keyup(function(){
+	if($(this).val() != ""  && $("#faturaTipi").val() == "1"){
+		$.ajax({
+	        type: "post",
+	        url: "",
+	        data: {
+	        	"ajaxMiktarControl" : $(this).val(),
+	        	"ajaxStokKodu"      : $('#stokKodu').val(),
+	        csrfmiddlewaretoken: "{{ csrf_token }}"
+	        },
+	        dataType: "json",
+	        success: function(Veri){
+	        	if(Veri.uyari == "Yetersiz Stok"){
+	        		alert(Veri.uyari);
+	        		$('#miktar').val("");
+	        	};
+	        },
+	        error: function(Hata) {
+	            alert("Hata !");
+	        }
+	    });
+	};
+	var miktar = $('#miktar').val();
+	var birimFiyat = $('#birimFiyat').val();
+	var iskontosuzTutar = miktar * birimFiyat;
+	$('#iskontoOrani').keyup(function(){
+		var iskOrani = $('#iskontoOrani').val();
+		if (iskOrani != ''){
+			var iskTutari = iskontosuzTutar * (iskOrani/100);
+			$('#iskontoTutari').val(iskTutari);
+			var kalan = iskontosuzTutar - iskTutari;
+			var kdvOrani = $('#kdvOrani').val();
+			var kdvTutari = kalan * (kdvOrani/100);
+			$('#kdvTutari').val(kdvTutari);
+			//var MalHizmetTutari = kalan + kdvTutari
+			$('#brutTutar').val(kalan);
+		};
+	});
+	var kdvOrani = $('#kdvOrani').val();
+	var kdvTutari = iskontosuzTutar * (kdvOrani/100);
+	$('#kdvTutari').val(kdvTutari);
+	//var MalHizmetTutari = iskontosuzTutar + kdvTutari
+	$('#brutTutar').val(iskontosuzTutar);			
+});
+*/
+// Hesaplamalar
+// Toplam Hesaplar
+/*
+function TopTut(){
+	var brutTutar = 0;
+	$("td.brutTutar").each(function(){
+		brutTutar +=  parseFloat($(this).html());
+	});
+	$('#toplamBrutTutar').val(brutTutar);
+	var kdvTutari = 0;
+	$("td.kdvTutari").each(function(){
+		kdvTutari +=  parseFloat($(this).html());
+	});
+	$('#toplamKdv').val(kdvTutari);
+	$('#odenecekTutar').val(parseFloat($('#toplamBrutTutar').val()) + kdvTutari);
+};
+*/
+// Toplam Hesaplar
+$("#idTablo .trClass").each(function(){
+	$(this).find(".brutTutar").html(parseFloat($(this).find(".miktar").html().replace(",",".")) * parseFloat($(this).find(".birimFiyat").html().replace(",",".")));
+	$(this).find(".kdvTutari").html(parseFloat($(this).find(".brutTutar").html().replace(",",".")) * parseInt($(this).find(".kdvOrani").html()) / 100);
+	$(this).find(".brutTutar").attr("name",parseFloat($(this).find(".kdvTutari").html().replace(",",".")) + parseFloat($(this).find(".brutTutar").html().replace(",",".")));
+});
+</script>
+{% endblock %}
+

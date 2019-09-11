@@ -1,0 +1,210 @@
+{% extends 'base.html' %}
+{% block pagetitle %}{{ block.super }} - Bordro Oluştur {% endblock %}
+{% block body  %}
+<div class="container-fluid">
+	<div class="w-box">
+		<div class="w-box-header">
+			<div align="Center">
+				<span>Bordro&nbsp;Oluşturma&nbsp;Ekranı</span>
+			</div>
+		</div>
+		<div class="w-box-content" style="overflow: auto;width: 100%;height: 100%;">
+	 		<table class="table table-bordered">
+	 			<tr>
+	 				<th style="width: 25%;">Bordro No</th>
+	 				<td style="width: 25%;">
+	 					<input type="text" id="bordroNo" value="{{sqlBordroNo.BordroNo}}" class="form-control  keypress-barrier requiredHg" data-input-type="Number" disabled="">
+	 				</td>	
+	 				<th>Bordro Tarihi</th>
+	 				<td>
+	 					<input type="date" id="bordroTarihi" value="{{ suan|date:'Y-m-d' }}" class="form-control requiredHg" disabled="">
+	 				</td>
+	 			</tr>
+	 			<tr>
+	 				<th>İşlem Türü</th>
+	 				<td>
+	 					<select id="islemTuru" class="form-control requiredHg" key="{{ sqlCekIsTransferred.Durum }}">
+	 						<option selected="" value="">Seçiniz</option>
+	 						<option value="2">Çek Çıkış(Cari Hesaba)</option>
+ 							<option value="3">Çek Çıkış(Banka Tahsil)</option>
+ 							<option value="4">Çek Çıkış(Banka Teminat)</option>
+	 					</select>
+	 				</td>
+	 				<th style="width: 25%;">Cari Ünvani</th>
+	 				<td style="width: 25%;"  colspan="3">
+	 					<select id="cariUnvani" class="form-control requiredHg">
+	 						<option selected="" value="">Seçiniz</option>
+	 						{% for cari in sqlCari %}
+	 							<option value="{{ cari.CariKodu }}">{{ cari.CariUnvani }}</option>
+	 						{% endfor %}
+	 					</select>
+	 				</td>
+	 			</tr>	
+	 			<tr>
+	 				<th>Çek No</th>
+	 				<td>
+		 				<input type="text" id="cekNo" value="{{ sqlCekIsTransferred.CekNo }}" class="form-control keypress-barrier requiredHg" data-input-type="Number" disabled="">
+	 				</td>
+	 				<th>Vadesi</th>
+	 				<td>
+	 					<input type="date" id="vade" value="{{ sqlCekIsTransferred.Vade|date:'Y-m-d' }}" class="form-control requiredHg" disabled="">
+	 				</td>
+	 			</tr>
+	 			<tr>
+	 				<th>Döviz</th>
+	 				<td>
+	 					<select id="doviz" class="form-control requiredHg" disabled="">
+ 							{% if sqlCekIsTransferred.Doviz == "1" %}
+ 							<option value="1">TL</option>
+ 							{% elif sqlCekIsTransferred.Doviz == "2" %}
+ 							<option value="2">DOLAR</option>
+ 							{% elif sqlCekIsTransferred.Doviz == "3" %}
+ 							<option value="3">EURO</option>
+ 							{% endif %}
+	 					</select>
+	 				</td>	
+	 				<th>Tutar</th>
+	 				<td>
+	 					<input type="text" id="tutar" value="{{ sqlCekIsTransferred.Tutar }}" class="form-control keypress-barrier requiredHg" data-input-type="Decimal" disabled="">
+	 				</td>
+	 			</tr>	
+	 			<tr>
+	 				<th>Banka Adı</th>
+	 				<td>
+	 					<input type="text" id="bankaAdi" value="{{ sqlCekIsTransferred.BankaAdi }}" class="form-control requiredHg" disabled="">
+	 				</td>
+
+	 				<th>Şube Kodu</th>
+	 				<td>
+	 					<input type="text" id="subeKodu" value="{{ sqlCekIsTransferred.SubeKodu }}" class="form-control requiredHg" disabled="">
+	 				</td>
+	 			</tr>
+	 			<tr>	
+	 				<th>Hesap No</th disabled="">
+	 				<td>
+	 					<input type="text" id="hesapNo" value="{{ sqlCekIsTransferred.HesapNo }}" class="form-control keypress-barrier requiredHg" data-input-type="Number" disabled="">
+	 				</td>
+	 				<th>Ödeme Yeri</th>
+	 				<td>
+	 					<input type="text" id="odemeYeri" value="{{ sqlCekIsTransferred.OdemeYeri }}" class="form-control requiredHg" disabled="">
+	 				</td>
+	 			</tr>
+	 			<tr>
+	 				<td colspan="2">
+	 					<button class="btn btn-info fa fa-plus" style="width: 100%;" onclick="Ekle();" title="Ekle"></button>
+	 				</td>
+	 				<td colspan="2">
+	 					<button class="btn btn-success fa fa-save" style="width: 100%;" onclick="Kaydet();" title="Kaydet"></button>
+	 				</td>
+	 			</tr>
+	 		</table>
+	 		<table class="table table-bordered" id="eklenenBordroTable" style="display: none;">
+	 			<thead>
+		 			<tr>
+		 				<th>İşlem Türü</th>
+						<th>Bordro No</th>
+						<th>Bordro Tarihi</th>
+						<th>Cari Ünvani</th>
+						<th>Çek No</th>
+						<th>Vade</th>
+						<th>Ödeme Yeri</th>
+						<th>Döviz</th>
+						<th>Tutar</th>
+						<th>Banka Adı</th>
+						<th>Şube Kodu</th>
+						<th>Hesap No</th>
+						<th>İşlem</th>
+					</tr>
+				</thead>
+				<tbody id="eklenenBordro"></tbody>	
+	 		</table>
+		</div> 	
+	</div>	
+</div>
+<script type="text/javascript">
+$(document).click(function(){
+	if($("#bordroNo").val() == ""){
+		if(confirm("Bordo Numarası Tanımlanmamış ! Tanımlama Sayfasına Yönlendirilsin mi ?") == true){
+			location = "/ceksenet/tanimlamalar";
+		};
+	};
+});
+function Ekle(){
+	Required();
+	$.ajax({
+        type: "post",
+        url: "",
+        data: {      	
+        	"ajaxDurum"    	   : $("#islemTuru").attr("key"),
+        	"ajaxIslemTuru"    : $("#islemTuru").val(),
+        	"ajaxBordroNo"     : $("#bordroNo").val(),
+        	"ajaxBordroTarihi" : $("#bordroTarihi").val(),
+        	"ajaxCariUnvani"   : $("#cariUnvani").val(),
+        	"ajaxCekNo"        : $("#cekNo").val(),
+        	"ajaxVade"         : $("#vade").val(),
+        	"ajaxOdemeYeri"    : $("#odemeYeri").val(),
+        	"ajaxDoviz"        : $("#doviz").val(),
+        	"ajaxTutar"        : $("#tutar").val(),
+        	"ajaxBankaAdi"     : $("#bankaAdi").val(),
+        	"ajaxSubeKodu"     : $("#subeKodu").val(),
+        	"ajaxHesapNo"      : $("#hesapNo").val(),
+        csrfmiddlewaretoken: "{{ csrf_token }}"
+        },
+        dataType: "json",        
+        success: function(Veri){
+        	if(Veri.ajaxMesaj == "1"){
+	        	$('#eklenenBordroTable').css("display","block")
+	        	$('#eklenenBordro').append('\
+        		<tr id="'+Veri.ajaxId+'" class="eklenenBordroTr">\
+        			<td>'+Veri.ajaxIslemTuru+'</td>\
+        			<td>'+Veri.ajaxBordroNo+'</td>\
+        			<td>'+Veri.ajaxBordroTarihi+'</td>\
+        			<td>'+Veri.ajaxCariUnvani+'</td>\
+        			<td>'+Veri.ajaxCekNo+'</td>\
+        			<td>'+Veri.ajaxVade+'</td>\
+        			<td>'+Veri.ajaxOdemeYeri+'</td>\
+        			<td>'+Veri.ajaxDoviz+'</td>\
+        			<td>'+Veri.ajaxTutar+'</td>\
+        			<td>'+Veri.ajaxBankaAdi+'</td>\
+        			<td>'+Veri.ajaxSubeKodu+'</td>\
+        			<td>'+Veri.ajaxHesapNo+'</td>\
+        			<td>\
+        			<button class="btn btn-danger fa fa-trash" onclick="urunSil('+Veri.ajaxId+');" title="Sil"></button>\
+        			</td>\
+        		</tr>');
+        	}else{alert(Veri.ajaxMesaj);};	
+        }, 
+        error: function(Hata){
+            alert("Hata !");
+        }
+    });
+};
+function Kaydet(){
+	if(confirm("Kaydedilsin mi ?") == true){
+		if($(".eklenenBordroTr").html() != null){
+			$.ajax({
+		        type: "post",
+		        url: "",
+		        data: {
+		        	"ajaxKaydet" : $('#bordroNo').val(),
+		        csrfmiddlewaretoken: "{{ csrf_token }}"
+		        },
+		        dataType: "json",
+		        success: function(Veri){
+		        	if(Veri.ajaxMesaj == "1"){
+		        		location = "/ceksenet/ceklerlistele/";
+		        	}else{alert(Veri.ajaxMesaj)};
+		        },
+		        error: function(Hata){
+		            alert("Hata !");
+		        }
+		    });
+		}else{alert("Lütfen Önce Ekleme İşlemini Gerçekleştirin !")};
+	};
+};
+</script>
+{% endblock %}
+
+
+
+ 

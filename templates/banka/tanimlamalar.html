@@ -1,0 +1,91 @@
+{% extends 'base.html' %}
+{% block pagetitle %}{{ block.super }} - Banka Tanımlamaları {% endblock %}
+{% block body  %}
+<div class="container-fluid">
+	<div class="w-box">
+		<div class="w-box-header">
+			<div align="Center">
+				<span>Banka Tanımlamaları Ekranı</span>
+			</div>
+		</div>
+		<div class="w-box-content">
+			<table id="test" class="table table-bordered" style="overflow: auto;width: 100%;height: 100%;">
+				<tbody>
+					<tr>
+						<th style="width: 30%;">Banka&nbsp;Seçimi&nbsp;Yapınız</th>
+						<td style="width: 70%;">
+							<select id="bankaKodu" class="form-control">
+								<option value="" selected="">Seçiniz</option>
+								{% for banka in bankalar %}
+								<option value="{{banka.BankaKodu}}">{{banka.BankaAdi}}</option>
+								{% endfor %}
+							</select>
+						</td>
+					</tr>
+					<tr>
+						<th style="width: 30%;">Tahsilat&nbsp;Dekontu&nbsp;Açılış&nbsp;Numarasını&nbsp;Giriniz</th>
+						<td style="width: 70%;">
+							<input type="text" id="tahsilatDekontu" class="form-control">
+						</td>
+					</tr>
+					<tr>
+						<th>Tediye&nbsp;Dekontu&nbsp;Açılış&nbsp;Numarasını&nbsp;Giriniz</th>
+						<td>
+							<input type="text" id="tediyeDekontu" class="form-control">
+						</td>
+					</tr>
+					<tr>
+						<th></th>
+						<td>
+							<button class="btn btn-success fa fa-save" style="width: 100%;" onclick="Kaydet();" title="Kaydet"></button>
+						</td>
+					</tr>
+				</tbody>
+			</table>
+		</div>	
+	</div>
+</div>
+<script type="text/javascript">
+$("#bankaKodu").change(function(){
+	if($(this).val() != ""){
+		$.ajax({
+	        type: "post",
+	        url: "",
+	        data: {
+	        	"ajaxBankaSecimi" : $("#bankaKodu").val(),
+	        csrfmiddlewaretoken: "{{ csrf_token }}"
+	        },
+	        dataType: "json",
+	        success: function(Veri){
+	        	$("#tahsilatDekontu").val(Veri.ajaxBankaTahDek);
+	        	$("#tediyeDekontu").val(Veri.ajaxBankaTedDek);
+	        }, 
+	        error: function(Hata){
+	            alert("Hata !");
+	        }
+	    });
+	};
+});
+function Kaydet(){
+	if($("#bankaKodu").val() != ""){
+		$.ajax({
+	        type: "post",
+	        url: "",
+	        data: {
+	        	"ajaxBankaKodu"         : $("#bankaKodu").val(),
+	        	"ajaxTahsilatDekontuNo" : $("#tahsilatDekontu").val(),
+	        	"ajaxTediyeDekontuNo"   : $("#tediyeDekontu").val(),
+	        csrfmiddlewaretoken: "{{ csrf_token }}"
+	        },
+	        dataType: "json",
+	        success: function(Veri){
+	        	location = "/banka/giris-cikis";
+	        }, 
+	        error: function(Hata){
+	            alert("Hata !");
+	        }
+	    });
+	}else{alert("Lütfen Banka Seçimi Yapınız !")};
+};
+</script>
+{% endblock %}

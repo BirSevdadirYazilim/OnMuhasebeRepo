@@ -1,0 +1,161 @@
+{% extends 'base.html' %}
+{% block pagetitle %}{{ block.super }} - Hesaplar Arası Transfer {% endblock %}
+{% block body  %}
+<div class="container-fluid">
+	<div class="w-box">
+		<div class="w-box-header">
+			<div align="Center">
+				<span>Hesaplar Arası Transfer Oluşturma Ekranı</span>
+			</div>
+		</div>
+		<div class="w-box-content">
+	 		<table class="table table-bordered">
+	 			<tr>
+	 				<th>Borç/Giriş Hesabı</th>
+					<td>
+						<select id="borcHesabi" class="form-control requiredHg">
+							<option selected="" value="">Seçiniz</option>
+							{% for kasa in sqlKasa %}
+								<option value="{{ kasa.KasaKodu }}">{{ kasa.KasaAdi }}</option>
+							{% endfor %}
+							{% for banka in sqlBanka %}
+								<option value="{{ banka.BankaKodu }}">{{ banka.BankaAdi }}</option>
+							{% endfor %}
+						</select>
+					</td>
+					<th>Alacak/Çıkış Hesabı</th>
+	 				<td>
+	 					<select id="alacakHesabi" class="form-control requiredHg">
+	 						<option selected="" value="">Seçiniz</option>
+	 						{% for kasa in sqlKasa %}
+	 							<option value="{{ kasa.KasaKodu }}">{{ kasa.KasaAdi }}</option>
+	 						{% endfor %}
+	 						{% for banka in sqlBanka %}
+								<option value="{{ banka.BankaKodu }}">{{ banka.BankaAdi }}</option>
+							{% endfor %}
+	 					</select>
+	 				</td>
+	 			</tr>
+	 			<tr>	
+	 				<th style="width: 15%;">Makbuz</th>
+	 				<td style="width: 30%;">
+	 					<select id="makbuz" class="form-control requiredHg">
+	 						<option selected="" value="">Seçiniz</option>
+	 						<option value="1">Tahsilat Makbuzu</option>
+	 						<option value="2">Tediye Makbuzu</option>
+	 					</select>
+	 				</td>
+	 				<th id="makbuzNoTh" style="width: 15%;">Makbuz No</th>
+	 				<td style="width: 30%;">
+	 					<input type="text" id="makbuzNo" class="form-control requiredHg" disabled="">
+	 				</td>
+	 			</tr>
+	 			<tr>	
+	 				<th>Makbuz Tarihi</th>
+	 				<td>
+	 					<input type="date" id="makbuzTarihi" value="{{ suan|date:'Y-m-d' }}" class="form-control requiredHg">
+	 				</td>
+	 				<th>Tutar</th>
+	 				<td>
+	 					<input type="text" id="tutar" class="form-control keypress-barrier" data-input-type="Decimal"  placeholder="Tutar">
+	 				</td>
+	 			</tr>
+	 			<tr>
+	 				<th>Açıklama</th>
+	 				<td colspan="2">
+	 					<input type="text" id="aciklama" class="form-control" placeholder="Açıklama" required="">
+	 				</td>
+	 				<td>
+	 					<button class="btn btn-success fa fa-save" style="width: 100%;" onclick="Kaydet();"></button>
+	 				</td>
+	 			</tr>	
+	 		</table>
+		</div> 	
+	</div>	
+</div>
+<script type="text/javascript">
+$("#makbuz").change(function(){
+	if($("#makbuz").val() != "" && $("#borcHesabi").val() != "" && $("#alacakHesabi").val() != ""){
+		$("#makbuzNo").val("");
+		$("#tutar").val("");
+		$.ajax({
+	        type: "post",
+	        url: "",
+	        data: {
+	        	"ajaxMakbuzKontrol" : $("#makbuz").val(),
+	        	"ajaxTahMakNoKasa"  : $("#borcHesabi").val(),
+	        	"ajaxTedMakNoKasa"  : $("#alacakHesabi").val(),
+	        csrfmiddlewaretoken: "{{ csrf_token }}"
+	        },
+	        dataType: "json",
+	        success: function(Veri){
+        		if(Veri.ajaxSqlMakbuzNo == null){
+        			if(confirm("Makbuz Numarası Tanımlanmamış ! Tanımlamalar Sayfasına Yönlendirilsin mi ? ") == true){
+	        			location = "/kasa/tanimlamalar";
+        			}else{alert("Makbuz Numarası Tanımlamadan Kayıt Yapamazsınız !");};
+	        	}else if(Veri.ajaxSqlMakbuzNo == false){
+	        		alert("Kasa Modülündesiniz ! Seçtiğiniz Hesaba Makbuz Kesemezsiniz.")
+	        	}else{$('#makbuzNo').val(Veri.ajaxSqlMakbuzNo);};	
+	        }, 
+	        error: function(hata) {
+	            alert("Hata !");
+	        }
+	    });
+	};    
+});
+$("#tutar").keyup(function(){
+	if($(this).val() != "" && $("#makbuz").val() == "2"){
+		$.ajax({
+	        type: "post",
+	        url: "",
+	        data: {
+	        	"ajaxBakiyeKontrol"   : $(this).val(),
+	        	"ajaxKasaKoduKontrol" : $("#alacakHesabi").val(), 
+	        csrfmiddlewaretoken: "{{ csrf_token }}"
+	        },
+	        dataType: "json",
+	        success: function(Veri){
+	        	if(Veri.ajaxMesaj != null){
+	        		$("#tutar").val("");	
+	        	};
+	        }, 
+	        error: function(hata) {
+	            alert("Hata !");
+	        }
+        });
+	};
+});
+function Kaydet(){
+	Required();
+	if(confirm("Kaydedilsin mi ?") != ""){
+		$.ajax({
+	        type: "post",
+	        url: "",
+	        data: {
+	        	"ajaxBorcHesabi"   : $("#borcHesabi").val(),
+	        	"ajaxAlacakHesabi" : $("#alacakHesabi").val(),
+	        	"ajaxMakbuz"       : $("#makbuz").val(),
+	        	"ajaxMakbuzNo"     : $("#makbuzNo").val(),
+	        	"ajaxMakbuzTarihi" : $("#makbuzTarihi").val(),
+	        	"ajaxTutar"        : $("#tutar").val(),
+	        	"ajaxAciklama"     : $("#aciklama").val(), 
+	        csrfmiddlewaretoken: "{{ csrf_token }}"
+	        },
+	        dataType: "json",
+	        success: function(Veri){
+	        	if(Veri.ajaxMesaj == "1"){
+	        		location = "/kasa/hareketler";
+	        	}else if(Veri.ajaxMesaj == false){
+	        		if(confirm("Bu İşleme Karşılık Gelen Makbuz Otomatik Olarak Kesilecektir Ancak Makbuz Numarası Tanımlanmamış ! Tanımlamalar Sayfasına Yönlendirilsin mi ? ") == true){
+		        			location = "/kasa/tanimlamalar";
+	        		}else{alert("Makbuz Numarası Tanımlanmadan Kayıt Yapamazsınız !");};
+	        	}else{alert(Veri.ajaxMesaj);};
+	        }, 
+	        error: function(hata) {
+	            alert("Hata !");
+	        }
+        });
+	};
+};
+</script>
+{% endblock %} 

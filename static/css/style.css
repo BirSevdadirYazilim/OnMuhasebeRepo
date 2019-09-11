@@ -1,0 +1,27 @@
+/* widgets */
+.w-box {-webkit-box-shadow:  0px 1px 2px 0px #efefef;box-shadow:  0px 1px 2px 0px #efefef}
+.w-box + .w-box {margin-top:20px}
+.w-box-header {height:32px;line-height:32px;border:1px solid #ddd;padding:0 10px;background: #fbfbfb;background: -moz-linear-gradient(top,  #fbfbfb 0%, #f1f1f1 100%);background: -webkit-gradient(linear, left top, left bottom, color-stop(0%,#fbfbfb), color-stop(100%,#f1f1f1));background: -webkit-linear-gradient(top,  #fbfbfb 0%,#f1f1f1 100%);background: -o-linear-gradient(top,  #fbfbfb 0%,#f1f1f1 100%);background: -ms-linear-gradient(top,  #fbfbfb 0%,#f1f1f1 100%);            background: linear-gradient(top,  #fbfbfb 0%,#f1f1f1 100%);filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#fbfbfb', endColorstr='#f1f1f1',GradientType=0 );font-weight:700;color:#666;font-size:11px}
+.w-box-header .btn-group {margin-top:5px}
+.w-box-header .dropdown-menu {font-size:12px}
+.w-box-header input {padding:2px;margin:-2px 0 0}
+.w-box-content {border:1px solid #ddd;border-top:none;background-color: #fff}
+.w-box-content.cnt_a {padding:10px}
+.w-box-content table,.w-box-content pre {margin-bottom:0}
+.w-box-content pre {-webkit-border-radius: 0 0 0 0;-moz-border-radius: 0 0 0 0;-ms-border-radius: 0 0 0 0;border-radius: 0 0 0 0;border:none}
+.w-box-content .no-th tr:first-child td {border-top:none}
+.w-box-content .gebo-upload {margin:0}
+.w-box-content .gebo-upload .plupload_filelist_header {border-top:none}
+.w-box-content .gebo-upload .plupload_filelist_footer {border-bottom:none}
+.w-box-content .tabbable {position:relative;top:-28px;margin-bottom:-28px}
+.w-box-content .nav-tabs {border-bottom:none}
+.w-box-content .nav-tabs {float:right;clear:both}
+.w-box-content .nav-tabs > li > a {padding:4px 6px;font-size:11px}
+.w-box-content .nav-tabs > li.active > a {background:#fff !important}
+.w-box-content .nav-tabs > li > a:hover {border-color:#ddd #ddd transparent;background: transparent}
+.w-box-content .tab-content {clear:both}
+.w-box-content .tab-pane {padding:0 10px 10px}
+.w-box-footer {border:1px solid #ddd;padding:8px 10px;background: #fdfdfd;border-top:none}
+.w-box-footer .pagination {margin:0; font-size:11px;height:22px}
+.w-box-footer .pagination a {line-height:20px}
+/* widgets */

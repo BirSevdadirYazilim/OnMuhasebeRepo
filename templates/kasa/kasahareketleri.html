@@ -1,0 +1,218 @@
+{% extends 'base.html' %}
+{% block pagetitle %}{{ block.super }} - Kasa Hareketleri {% endblock %}
+{% block body  %}
+<div id="divListe" class="container-fluid">
+	<div class="w-box">
+		<input type="button" value="İptal Edilen Kasa Hareketleri" id="iptalEdilenler" class="btn btn-primary">
+		<div class="w-box-header">
+			<div align="Center"><span id="header">Kasa Hareketleri Listesi Ekranı</span></div>
+		</div>
+		<div id="kasaHar" class="w-box-content" style="overflow: auto;width: 100%;height: 100%;">
+			<table class="table table-bordered" id="datatable">
+				<thead>
+					<tr>
+						<th>Kasa Kodu</th>
+						<th>Makbuz</th>
+						<th>MakbuzTarihi</th>
+						<th>Açıklama</th>
+						<th>İşlemler</th>
+					</tr>
+				</thead>
+				<tbody align="Center">
+				{% for kasaHareketler in sqlKasaHareketler %}
+					<tr id="{{ kasaHareketler.id }}">
+						<td>{{ kasaHareketler.KasaKodu }}</td>
+						{% if kasaHareketler.Makbuz == "1" %}
+						<td>Tahsilat Makbuzu</td>
+						{% elif kasaHareketler.Makbuz == "2" %}
+						<td>Tediye Makbuzu</td>
+						{% elif kasaHareketler.Makbuz == "3" %}
+						<td>Açılış Fişi Makbuzu</td>
+						{% else %}
+						<td>{{ kasaHareketler.Makbuz }}</td>
+						{% endif %}
+						<td>{{ kasaHareketler.MakbuzTarihi }}</td>
+						<td>{{ kasaHareketler.Aciklama }}</td>
+						<td>
+							{% if islemlerKontrol.IsKasaHareketleriDetay == True %}
+							<button class="btn btn-info fa fa-search" onclick="Detay('{{ kasaHareketler.id }}');" title="Detay"></button>
+							{% endif %}
+							{% if islemlerKontrol.IsKasaHareketleriIptalEt == True %}
+							<button class="btn btn-danger fa fa-close" onclick="IptalEt('{{ kasaHareketler.id }}');" title="İptal Et"></button>
+							{% endif %}
+						</td>
+					</tr>
+				{% endfor %}	
+				</tbody>
+			</table>
+		</div>
+		<div id="iptalEdilenKasaHar" class="w-box-content" style="overflow: auto;width: 100%;height: 100%; display: none;">
+			<table class="table table-bordered" id="datatable2">
+				<thead>
+					<tr>
+						<th>Kasa Adı</th>
+						<th>Makbuz</th>
+						<th>MakbuzTarihi</th>
+						<th>Açıklama</th>
+						<th>İşlemler</th>
+					</tr>
+				</thead>
+				<tbody align="Center">
+				{% for kasaHareketler in sqlKasaHareketleriIsCanceled %}
+					<tr id="{{ kasaHareketler.id }}">
+						<td>{{ kasaHareketler.KasaKodu }}</td>
+						{% if kasaHareketler.Makbuz == "1" %}
+						<td>Tahsilat Makbuzu</td>
+						{% elif kasaHareketler.Makbuz == "2" %}
+						<td>Tediye Makbuzu</td>
+						{% else %}
+						<td>{{ kasaHareketler.Makbuz }}</td>
+						{% endif %}
+						<td>{{ kasaHareketler.MakbuzTarihi }}</td>
+						<td>{{ kasaHareketler.Aciklama }}</td>
+						<td>
+							{% if islemlerKontrol.IsKasaHareketleriDetay == True %}
+							<button class="btn btn-info fa fa-search" onclick="Detay('{{ kasaHareketler.id }}');" title="Detay"></button>
+							{% endif %}
+							{% if islemlerKontrol.IsKasaHareketleriSil == True %}
+							<button class="btn btn-danger fa fa-trash" onclick="Sil('{{ kasaHareketler.id }}');" title="Sil"></button>
+							{% endif %}
+						</td>
+					</tr>
+				{% endfor %}	
+				</tbody>
+			</table>
+		</div>
+	</div>
+</div>
+<div id="divDetay" class="container-fluid" style="display: none;">
+	<div class="w-box" style="margin-top: 1%; margin-bottom: 1%;">
+		<div align="left">
+			<button class="btn btn-warning fa fa-long-arrow-left" style="margin-bottom:5px; width: 25%;" onclick="Geri();" title="Geri"></button>
+		</div>
+		<div class="w-box-header">
+			<div align="Center"><span>Hesap Detay Ekranı</span></div>
+		</div>
+		<div class="w-box-content">
+			<table class="table table-bordered">
+                <tbody>
+                	<tr>	
+						<th>Hesap</th>
+						<td id="cariUnvani"></td>
+					</tr>
+					<tr>
+						<th style="width: 25%;">Kasa Kodu</th>
+						<td id="kasaKodu" style="width: 75%;"></td>
+					</tr>
+					<tr>	
+						<th>Makbuz</th>
+						<td id="makbuz"></td>
+					</tr>
+					<tr>	
+						<th>Makbuz No</th>
+						<td id="makbuzNo"></td>
+					</tr>
+					<tr>	
+						<th>Makbuz Tarihi</th>
+						<td id="makbuzTarihi"></td>
+					</tr>
+					<tr>	
+						<th>Borc</th>
+						<td id="kasaBorc"></td>
+					</tr>
+					<tr>	
+						<th>Alacak</th>
+						<td id="kasaAlacak"></td>
+					</tr>
+				</tbody>
+            </table>             
+		</div>
+	</div>
+</div>
+<script type="text/javascript">
+$("#iptalEdilenler").click(function(){
+	if($("#iptalEdilenler").val() == "İptal Edilen Kasa Hareketleri"){
+		$("#iptalEdilenler").val("Kasa Hareketleri");
+		$("#header").html("İptal Edilen Kasa Hareketleri");
+		$("#kasaHar").css("display","none");
+		$("#iptalEdilenKasaHar").css("display","block");
+	}else{
+		$("#iptalEdilenler").val("İptal Edilen Kasa Hareketleri");
+		$("#header").html("Kasa Hareketleri");
+		$("#iptalEdilenKasaHar").css("display","none");
+		$("#kasaHar").css("display","block");
+	};
+});	
+function Detay(argument){
+	$.ajax({
+        type: "post",
+        url: "",
+        data: {
+        	'ajaxDetay' : argument,
+        csrfmiddlewaretoken: "{{ csrf_token }}"
+        },
+        dataType: "json",
+        success: function(Veri){
+        	$("#divListe").css("display","none");
+        	$("#divDetay").css("display","block");
+			$("#kasaKodu").html(Veri.ajaxKasaKodu);
+			$("#makbuz").html(Veri.ajaxMakbuz);
+			$("#makbuzNo").html(Veri.ajaxMakbuzNo);
+			$("#makbuzTarihi").html(Veri.ajaxMakbuzTarihi);
+			$("#kasaBorc").html(Veri.ajaxKasaBorc);
+			$("#kasaAlacak").html(Veri.ajaxKasaAlacak);
+			$("#cariUnvani").html(Veri.ajaxCariUnvani);
+        }, 
+        error: function(hata) {
+            alert(hata);
+        }
+    });
+};
+function Geri(){
+	$("#divDetay").css("display","none");
+	$("#divListe").css("display","block");
+};
+function IptalEt(argument){
+	if(confirm("İptal Ediliyor ! Onaylıyor musunuz  ?") == true){
+		$.ajax({
+	        type: "post",
+	        url: "",
+	        data: {
+	        	"ajaxIptal" : argument,
+	        csrfmiddlewaretoken: "{{ csrf_token }}"
+	        },
+	        dataType: "json",
+	        success: function(Veri){
+				$("#"+argument+"").fadeOut().remove();
+	        }, 
+	        error: function(hata) {
+	            alert(hata);
+	        }
+	    });
+	};
+};
+function Sil(argument){
+	if(confirm("İptal Edilen Kasa Hareketi Siliniyor ! Onaylıyor musunuz  ?") == true){
+		$.ajax({
+	        type: "post",
+	        url: "",
+	        data: {
+	        	"ajaxSil" : argument,
+	        csrfmiddlewaretoken: "{{ csrf_token }}"
+	        },
+	        dataType: "json",
+	        success: function(Veri){
+				$("#"+argument+"").fadeOut().remove();
+	        }, 
+	        error: function(hata) {
+	            alert(hata);
+	        }
+	    });
+	};
+};
+</script>
+{% endblock %}
+
+
+
+ 

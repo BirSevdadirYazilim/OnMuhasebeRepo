@@ -1,0 +1,367 @@
+{% extends 'base.html' %}
+{% block pagetitle %}{{ block.super }} - Cari Listesi {% endblock %}
+{% block body  %}
+<div id="divListe" class="container-fluid">
+	<div class="w-box">
+		<div class="w-box-header">
+			<div align="Center"><span>Cari Listesi Ekranı</span></div>
+		</div>
+		<div class="w-box-content" style="overflow: auto;width: 100%;height: 100%;">
+			<table class="table table-bordered" id="datatable">
+				<thead>
+					<tr>
+						<th>Cari Ünvani</th>
+						<th>Borc</th>
+						<th>Alacak</th>
+						<th>Kalan Bakiye</th>
+						<th>İşlemler</th>
+					</tr>
+				</thead>
+				<tbody align="Center">
+				{% for i in liste %}
+					<tr id="{{ i.id }}">
+						<td>{{ i.CariUnvani }}</td>
+						<td>{{ i.borc }}</td>
+						<td>{{ i.alacak }}</td>
+						<td>{{ i.kalanBakiye  }}</td>
+						<td>
+						{% if islemlerKontrol.IsCariDetay == True %}
+						<button class="btn btn-info fa fa-search" onclick="Detay('{{ i.id }}');"></button>
+						{% endif %}
+						{% if islemlerKontrol.IsCariGuncelle == True %}
+						<button class="btn btn-warning fa fa-pencil" onclick="Guncelle('{{ i.id }}');"></button>
+						{% endif %}
+						{% if islemlerKontrol.IsCariSil == True %}
+						<button class="btn btn-danger fa fa-trash" onclick="Sil('{{ i.id }}');"></button>
+						{% endif %}
+						</td>
+					</tr>
+				{% endfor %}	
+				</tbody>
+			</table>
+		</div>
+	</div>	
+</div>
+<div id="divDetay" class="container-fluid" style="display: none;">
+	<div class="w-box" style="margin-top: 1%; margin-bottom: 1%;">
+		<input type="button" class="btn btn-warning geri" value="Geri" style="margin-bottom:5px; width: 25%;">
+		<div class="w-box-header">
+			<div align="Center"><span>Cari Detay Ekranı</span></div>
+		</div>
+		<div class="w-box-content">
+			<div class="row-fluid">
+				<div id="DivAnaTablo">
+					<table class="table table-bordered">
+	                    <tbody>
+							<tr>
+								<th style="width: 25%;">Cari Kodu</th>
+								<td id="cariKodu" style="width: 75%;"></td>
+							</tr>
+							<tr>	
+								<th>Cari Unvani</th>
+								<td id="cariUnvani"></td>
+							</tr>
+							<tr>	
+								<th>Vergi Dairesi</th>
+								<td id="vergiDairesi"></td>
+							</tr>
+							<tr>	
+								<th>Vergi Numarası</th>
+								<td id="vergiNumarasi"></td>
+							</tr>
+							<tr>	
+								<th>İl</th>
+								<td id="il"></td>
+							</tr>
+							<tr>	
+								<th>İlçe</th>
+								<td id="ilce"></td>
+							</tr>
+							<tr>	
+								<th>Adres</th>
+								<td id="adres"></td>
+							</tr>
+							<tr>	
+								<th>Posta Kodu</th>
+								<td id="postaKodu"></td>
+							</tr>
+							<tr>	
+								<th>KEP</th>
+								<td id="KEP"></td>
+							</tr>
+							<tr>	
+								<th>Tel1</th>
+								<td id="tel1"></td>
+							</tr>
+							<tr>	
+								<th>Tel2</th>
+								<td id="tel2"></td>
+							</tr>
+							<tr>	
+								<th>Email</th>
+								<td id="email"></td>
+							</tr>
+							<tr>	
+								<th>Web Sitesi</th>
+								<td id="webSitesi"></td>
+							</tr>
+							<tr>	
+								<th>LokasyonKodu</th>
+								<td id="lokasyonKodu"></td>
+							</tr>
+							<tr>	
+								<th>Lokasyon Detay</th>
+								<td id="lokasyonDetay"></td>
+							</tr>
+						</tbody>
+	                </table>             
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+<div id="divGuncelle" class="container-fluid" style="display: none;">
+	<div class="w-box" style="margin-top: 1%px; margin-bottom: 1%;">
+	<div class="w-box-header">
+		<div align="Center">
+			<span>Cari Düzenleme Ekranı</span>
+		</div>
+	</div>
+	<div class="w-box-content">
+		<table class="table table-bordered">	
+			<tr>
+				<th style="width: 25%">Cari Kodu</th>
+				<td style="width: 75%">
+					<input type="text" id="cariKoduGuncelle" class="form-control">
+				</td>
+			</tr>
+			<tr>
+				<th>Cari Ünvanı</th>
+				<td>
+					<input type="text" id="cariUnvaniGuncelle" class="form-control">
+				</td>
+			</tr>
+			<tr>
+				<th>Vergi Dairesi</th>
+				<td>
+					<input type="text" id="vergiDairesiGuncelle" class="form-control">
+				</td>
+			</tr>
+			<tr>
+				<th>Vergi Numarası</th>
+				<td>
+					<input type="text" id="vergiNumarasiGuncelle" class="form-control">
+				</td>
+			</tr>
+			<tr>
+				<th>İl</th>	
+				<td>
+					<input type="text" id="ilGuncelle" class="form-control">
+				</td>
+			</tr>
+			<tr>
+				<th>İlçe</th>
+				<td>
+					<input type="text" id="ilceGuncelle" class="form-control">
+				</td>
+			</tr>
+			<tr>
+				<th>Adres</th>
+				<td>
+					<input type="text" id="adresGuncelle" class="form-control">
+				</td>
+			</tr>
+			<tr>
+				<th>Posta Kodu</th>	
+				<td>
+					<input type="text" id="postaKoduGuncelle" class="form-control">
+				</td>
+			</tr>
+			<tr>
+				<th>KEP</th>
+				<td>
+					<input type="email" id="KEPGuncelle" class="form-control">
+				</td>
+			</tr>
+			<tr>
+				<th>Tel1</th>
+				<td>
+					<input type="text" id="tel1Guncelle" class="form-control">
+				</td>
+			</tr>
+			<tr>
+				<th>Tel2</th>
+				<td>
+					<input type="text" id="tel2Guncelle" class="form-control">
+				</td>
+			</tr>
+			<tr>
+				<th>Email</th>	
+				<td>
+					<input type="email" id="emailGuncelle" class="form-control">
+				</td>
+			</tr>
+			<tr>
+				<th>Web Adresi</th>	
+				<td>
+					<input type="text" id="webSitesiGuncelle" class="form-control">
+				</td>
+			</tr>
+			<tr>
+				<th>Lokasyon Kodu</th>	
+				<td>
+					<input type="text" id="lokasyonKoduGuncelle" class="form-control">
+				</td>
+			</tr>
+			<tr>
+				<th>Lokasyon Detay</th>
+				<td>
+					<input type="text" id="lokasyonDetayGuncelle" class="form-control">
+				</td>
+			</tr>
+			<table class="table table-bordered">
+				<tr>
+					<td>
+						<input type="button" value="Geri" class="btn btn-warning geri" style="width: 48%">
+						<input type="button" id="kaydet" value="Kaydet" class="btn btn-success" key="" key2="" key3="" style="width: 50%" onclick="Kaydet();">
+					</td>
+				</tr>
+			</table>	
+		</table>
+	</div>
+</div>
+<script type="text/javascript">
+function Detay(argument){
+	$.ajax({
+        type: "post",
+        url: "",
+        data: {
+        	"ajaxDetay" : argument, 
+        csrfmiddlewaretoken: "{{ csrf_token }}"
+        },
+        dataType: "json",
+        success: function(Veri){
+        	$("#divListe").css("display","none");
+        	$("#divDetay").css("display","block");
+        	$("#cariKodu").html(Veri.ajaxCariKodu);
+        	$("#cariUnvani").html(Veri.ajaxCariUnvani);
+        	$("#vergiDairesi").html(Veri.ajaxVergiDairesi);
+        	$("#vergiNumarasi").html(Veri.ajaxVergiNumarasi);
+        	$("#KEP").html(Veri.ajaxKEP);
+        	$("#il").html(Veri.ajaxIl);
+        	$("#ilce").html(Veri.ajaxIlce);
+        	$("#adres").html(Veri.ajaxAdres);
+        	$("#postaKodu").html(Veri.ajaxPostaKodu);
+        	$("#tel1").html(Veri.ajaxTel1);
+        	$("#tel2").html(Veri.ajaxTel2);
+        	$("#email").html(Veri.ajaxEmail);
+        	$("#webSitesi").html(Veri.ajaxWebSitesi);
+        	$("#lokasyonKodu").html(Veri.ajaxLokasyonKodu);
+        	$("#lokasyonDetay").html(Veri.ajaxLokasyonDetay);
+        }, 
+        error: function(hata) {
+            alert("Hata !");
+        }
+    });
+};
+function Guncelle(argument){
+	if(confirm("Güncelleme Ekranı Açılsın mı ?") == true){
+		$.ajax({
+	        type: "post",
+	        url: "",
+	        data: {
+	        	"ajaxGuncelle" : argument, 
+	        csrfmiddlewaretoken: "{{ csrf_token }}"
+	        },
+	        dataType: "json",
+	        success: function(Veri){
+	        	$("#divListe").css("display","none");
+	        	$("#divGuncelle").css("display","block");
+	        	$("#kaydet").attr("key",Veri.ajaxIdGuncelle);
+	        	$("#kaydet").attr("key2",Veri.ajaxIdGuncelle2);
+	        	$("#kaydet").attr("key3",Veri.ajaxIdGuncelle3);
+	        	$("#cariKoduGuncelle").val(Veri.ajaxCariKoduGuncelle);
+	        	$("#cariUnvaniGuncelle").val(Veri.ajaxCariUnvaniGuncelle);
+	        	$("#vergiDairesiGuncelle").val(Veri.ajaxVergiDairesiGuncelle);
+	        	$("#vergiNumarasiGuncelle").val(Veri.ajaxVergiNumarasiGuncelle);
+	        	$("#KEPGuncelle").val(Veri.ajaxKEPGuncelle);
+	        	$("#ilGuncelle").val(Veri.ajaxIlGuncelle);
+	        	$("#ilceGuncelle").val(Veri.ajaxIlceGuncelle);
+	        	$("#adresGuncelle").val(Veri.ajaxAdresGuncelle);
+	        	$("#postaKoduGuncelle").val(Veri.ajaxPostaKoduGuncelle);
+	        	$("#tel1Guncelle").val(Veri.ajaxTel1Guncelle);
+	        	$("#tel2Guncelle").val(Veri.ajaxTel2Guncelle);
+	        	$("#emailGuncelle").val(Veri.ajaxEmailGuncelle);
+	        	$("#webSitesiGuncelle").val(Veri.ajaxWebSitesiGuncelle);
+	        	$("#lokasyonKoduGuncelle").val(Veri.ajaxLokasyonKoduGuncelle);
+	        	$("#lokasyonDetayGuncelle").val(Veri.ajaxLokasyonDetayGuncelle);
+	        }, 
+	        error: function(hata) {
+	            alert("Hata !");
+	        }
+        });
+	};
+};
+function Kaydet(){
+	if(confirm("Kaydedilsin mi ?") == true){
+		$.ajax({
+	        type: "post",
+	        url: "",
+	        data: {
+	        	"ajaxIdKaydet"            : $("#kaydet").attr("key"),
+	        	"ajaxIdKaydet2"           : $("#kaydet").attr("key2"),
+	        	"ajaxIdKaydet3"           : $("#kaydet").attr("key3"),
+	        	"ajaxCariKoduKaydet"      : $("#cariKoduGuncelle").val(),
+	        	"ajaxCariUnvaniKaydet"    : $("#cariUnvaniGuncelle").val(),
+	        	"ajaxVergiDairesiKaydet"  : $("#vergiDairesiGuncelle").val(),
+	        	"ajaxVergiNumarasiKaydet" : $("#vergiNumarasiGuncelle").val(),
+	        	"ajaxKEPKaydet"           : $("#KEPGuncelle").val(),
+	        	"ajaxIlKaydet"            : $("#ilGuncelle").val(),
+	        	"ajaxIlceKaydet"          : $("#ilceGuncelle").val(),
+	        	"ajaxAdresKaydet"         : $("#adresGuncelle").val(),
+	        	"ajaxPostaKoduKaydet"     : $("#postaKoduGuncelle").val(),
+	        	"ajaxTel1Kaydet"          : $("#tel1Guncelle").val(),
+	        	"ajaxTel2Kaydet"          : $("#tel2Guncelle").val(),
+	        	"ajaxEmailKaydet"         : $("#emailGuncelle").val(),
+	        	"ajaxWebSitesiKaydet"     : $("#webSitesiGuncelle").val(),
+	        	"ajaxLokasyonKoduKaydet"  : $("#lokasyonKoduGuncelle").val(),
+	        	"ajaxLokasyonDetayKaydet" : $("#lokasyonDetayGuncelle").val(), 
+	        csrfmiddlewaretoken: "{{ csrf_token }}"
+	        },
+	        dataType: "json",
+	        success: function(Veri){
+	        	$("#divGuncelle").css("display","none");
+	        	$("#divListe").css("display","block");
+	        }, 
+	        error: function(hata) {
+	            alert("Hata !");
+	        }
+        });
+	};
+};
+function Sil(argument){
+	if(confirm("Silinsin mi ?") == true){
+		$.ajax({
+	        type: "post",
+	        url: "",
+	        data: {
+	        	"ajaxSil" : argument, 
+	        csrfmiddlewaretoken: "{{ csrf_token }}"
+	        },
+	        dataType: "json",
+	        success: function(Veri){
+	        	$("#"+argument+"").fadeOut().remove();
+	        }, 
+	        error: function(hata) {
+	            alert("Hata !");
+	        }
+        });
+	};
+};
+$(".geri").click(function(){
+	$("#divDetay").css("display","none");
+	$("#divGuncelle").css("display","none");
+	$("#divListe").css("display","block");
+});
+</script>
+{% endblock %}

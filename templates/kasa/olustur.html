@@ -1,0 +1,85 @@
+{% extends 'base.html' %}
+{% block pagetitle %}{{ block.super }} - Kasa Oluştur {% endblock %}
+{% block body  %}
+<div class="container-fluid">
+	<div class="w-box">
+		<div class="w-box-header">
+			<div align="Center">
+				<span>Hesap Oluşturma Ekranı</span>
+			</div>
+		</div>
+		<div class="w-box-content">
+	 		<table class="table table-bordered">
+	 			<tr>
+	 				<th style="width: 25%;">Kasa Kodu</th>
+	 				<td style="width: 75%;">
+	 					<input type="text" id="kasaKodu" class="form-control requiredHg" placeholder="Kasa Kodu">
+	 				</td>
+	 			</tr>
+	 			<tr>
+	 				<th>Kasa Adı</th>
+	 				<td>
+	 					<input type="text" id="kasaAdi" class="form-control  requiredHg" placeholder="Kasa Adı">
+	 				</td>
+	 			</tr>		 			
+	 			<tr>	
+	 				<th>Kasa Açılış Bakiyesi</th>
+	 				<td>
+	 					<input type="text" id="kasaAcilisBakiyesi" class="form-control keypress-barrier requiredHg" data-input-type="Decimal" placeholder="Kasa Açılış Bakiyesi">
+	 				</td>
+	 			</tr>
+	 			<tr>	
+	 				<th>Kasa Açılış Tarihi</th>
+	 				<td>
+	 					<input type="date" id="kasaAcilisTarihi" value="{{ suan|date:'Y-m-d' }}" class="form-control requiredHg">
+	 				</td>
+	 			</tr>
+	 			<tr>	
+	 				<th>Açıklama</th>
+	 				<td>
+	 					<input type="text" id="aciklama" class="form-control" placeholder="Açıklama">
+	 				</td>
+	 			</tr>
+	 			<tr>
+	 				<th></th>
+	 				<td>
+	 					<button class="btn btn-success fa fa-save" onclick="Kaydet();" style="width: 100%;"></button>
+	 				</td>
+	 			</tr>
+	 		</table>
+		</div> 	
+	</div>	
+</div>
+<script type="text/javascript">
+function Kaydet(){
+	Required();
+	if(confirm("Kaydedilsin mi ?") == true){
+		$.ajax({
+	        type: "post",
+	        url: "",
+	        data: {
+	        	'ajaxKasaKodu' 			 : $("#kasaKodu").val(),
+	        	'ajaxKasaAdi' 			 : $("#kasaAdi").val(),
+	        	'ajaxKasaAcilisBakiyesi' : $("#kasaAcilisBakiyesi").val(),
+	        	'ajaxKasaAcilisTarihi'   : $("#kasaAcilisTarihi").val(),
+	        	'ajaxAciklama' 			 : $("#aciklama").val(),
+	        csrfmiddlewaretoken: "{{ csrf_token }}"
+	        },
+	        dataType: "json",
+	        success: function(Veri){
+	        	if(Veri.ajaxMesaj == "1"){
+	        		location = "/kasa/listele";
+	        	}else{alert(Veri.ajaxMesaj)};
+	        }, 
+	        error: function(hata) {
+	            alert(hata);
+	        }
+	    });
+	};    
+};
+</script>
+{% endblock %}
+
+
+
+ 

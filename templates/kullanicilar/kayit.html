@@ -1,0 +1,109 @@
+{% extends 'base.html' %}
+{% block pagetitle %}{{ block.super }} - Kayıt {% endblock %}
+{% block body  %}
+<div class="container-fluid">	
+	<div class="w-box">
+		<div class="w-box-header">
+			<div align="Center">
+				<span>Kullanici Oluşturma Ekranı</span>
+			</div>
+		</div>
+		<div class="w-box-content">
+	 		<table class="table table-bordered">
+	 			<tr>
+	 				<th style="width: 15%;">Kullanıcı Kodu</th>
+	 				<td style="width: 25%;">
+	 					<input type="text" id="kullaniciKodu" class="form-control requiredHg" placeholder="Kullanıcı Kodu">
+	 				</td>
+	 				<th style="width: 15%;">Kullanıcı Adı</th>
+	 				<td style="width: 25%;">
+	 					<input type="text" id="kullaniciAdi" class="form-control requiredHg" placeholder="Kullanıcı Adı">
+	 				</td>
+	 			</tr>
+	 			<tr>	
+	 				<th>Parola</th>
+	 				<td>
+	 					<input type="password" id="kullaniciParola" class="form-control requiredHg" placeholder="Parola">
+	 				</td>
+	 				<th>Parola Doğrulama</th>
+	 				<td>
+	 					<input type="password" id="kullaniciParolaDogrulama" class="form-control requiredHg" placeholder="Parola Doğrulama">
+	 				</td>
+	 			</tr>
+	 			<tr>	
+	 				<th>Kullanıcı Tipi</th>
+	 				<td>
+	 					<select id="kullaniciTipi" class="form-control requiredHg">
+	 						<option value="" selected="">Seçiniz</option>
+	 						{% for kullaniciTipiModel in sqlKullaniciTipiModel %}
+	 						<option value="{{ kullaniciTipiModel.KullaniciTipiKodu }}">{{ kullaniciTipiModel.KullaniciTipi }}</option>
+	 						{% endfor %}
+	 					</select>
+	 				</td>
+	 				<th>Kullanıcı Grubu</th>
+	 				<td>
+	 					<select id="kullaniciGrubu" class="form-control">
+	 						<option value="" selected="">Seçiniz</option>
+	 						{% for kullaniciGrubuModel in sqlKullaniciGrubuModel %}
+	 						<option value="{{ kullaniciGrubuModel.KullaniciGrubuKodu }}">{{ kullaniciGrubuModel.KullaniciGrubu }}</option>
+	 						{% endfor %}
+	 					</select>
+	 				</td>
+	 			</tr>
+	 			<tr>	
+	 				<th>Durumu</th>
+	 				<td>
+	 					<select id="kullaniciDurumu" class="form-control requiredHg">
+	 						<option value="" selected="">Seçiniz</option>
+	 						<option value="1">Aktif</option>
+	 						<option value="0">Pasif</option>
+	 					</select>
+	 				</td>
+	 				<td colspan="2">
+		 				<a href="/kullanicilar/listele">
+		 				<button class="btn btn-warning fa fa-long-arrow-left" style="width: 48%;" title="Geri"></button></a>
+	 					<button class="btn btn-success fa fa-save" style="width: 50%;" onclick="Kaydet();" title="Kaydet"></button>
+	 				</td>
+	 			</tr>
+	 		</table>
+		</div> 	
+	</div>
+</div>
+<script type="text/javascript">
+function Kaydet(){
+	Required();
+	$.ajax({
+        type: "post",
+        url: "",
+        data: {
+        	"ajaxKullaniciKodu"    : $("#kullaniciKodu").val(),
+        	"ajaxKullaniciAdi"     : $("#kullaniciAdi").val(),
+        	"ajaxKullaniciParola"  : $("#kullaniciParola").val(),
+        	"ajaxKullaniciParolaD" : $("#kullaniciParolaDogrulama").val(),
+        	"ajaxKullaniciTipi"    : $("#kullaniciTipi").val(),
+        	"ajaxKullaniciGrubu"   : $("#kullaniciGrubu").val(),
+        	"ajaxKullaniciDurumu"  : $("#kullaniciDurumu").val(),
+        csrfmiddlewaretoken: "{{ csrf_token }}"
+        },
+        dataType: "json",
+        success: function(Veri){
+        	if(Veri.ajaxMesaj == "1"){
+        		location = "/kullanicilar/listele";
+        	}else{alert(Veri.ajaxMesaj);};
+        }, 
+        error: function(Hata) {
+            alert("Hata !");
+        }
+    });
+};
+$("#kullaniciParolaDogrulama").keyup(function(){
+	if($("#kullaniciParola").val() && $("#kullaniciParolaDogrulama").val() != ""){
+		if($("#kullaniciParola").val() != $("#kullaniciParolaDogrulama").val()){
+			$("#kullaniciParolaDogrulama").css("border-color","#ff0505");
+		}else{
+			$("#kullaniciParolaDogrulama").css("border-color","#5cb85c");
+		};
+    };
+});
+</script>
+{% endblock %}

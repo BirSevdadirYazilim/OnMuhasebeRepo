@@ -1,0 +1,386 @@
+{% extends 'base.html' %}
+{% block pagetitle %}{{ block.super }} - İrsaliye Oluştur {% endblock %}
+{% block body  %}
+<div class="container-fluid">
+	<div class="w-box">
+		<div class="w-box-header">
+			<div align="Center">
+				<span>İrsaliye&nbsp;Oluşturma&nbsp;Ekranı</span>
+			</div>
+		</div>
+		<div class="w-box-content">
+			<div style="overflow: auto;width: 100%;height: 100%;">
+				<table class="table table-bordered">
+					<thead>
+						<tr>
+							<th>Cari&nbsp;Seç</th>
+							<th>İrsaliye&nbsp;Tipi</th>
+							<th>İrsaliye&nbsp;No</th>
+							<th>Düzenlenme&nbsp;Tarihi</th>
+							<th>Düzenlenme&nbsp;Saati</th>
+						</tr>
+					</thead>
+					<tbody>	
+					<tr>
+						<td> 
+							<select id="cariKodu" class="form-control requiredHg">
+						    	<option selected value="">Seçiniz</option>
+					    		{% for cari in sqlCari %}
+					    			<option value="{{ cari.CariKodu }}">{{ cari.CariUnvani }}</option>
+					    		{% endfor %}
+						    </select>
+						</td>
+						<td>
+							<select id="irsaliyeTipi" class="form-control requiredHg">
+								<option selected="" value="">Seçiniz</option>
+								<option value="1">Satış İrsaliyesi</option>
+								<option value="2">Alış İrsaliyesi</option>
+							</select>
+						</td>
+						<td>
+							<input type="text" id="irsaliyeNo" class="form-control keypress-barrier requiredHg" placeholder="İrsaliye No" data-input-type="Number">
+						</td>
+						<td>
+							<input type="date" id="duzenlenmeTarihi" value="{{ suan|date:'Y-m-d' }}" class="form-control requiredHg">
+						</td>
+						<td>
+							<input type="time" id="duzenlenmeSaati" value="{{ suan|date:'H:i' }}" class="form-control requiredHg">
+						</td>
+					</tr>
+					</tbody>
+					<thead>
+						<tr>
+							<th>Sevk&nbsp;Tarihi</th>
+							<th>Sevk&nbsp;Saati</th>
+							<th>Tesim&nbsp;Eden</th>
+							<th>Teslim&nbsp;Alan</th>
+							<th>Teslim&nbsp;Saati</th>
+						</tr>
+					</thead>
+					<tbody>
+					<tr>
+						<td>
+							<input type="date" id="sevkTarihi" value="{{ suan|date:'Y-m-d' }}" class="form-control requiredHg">
+						</td>
+						<td>
+							<input type="time" id="sevkSaati" value="{{ suan|date:'H:i' }}" class="form-control requiredHg">
+						</td>
+						<td>
+							<input type="text" id="teslimEden" class="form-control requiredHg">
+						</td>
+						<td>
+							<input type="text" id="teslimAlan" class="form-control requiredHg">
+						</td>
+						<td>
+							<input type="time" id="teslimSaati" value="{{ suan|date:'H:i' }}" class="form-control requiredHg">
+						</td>
+						<td style="display: none;">
+							<input type="text" id="toplamBrutTutar" value="0" class="form-control">
+						</td>	
+						<td style="display: none;">
+							<input type="text" id="toplamKdv" value="0" class="form-control">
+						</td>
+						<td style="display: none;">
+							<input type="text" id="odenecekTutar" value="0" class="form-control">
+						</td>
+					</tr>
+					<tr>
+						<td colspan="5">
+							<button class="btn btn-success fa fa-save" align="Center" style="width: 100%;" title="Kaydet" onclick="Kaydet();"></button>
+						</td>
+					</tr>
+					</tbody>
+				</table>
+			</div>
+			<div style="overflow: auto;width: 100%;height: 100%;">
+				<table id="tablo" class="table table-bordered" style="margin-top: 1%; margin-bottom: 1%;">
+					<thead>
+						<tr>
+							<th>Stok&nbsp;Adı</th>
+						    <th>Miktar</th>
+						    <th>Nitelik</th>
+							<th>Birim&nbsp;Fiyat</th>	
+							<th>İsk.&nbsp;Orani&nbsp;%</th>
+							<th>İsk.&nbsp;Tutari</th>
+							<th>Kdv&nbsp;Orani&nbsp;%</th>
+							<th>Kdv&nbsp;Tutari</th>
+							<th>Brüt&nbsp;Tutar</th>
+							<th>İşlem</th>
+						</tr>
+					</thead>
+					<tbody>		
+						<tr>
+							<td>
+								<select id="stokAdi" class="form-control requiredHg">
+						    	<option selected value="">Seçiniz</option>
+						    	{% for stok in sqlStok %}
+						    		<option value="{{ stok.StokKodu }}">{{ stok.StokAdi }}</option>
+						    	{% endfor %}
+						    	</select>
+							</td>
+							<td>
+								<input type="text" id="miktar" placeholder="Miktar" class="form-control keypress-barrier requiredHg" data-input-type="Number">
+							</td>
+							<td>
+								<input type="text" id="nitelik" placeholder="Nitelik" class="form-control requiredHg" disabled="">
+							</td>
+							<td>
+								<input type="text" id="birimFiyat" placeholder="Birim Fiyat" class="form-control keypress-barrier requiredHg" data-input-type="Decimal" disabled="">
+							</td>
+							<td>
+								<input type="text" id="iskontoOrani" value="0" placeholder="İskonto Orani %" class="form-control keypress-barrier" data-input-type="Number">
+							</td>
+							<td>
+								<input type="text" id="iskontoTutari" value="0" placeholder="İskonto Tutari" class="form-control keypress-barrier" data-input-type="Decimal" disabled="">
+							</td>
+							<td>
+								<input type="text" id="kdvOrani" placeholder="Kdv Orani %" class="form-control keypress-barrier requiredHg" data-input-type="Number" disabled="">
+							</td>
+							<td>
+								<input type="text" id="kdvTutari" placeholder="Kdv Tutari" class="form-control keypress-barrier requiredHg" data-input-type="Decimal" disabled="">
+							</td>
+							<td>
+								<input type="text" id="brutTutar" placeholder="Brüt Tutar" class="form-control keypress-barrier requiredHg" data-input-type="Decimal" disabled="">
+							</td>
+							<td>
+								<button class="btn btn-info fa fa-plus" title="Ekle" onclick="Ekle();"></button>
+							</td>
+						</tr>
+					</tbody>
+				</table>
+			</div>
+		</div>				
+	</div>		
+</div>
+<script type="text/javascript">
+// İrsaliye Tipi Secimi
+$("#irsaliyeTipi").change(function (){
+	$("#irsaliyeNo").val("");
+	if($(this).val() == "1"){
+		$("#irsaliyeNo").attr("disabled",true);
+		$.ajax({
+	        type: "post",
+	        url: "",
+	        data: {
+	        	"ajaxIrsaliyeTipiSecimi" : $(this).val(),
+	        csrfmiddlewaretoken: "{{ csrf_token }}"
+	        },
+	        dataType: "json",
+	        success: function(Veri){
+	        	if(Veri.ajaxSqlIrsaliyeNo != ""){
+	        		$("#irsaliyeNo").val(Veri.ajaxSqlIrsaliyeNo);
+	        	}else{
+	        		if(confirm("İrsaliye Numarasi Tanımlanmamış ! Tanımlama Sayfasına Yönlendirilsin mi ?") == true){
+	        			location ="/irsaliye/tanimlamalar";
+	        		}else{alert("İrsaliye Numarası Tanımlamadan Kayıt Yapamazsınız !");};
+	        	};
+	        }, 
+	        error: function(Hata){
+	            alert("Hata !");
+	        }
+        });
+	}else{$("#irsaliyeNo").attr("disabled",false);};
+});
+// İrsaliye Tipi Secimi
+
+// Stok Secimi
+	$("#stokAdi").change(function (){
+		$("#miktar").val("");
+		$("#birimFiyat").val("");
+        $("#kdvOrani").val("");
+        $("#nitelik").val("");
+        $("#iskontoOrani").val("0");
+        $("#iskontoTutari").val("");
+        $("#kdvTutari").val("");
+        $("#brutTutar").val("");
+		if($("#irsaliyeTipi").val() != ""){
+			$.ajax({
+		        type: "post",
+		        url: "",
+		        data: {
+		        	"ajaxStokKoduStokSecimi"     : $(this).val(),
+		        	"ajaxIrsaliyeTipiStokSecimi" : $("#irsaliyeTipi").val(),
+		        csrfmiddlewaretoken: "{{ csrf_token }}"
+		        },
+		        dataType: "json",
+		        success: function(Veri){
+	        		$("#birimFiyat").val(Veri.birimFiyati);
+		            $("#kdvOrani").val(Veri.sqlStokKdvOrani);
+		            $("#nitelik").val(Veri.sqlStokNitelik);
+		        },
+		        error: function(Hata) {
+		            alert("Hata !");
+		        }
+	        });
+		}else{alert("Lütfen İrsaliye Tipini Seçiniz !");};
+    });
+// Stok Secimi
+
+// Fatura Hareketi Ekleme
+function Ekle(){
+	Required();
+	$.ajax({
+        type: "post",
+        url: "",
+        data: {
+        	"ajaxIrsaliyeNo"   : $("#irsaliyeNo").val(),
+        	"ajaxIrsaliyeTipi" : $("#irsaliyeTipi").val(),
+        	"ajaxSevkTarihi"   : $("#sevkTarihi").val(),
+        	"ajaxStokKodu"     : $("#stokAdi").val(),
+        	"ajaxMiktar"       : $("#miktar").val(),
+        	"ajaxNitelik"      : $("#nitelik").val(),
+        	"ajaxBirimFiyat"   : $("#birimFiyat").val(),
+        	"ajaxIskontoOrani" : $("#iskontoOrani").val(),
+        	"ajaxKdvOrani"     : $("#kdvOrani").val(),
+        csrfmiddlewaretoken: "{{ csrf_token }}"
+        },
+        dataType: "json",
+        success: function(Veri){
+        	if(Veri.ajaxMesaj == "1"){
+        		$("#tablo tbody").append('\
+	        		<tr class="class" id="'+Veri.sqlId+'">\
+	        			<td>'+Veri.sqlStokKodu+'</td>\
+	        			<td class="miktar">'+Veri.sqlMiktar+'</td>\
+	        			<td class="nitelik">'+Veri.sqlNitelik+'</td>\
+	        			<td class="birimFiyat">'+Veri.sqlBirimFiyat+'</td>\
+	        			<td class="iskontoOrani">'+Veri.sqlIskontoOrani+'</td>\
+	        			<td>'+$('#iskontoTutari').val()+'</td>\
+	        			<td class="kdvOrani">'+Veri.sqlKdvOrani+'</td>\
+	        			<td class="kdvTutari">'+$('#kdvTutari').val()+'</td>\
+	        			<td class="brutTutar">'+$('#brutTutar').val()+'</td>\
+	        			<td>\
+	        			<button class="btn btn-danger fa fa-trash" onclick="UrunSil('+Veri.sqlId+');" title="Sil"></button>\
+	        			</td>\
+	        		</tr>\
+	        	');
+	        	TopTut();		
+        	}else{alert(Veri.ajaxMesaj);};
+        },
+        error: function(Hata) {
+            alert("Hata !");
+        }
+    });
+};
+// Fatura Hareketi Ekleme
+// Fatura Olusturma
+function Kaydet(){
+	if(confirm("Kaydedilsin mi ?") == true){
+		Required();
+		if($(".class").html() != undefined){
+			$.ajax({
+		        type: "post",
+		        url: "",
+		        data: {
+		        	"ajaxCariKodu"         : $("#cariKodu").val(),
+		        	"ajaxToplamBrutTutar"  : $("#toplamBrutTutar").val(),
+		        	"ajaxToplamKdv"        : $("#toplamKdv").val(),
+		        	"ajaxIrsaliyeNo"       : $("#irsaliyeNo").val(),
+		        	"ajaxIrsaliyeTipi"     : $("#irsaliyeTipi").val(),
+		        	"ajaxDuzenlenmeTarihi" : $("#duzenlenmeTarihi").val(),
+		        	"ajaxDuzenlenmeSaati"  : $("#duzenlenmeSaati").val(),
+		        	"ajaxSevkTarihi"       : $("#sevkTarihi").val(),
+		        	"ajaxSevkSaati"        : $("#sevkSaati").val(),
+		        	"ajaxTeslimEden"       : $("#teslimEden").val(),
+		        	"ajaxTeslimAlan"       : $("#teslimAlan").val(),
+		        	"ajaxTeslimSaati"      : $("#teslimSaati").val(),
+		        csrfmiddlewaretoken: "{{ csrf_token }}"
+		        },
+		        dataType: "json",
+		        success: function(Veri){
+		        	if(Veri.ajaxMesaj == "1"){
+		        		location = "/irsaliye/listele/";
+		        	}else{alert(Veri.ajaxMesaj);};
+		        }, 
+		        error: function(Hata){
+		            alert("Hata !");
+		        }
+	        });
+		}else{alert("Lütfen Önce Ekleme Yapınız !")};
+	};
+};
+// Fatura Olusturma
+// Ürun Silme
+function UrunSil(arguman){
+	$.ajax({
+        type: "post",
+        url: "",
+        data: {
+        	"ajaxSil" : arguman,
+        csrfmiddlewaretoken: "{{ csrf_token }}"
+        },
+        dataType: "json",
+        success: function(Veri){ 
+            $("#"+arguman+"").fadeOut().remove();
+            TopTut();  
+        },
+        error: function(Hata){
+            alert("Hata !");
+        }
+    });
+};
+// Ürun Silme
+
+// Hesaplamalar
+$("#miktar").keyup(function(){
+	if($(this).val() != ""  && $("#irsaliyeTipi").val() == "1"){
+		$.ajax({
+	        type: "post",
+	        url: "",
+	        data: {
+	        	"ajaxMiktarKontrol"   : $(this).val(),
+	        	"ajaxStokKoduKontrol" : $("#stokAdi").val(),
+	        csrfmiddlewaretoken: "{{ csrf_token }}"
+	        },
+	        dataType: "json",
+	        success: function(Veri){
+	        	if(Veri.ajaxMesaj == "1"){
+	        		alert("Yetersiz Stok");
+	        		$("#miktar").val("");
+	        	};
+	        },
+	        error: function(Hata){
+	            alert("Hata !");
+	        }
+	    });
+	};
+	var miktar = $("#miktar").val();
+	var birimFiyat = $("#birimFiyat").val();
+	var iskontosuzTutar = miktar * birimFiyat
+	$("#iskontoOrani").keyup(function(){
+		var iskontoOrani = $("#iskontoOrani").val();
+		if (iskontoOrani != ""){
+			var iskontoTutari = iskontosuzTutar * (iskontoOrani/100);
+			$("#iskontoTutari").val(iskontoTutari);
+			var kalan = iskontosuzTutar - iskontoTutari
+			var kdvOrani = $("#kdvOrani").val();
+			var kdvTutari = kalan * (kdvOrani/100);
+			$("#kdvTutari").val(kdvTutari);
+			//var MalHizmetTutari = kalan + kdvTutari
+			$("#brutTutar").val(kalan);
+		};
+	});
+	var kdvOrani = $("#kdvOrani").val();
+	var kdvTutari = iskontosuzTutar * (kdvOrani/100);
+	$("#kdvTutari").val(kdvTutari);
+	//var MalHizmetTutari = iskontosuzTutar + kdvTutari
+	$("#brutTutar").val(iskontosuzTutar);			
+});
+// Hesaplamalar
+// Toplam Hesaplar
+function TopTut(){
+	var hesapBrutTutar = 0;
+	$("td.brutTutar").each(function(){
+		hesapBrutTutar +=  parseFloat($(this).html());
+	});
+	$("#toplamBrutTutar").val(hesapBrutTutar);
+	var hesapKdvTutari = 0;
+	$("td.kdvTutari").each(function(){
+		hesapKdvTutari +=  parseFloat($(this).html());
+	});
+	$("#toplamKdv").val(hesapKdvTutari);
+	$("#odenecekTutar").val(parseFloat($("#toplamBrutTutar").val()) + hesapKdvTutari);
+};
+// Toplam Hesaplar	
+</script>
+{% endblock %}
+

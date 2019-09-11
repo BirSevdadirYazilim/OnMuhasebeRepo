@@ -1,0 +1,57 @@
+{% extends 'base.html' %}
+{% block pagetitle %}{{ block.super }} - Fatura Tanımlamaları {% endblock %}
+{% block body  %}
+<div class="container-fluid">
+	<div class="w-box">
+		<div class="w-box-header">
+			<div align="Center">
+				<span>Fatura Tanımlamaları Ekranı</span>
+			</div>
+		</div>
+		<div class="w-box-content">
+			<table id="test" class="table table-bordered" style="overflow: auto;width: 100%;height: 100%;">
+				<tbody>
+					<tr>
+						<th style="width: 30%;">Faturası&nbsp;Seri&nbsp;No</th>
+						<td style="width: 70%;">
+							<input type="text" id="faturaSeri" value="{{sqlFaturaNo.FaturaSeri}}" class="form-control">
+						</td>
+					</tr>
+					<tr>
+						<th style="width: 30%;">Faturası&nbsp;Sira&nbsp;No</th>
+						<td style="width: 70%;">
+							<input type="text" id="faturaSira" value="{{sqlFaturaNo.FaturaSira}}" class="form-control">
+						</td>
+					</tr>
+					<tr>
+						<th></th>
+						<td>
+							<button class="btn btn-success fa fa-save" style="width: 100%;" onclick="Kaydet();" title="Kaydet"></button>
+						</td>
+					</tr>
+				</tbody>
+			</table>
+		</div>	
+	</div>
+</div>
+<script type="text/javascript">
+function Kaydet(){
+	$.ajax({
+        type: "post",
+        url: "",
+        data: {
+        	"ajaxFaturaSeri" : $("#faturaSeri").val(),
+        	"ajaxFaturaSira" : $("#faturaSira").val(),
+        csrfmiddlewaretoken: "{{ csrf_token }}"
+        },
+        dataType: "json",
+        success: function(Veri){
+        	location = "/fatura/olustur";
+        }, 
+        error: function(Hata){
+            alert("Hata !");
+        }
+    });
+};
+</script>
+{% endblock %}

@@ -1,0 +1,235 @@
+{% extends 'base.html' %}
+{% block pagetitle %}{{ block.super }} - Kasa Listele {% endblock %}
+{% block body  %}
+<div id="divListe" class="container-fluid">
+	<div class="w-box">
+		<div class="w-box-header">
+			<div align="Center"><span>Kasa Listesi Ekranı</span></div>
+		</div>
+		<div class="w-box-content" style="overflow: auto;width: 100%;height: 100%;">
+			<table class="table table-bordered" id="datatable">
+				<thead>
+					<tr>
+						<th>Kasa Adı</th>
+						<th>Açılış Bakiyesi</th>
+						<th>Borç</th>
+						<th>Alacak</th>
+						<th>Kasa Bakiye</th>
+						<th>İşlemler</th>
+					</tr>
+				</thead>
+				<tbody align="Center">
+				{% for kasa in bakiyeList %}
+					<tr id="{{ kasa.KasaId }}">
+						<td>{{ kasa.KasaAdi }}</td>
+						<td>{{ kasa.KasaAcilisBakiyesi }}</td>
+						<td>{{ kasa.KasaBorc }}</td>
+						<td>{{ kasa.KasaAlacak }}</td>
+						<td>{{ kasa.KasaBakiyesi }}</td>
+						<td>
+							{% if islemlerKontrol.IsKasaDetay == True %}
+							<button class="btn btn-info fa fa-search" onclick="Detay('{{ kasa.KasaId }}')"></button>
+							{% endif %}
+							{% if islemlerKontrol.IsKasaGuncelle == True %}
+							<button class="btn btn-warning fa fa-pencil" onclick="Guncelle('{{ kasa.KasaId }}')"></button>
+							{% endif %}
+							{% if islemlerKontrol.IsKasaSil == True %}
+							<button class="btn btn-danger fa fa-trash" onclick="Sil('{{ kasa.KasaId }}')"></button>
+							{% endif %}
+						</td>
+					</tr>
+				{% endfor %}	
+				</tbody>
+			</table>
+		</div>
+	</div>	
+</div>
+<div id="divDetay" class="container-fluid" style="display: none;">
+	<div class="w-box" style="margin-top: 1%; margin-bottom: 1%;">
+		<div align="left">
+			<button class="btn btn-warning fa fa-long-arrow-left geri" style="margin-bottom:5px; width: 25%;"></button>
+		</div>
+		<div class="w-box-header">
+			<div align="Center"><span>Hesap Detay Ekranı</span></div>
+		</div>
+		<div class="w-box-content">
+			<div class="row-fluid">
+				<div id="DivAnaTablo">
+					<table class="table table-bordered">
+	                    <tbody>
+							<tr>
+								<th style="width: 25%;">Kasa Kodu</th>
+								<td id="kasaKodu" style="width: 75%;"></td>
+							</tr>
+							<tr>	
+								<th>Kasa Adı</th>
+								<td id="kasaAdi"></td>
+							</tr>
+							<tr>	
+								<th>Kasa Açılış Bakiyesi</th>
+								<td id="kasaAcilisBakiyesi"></td>
+							</tr>
+							<tr>	
+								<th>Kasa Açılış Tarihi</th>
+								<td id="kasaAcilisTarihi"></td>
+							</tr>
+							<tr>	
+								<th>Kasa Kaydı Oluşturan</th>
+								<td id="kasaKaydiOlusturan"></td>
+							</tr>
+							<tr>	
+								<th>Kasa Bakiye</th>
+								<td id="kasaBakiyesi"></td>
+							</tr>
+							<tr>	
+								<th>Kasa Güncelleme Tarihi</th>
+								<td id="kasaDuzenlemeTarihi"></td>
+							</tr>
+							<tr>	
+								<th>Kasa Kaydını Güncelleyen</th>
+								<td id="kasaKaydıDuzenleyen"></td>
+							</tr>
+							<tr>	
+								<th>Açıklama</th>
+								<td id="aciklama"></td>
+							</tr>
+						</tbody>
+	                </table>             
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+<div id="divGuncelle" class="container-fluid" style="display: none;">
+	<div class="w-box" style="margin-top: 1%; margin-bottom: 1%;">
+	<div class="w-box-header">
+		<div align="Center">
+			<span>Kasa Düzenleme Ekranı</span>
+		</div>
+	</div>
+	<div class="w-box-content">
+		<table class="table table-bordered">	
+			<tr>
+				<th>Kasa Adı</th>
+				<td>
+					<input type="text" id="kasaAdiGuncelle" class="form-control requiredHg">
+				</td>
+			</tr>					
+			<tr>
+				<th>Açıklama</th>	
+				<td>
+					<input type="text" id="aciklamaGuncelle" class="form-control">
+				</td>
+			</tr>
+			<tr>
+				<td colspan="2">
+					<button class="btn btn-warning fa fa-long-arrow-left geri" style="width: 48%"></button>
+					<button id="kaydet" key="" class="btn btn-success fa fa-save" style="width: 50%" onclick="Kaydet()"></button>
+				</td>
+			</tr>	
+		</table>
+	</div>
+</div>
+<script type="text/javascript">
+function Detay(arguman){
+	$.ajax({
+        type: "post",
+        url: "",
+        data: {
+        	"ajaxDetay":arguman,
+        csrfmiddlewaretoken: "{{ csrf_token }}"
+        },
+        dataType: "json",
+        success: function(Veri){
+        	$("#divListe").css("display","none");
+			$("#divDetay").css("display","block");
+        	$("#kasaKodu").html(Veri.ajaxKasaKodu);
+        	$("#kasaAdi").html(Veri.ajaxKasaAdi);
+        	$("#kasaAcilisBakiyesi").html(Veri.ajaxKasaAcilisBakiyesi);
+        	$("#kasaAcilisTarihi").html(Veri.ajaxKasaAcilisTarihi);
+        	$("#kasaKaydiOlusturan").html(Veri.ajaxKasaKaydiOlusturan);
+        	$("#kasaBakiyesi").html(Veri.ajaxKasaBakiyesi);
+        	$("#kasaDuzenlemeTarihi").html(Veri.ajaxKasaDuzenlemeTarihi);
+        	$("#kasaKaydıDuzenleyen").html(Veri.ajaxKasaKaydıDuzenleyen);
+        	$("#aciklama").html(Veri.ajaxAciklama);
+        }, 
+        error: function(Hata){
+            alert("Hata !");
+        }
+    });
+};
+function Guncelle(arguman){
+	if (confirm("Kasa Güncellensin mi ?") == true) {
+		$.ajax({
+	        type: "post",
+	        url: "",
+	        data: {
+	        	"ajaxGuncelle":arguman,
+	        csrfmiddlewaretoken: "{{ csrf_token }}"
+	        },
+	        dataType: "json",
+	        success: function(Veri){
+	        	$("#divListe").css("display","none");
+				$("#divGuncelle").css("display","block");
+				$("#kaydet").attr("key",Veri.ajaxIdGuncelle);
+				$("#kasaKoduGuncelle").val(Veri.ajaxKasaKoduGuncelle);
+	        	$("#kasaAdiGuncelle").val(Veri.ajaxKasaAdiGuncelle);
+				$("#aciklamaGuncelle").val(Veri.ajaxAciklamaGuncelle);
+	        }, 
+	        error: function(Hata){
+	            alert("Hata !");
+	        }
+        });
+	};
+};
+function Kaydet() {
+	Required();
+	if(confirm("Kasa Kaydedilsin mi ?") == true){
+		$.ajax({
+	        type: "post",
+	        url: "",
+	        data: {
+	        	"ajaxIdKaydet"       : $("#kaydet").attr("key"),
+	        	"ajaxKasaKoduKaydet" : $("#kasaKoduGuncelle").val(),
+	        	"ajaxKasaAdiKaydet"  : $("#kasaAdiGuncelle").val(),
+	        	"ajaxAciklamaKaydet" : $("#aciklamaGuncelle").val(),
+	        csrfmiddlewaretoken: "{{ csrf_token }}"
+	        },
+	        dataType: "json",
+	        success: function(Veri){
+	        	if(Veri.ajaxMesaj == "1"){
+	        		location = "/kasa/listele";
+	        	}else{alert(Veri.ajaxMesaj);};	
+	        }, 
+	        error: function(Hata){
+	            alert("Hata !");
+	        }
+        });
+	};
+};
+function Sil(arguman) {
+	if(confirm("Kasa Silinsin mi ?") == true) {
+		$.ajax({
+	        type: "post",
+	        url: "",
+	        data: {
+	        	"ajaxSil" : arguman,
+	        csrfmiddlewaretoken: "{{ csrf_token }}"
+	        },
+	        dataType: "json",
+	        success: function(Veri){
+	        	$("#"+arguman+"").fadeOut().remove();
+	        }, 
+	        error: function(Hata){
+	            alert("Hata !");
+	        }
+        });
+	};
+};
+$(".geri").click(function(){
+	$("#divDetay").css("display","none");
+	$("#divGuncelle").css("display","none");
+	$("#divListe").css("display","block");
+});
+</script>
+{% endblock %}

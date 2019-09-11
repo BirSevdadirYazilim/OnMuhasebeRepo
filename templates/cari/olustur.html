@@ -1,0 +1,140 @@
+{% extends 'base.html' %}
+{% block pagetitle %}{{ block.super }} - Cari Oluştur {% endblock %}
+{% block body  %}
+<div class="container-fluid">
+	<div class="w-box">
+		<div class="w-box-header">
+			<div align="Center">
+				<span>Cari Kartı Oluşturma Ekranı</span>
+			</div>
+		</div>
+		<div class="w-box-content">
+	 		<table class="table table-bordered">
+	 			<tr>
+	 				<th style="width: 25%;">Cari Kodu</th>
+	 				<td style="width: 25%;">
+	 					<input type="text" id="cariKodu" class="form-control requiredHg" placeholder="Cari Kodu">
+	 				</td>
+	 				<th>Cari Unvani</th>
+	 				<td>
+	 					<input type="text" id="cariUnvani" class="form-control requiredHg" placeholder="Cari Ünvani">
+	 				</td>
+	 			</tr>
+	 			<tr>	
+	 				<th>Vergi Dairesi</th>
+	 				<td>
+	 					<input type="text" id="vergiDairesi" class="form-control requiredHg" placeholder="Vergi Dairesi">
+	 				</td>
+	 				<th>Vergi Numarası</th>
+	 				<td>
+	 					<input type="number" id="vergiNumarasi" class="form-control keypress-barrier requiredHg" placeholder="Vergi Numarası" data-input-type="Number">
+	 				</td>
+	 			</tr>
+	 			<tr>	
+	 				<th>İl</th>
+	 				<td>
+	 					<input type="text" id="il" class="form-control requiredHg" placeholder="İl">
+	 				</td>
+	 				<th>İlçe</th>
+	 				<td>
+	 					<input type="text" id="ilce" class="form-control requiredHg" placeholder="İlçe">
+	 				</td>
+	 			</tr>
+	 			<tr>	
+	 				<th>Adres</th>
+	 				<td>
+	 					<input type="text" id="adres" class="form-control requiredHg" placeholder="Adres">
+	 				</td>
+	 				<th>Posta Kodu</th>
+	 				<td>
+	 					<input type="number" id="postaKodu" class="form-control keypress-barrier requiredHg" placeholder="Posta Kodu" data-input-type="Number">
+	 				</td>
+	 			</tr>
+	 			<tr>	
+	 				<th>Tel1</th>
+	 				<td>
+	 					<input type="text" id="tel1" class="form-control keypress-barrier requiredHg" placeholder="Tel1" data-input-type="Phone">
+	 				</td>
+	 				<th>Tel2</th>
+	 				<td>
+	 					<input type="text" id="tel2" class="form-control keypress-barrier" placeholder="Tel2" data-input-type="Phone">
+	 				</td>
+	 			</tr>
+	 			<tr>
+	 				<th>KEP</th>
+	 				<td>
+	 					<input type="email" id="KEP" class="form-control" placeholder="KEP">
+	 				</td>
+	 				<th>Email</th>
+	 				<td>
+	 					<input type="email" id="email" class="form-control" placeholder="Email">
+	 				</td>
+	 			</tr>
+	 			<tr>	
+	 				<th>Lokasyon Kodu</th>
+	 				<td>
+	 					<input type="text" id="lokasyonKodu" class="form-control" placeholder="Lokasyon Kodu">
+	 				</td>
+	 				<th>Lokasyon Detay</th>
+	 				<td>
+	 					<input type="text" id="lokasyonDetay" class="form-control" placeholder="Lokasyon Detay">
+	 				</td>
+	 			</tr>	
+	 			<tr>
+	 				<th>Web Sitesi</th>
+	 				<td>
+	 					<input type="text" id="webSitesi" class="form-control" placeholder="Web Sitesi">
+	 				</td>
+	 				<td colspan="2">
+	 					<button class="btn btn-success fa fa-save" style="width: 100%;" onclick="Kaydet();"></button>
+	 				</td>
+	 			</tr>
+	 		</table>
+		</div> 	
+	</div>	
+</div>
+<script type="text/javascript">
+function Kaydet(){
+	if(confirm("Kaydedilsin mi ?") == true){
+		Required();
+		$.ajax({
+	        type: "post",
+	        url: "",
+	        data: {
+	        	"ajaxCariKodu"          : $("#cariKodu").val(),
+	        	"ajaxCariUnvani"        : $("#cariUnvani").val(),
+	        	"ajaxVergiDairesi"      : $("#vergiDairesi").val(),
+	        	"ajaxVergiNumarasi"     : $("#vergiNumarasi").val(),
+	        	"ajaxKEP"               : $("#KEP").val(),
+	        	"ajaxIl"                : $("#il").val(),
+	        	"ajaxIlce"              : $("#ilce").val(),
+	        	"ajaxAdres"             : $("#adres").val(),
+	        	"ajaxPostaKodu"         : $("#postaKodu").val(),
+	        	"ajaxTel1"              : $("#tel1").val(),
+	        	"ajaxTel2"              : $("#tel2").val(),
+	        	"ajaxEmail"             : $("#email").val(),
+	        	"ajaxWebSitesi" 		: $("#webSitesi").val(),
+	        	"ajaxLokasyonKodu"      : $("#lokasyonKodu").val(),
+	        	"ajaxLokasyonDetay"     : $("#lokasyonDetay").val(), 
+	        csrfmiddlewaretoken: "{{ csrf_token }}"
+	        },
+	        dataType: "json",
+	        success: function(Veri){
+	        	if(Veri.ajaxMesaj == "1"){
+	        		location = "/cari/listele";
+	        	}else{
+	        		alert(Veri.ajaxMesaj);
+	        	};
+	        }, 
+	        error: function(Hata){
+	            alert("Hata !");
+	        }
+        });
+	};
+};
+</script>
+{% endblock %}
+
+
+
+ 

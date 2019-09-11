@@ -1,0 +1,309 @@
+{% extends 'base.html' %}
+{% block pagetitle %}{{ block.super }} - İrsaliye Listesi {% endblock %}
+{% block body  %}
+<div class="container-fluid" id="divListe">
+	<div class="w-box">
+		<input type="button" value="İptal Edilen İrsaliyeler" id="iptalEdilenler" class="btn btn-primary">
+		<div class="w-box-header">
+			<div align="Center"><span id="header">İrsaliye Listesi Ekranı</span></div>
+		</div>	
+		<div class="w-box-content" id="irsaliyeTablosu" style="overflow: auto;width: 100%;height: 100%;">
+			<table class="table table-bordered" id="datatable">
+				<thead>
+					<tr>
+						<th>İrsaliye No</th>
+						<th>İrsaliye Tipi</th>
+						<th>Sevk Tarihi</th>
+						<th>Cari Kodu</th>
+						<th>İşlemler</th>
+					</tr>
+				</thead>
+				<tbody align="Center">
+				{% for irsaliye in sqlIrsaliye %}
+					<tr id="{{ irsaliye.id }}">
+						<td>{{ irsaliye.IrsaliyeNo }}</td>
+						{% if irsaliye.IrsaliyeTipi == "1" %}
+							<td>Satış İrsaliyesi</td>
+						{% elif irsaliye.IrsaliyeTipi == "2" %}
+							<td>Alış İrsaliyesi</td>
+						{% endif %}		
+						<td>{{ irsaliye.SevkTarihi }}</td>
+						<td>{{ irsaliye.CariKodu }}</td>
+						<td>
+							{% if islemlerKontrol.IsIrsaliyeDetay == True %}
+							<button class="btn btn-info fa fa-search" onclick="Detay('{{ irsaliye.id }}');" title="Detay"></button>
+							{% endif %}
+							{% if islemlerKontrol.IsIrsaliyeIptalEt == True %}
+								{% if irsaliye.IsVerified == False %}
+								<button class="btn btn-danger fa fa-close" onclick="IptalEt('{{ irsaliye.IrsaliyeNo }}','{{ irsaliye.IrsaliyeTipi }}','{{ irsaliye.id }}');" title="İptal Et"></button>
+								{% endif %}
+							{% endif %}
+							{% if islemlerKontrol.IsIrsaliyeFatura == True %}
+								{% if irsaliye.IsVerified == False %}
+								<button class="btn btn-primary fa fa-list-alt" onclick="Fatura('{{ irsaliye.IrsaliyeNo }}','{{ irsaliye.IrsaliyeTipi }}');" title="Fatura"></button>
+								{% endif %}
+							{% endif %}	
+						</td>
+					</tr>
+				{% endfor %}	
+				</tbody>
+			</table>		
+		</div>	
+		<div class="w-box-content" style="display: none; overflow: auto;width: 100%;height: 100%;" id="iptalEdilenlerTablosu">
+			<table class="table table-bordered" id="datatable2">
+				<thead>
+					<tr>
+						<th>İrsaliye No</th>
+						<th>İrsaliye Tipi</th>
+						<th>Sevk Tarihi</th>
+						<th>Teslim Eden</th>
+						<th>Teslim Alan</th>
+						<th>İşlem</th>
+					</tr>
+				</thead>
+				<tbody align="Center">
+				{% for irsaliyeIsCanceled in sqlIrsaliyeIsCanceled %}
+					<tr id="{{ irsaliyeIsCanceled.id }}">
+						<td>{{ irsaliyeIsCanceled.IrsaliyeNo }}</td>
+						{% if irsaliyeIsCanceled.IrsaliyeTipi == "1" %}
+							<td>Satış İrsaliyesi</td>
+						{% elif irsaliyeIsCanceled.IrsaliyeTipi == "2" %}
+							<td>Alış İrsaliyesi</td>
+						{% endif %}
+						<td>{{ irsaliyeIsCanceled.SevkTarihi }}</td>
+						<td>{{ irsaliyeIsCanceled.TeslimEden }}</td>
+						<td>{{ irsaliyeIsCanceled.TeslimAlan }}</td>
+						<td>
+							{% if islemlerKontrol.IsIrsaliyeDetay == True %}
+							<button class="btn btn-info fa fa-search" onclick="Detay('{{ irsaliyeIsCanceled.id }}');" title="Detay"></button>
+							{% endif %}
+							{% if islemlerKontrol.IsIrsaliyeSil == True %}
+							<button class="btn btn-danger fa fa-trash" onclick="Sil('{{ irsaliyeIsCanceled.IrsaliyeNo }}','{{ irsaliyeIsCanceled.IrsaliyeTipi }}','{{ irsaliyeIsCanceled.id }}');" title="Sil"></button>
+							{% endif %}
+						</td>
+					</tr>
+				{% endfor %}	
+				</tbody>
+			</table>		
+		</div>
+	</div>
+</div>	
+<div class="container-fluid" id="divDetay" style="display: none;">
+	<div class="w-box" style="margin-top: 1%; margin-bottom: 1%;">
+		<button class="btn btn-warning fa fa-long-arrow-left" style="margin-bottom: 5px;width: 25%" onclick="Geri();" title="Geri"></button>
+		<div class="w-box-header">
+			<div align="Center">
+				<span>İrsaliye Detay Ekranı</span>
+			</div>
+		</div>
+		<div class="w-box-content">
+			<table class="table table-bordered">
+                <thead>
+					<tr>	
+						<th style="width: 25%;">İrsaliye No</th>
+						<td id="irsaliyeNo" style="width: 75%;"></td>
+					</tr>
+					<tr>	
+						<th>İrsaliye Tipi</th>
+						<td id="irsaliyeTipi"></td>
+					</tr>
+					<tr>	
+						<th>Düzenlenme Tarihi</th>
+						<td id="duzenlenmeTarihi"></td>
+					</tr>
+					<tr>	
+						<th>Düzenlenme Saati</th>
+						<td id="duzenlenmeSaati"></td>
+					</tr>
+					<tr>	
+						<th>Sevk Tarihi</th>
+						<td id="sevkTarihi"></td>
+					</tr>
+					<tr>	
+						<th>Sevk Saati</th>
+						<td id="sevkSaati"></td>
+					</tr>
+					<tr>	
+						<th>Teslim Eden</th>
+						<td id="teslimEden"></td>
+					</tr>
+					<tr>	
+						<th>Teslim Alan</th>
+						<td id="teslimAlan"></td>
+					</tr>
+					<tr>	
+						<th>Teslim Saati</th>
+						<td id="teslimSaati"></td>
+					</tr>
+					<tr>
+						<th>Cari Ünvani</th>
+						<td id="cariUnvani"></td>
+					</tr>
+					<tr>	
+						<th>Vergi Dairesi</th>
+						<td id="vergiDairesi"></td>
+					</tr>
+					<tr>	
+						<th>Vergi Numarası</th>
+						<td id="vergiNumarsi"></td>
+					</tr>
+					<tr>	
+						<th>Adres</th>
+						<td id="adres">{{ sqlCariIrtibat.Adres }}&nbsp;{{ sqlCariIrtibat.Il }}&nbsp;{{ sqlCariIrtibat.Ilce }}</td>
+					</tr>
+					<tr>	
+						<th>Tel1</th>
+						<td id="tel1"></td>
+					</tr>						
+				</thead>
+			</table>	
+			<table id="faturaHareketleri" class="table table-bordered" style="margin-top: 10px;">
+				<tbody></tbody>
+			</table>          
+		</div>
+	</div>
+</div>
+<script type="text/javascript">
+function Fatura(arguman1,argumant2){
+	if(confirm("Fatura Kaydı Oluşturulsun mu? ") == true){
+		$.ajax({
+	        type: "post",
+	        url: "",
+	        data: {
+	        	"ajaxArguman1" : arguman1,
+	        	"ajaxArguman2" : argumant2,
+	        csrfmiddlewaretoken: "{{ csrf_token }}"
+	        },
+	        dataType: "json",
+	        success: function(Veri){ 
+	        	location = Veri.ajaxMesaj;
+	        }, 
+	        error: function(Hata) {
+	            alert("Hata !");
+	        }
+	    });
+	};
+};
+function IptalEt(arguman1,arguman2,arguman3){
+	if (confirm("İrsaliye İptal Ediliyor ! Onaylıyor musunuz ?") == true) {
+		$.ajax({
+	        type: "post",
+	        url: "",
+	        data: {
+	        	"ajaxArguman1Iptal" : arguman1,
+	        	"ajaxArguman2Iptal" : arguman2,
+	        csrfmiddlewaretoken: "{{ csrf_token }}"
+	        },
+	        dataType: "json",
+	        success: function(Veri){
+	        	$("#"+arguman3+"").fadeOut().remove();
+	        }, 
+	        error: function(Hata){
+	            alert("Hata !");
+	        }
+        });
+	};
+};
+function Sil(arguman1,arguman2,arguman3){
+	if (confirm("İptal Edilen İrsaliye Siliniyor ! Onaylıyor musunuz ?") == true){
+		$.ajax({
+	        type: "post",
+	        url: "",
+	        data: {
+	        	"ajaxArguman1Sil" : arguman1,
+	        	"ajaxArguman2Sil" : arguman2,
+	        csrfmiddlewaretoken: "{{ csrf_token }}"
+	        },
+	        dataType: "json",
+	        success: function(Veri){
+	        	$("#"+arguman3+"").fadeOut().remove();
+	        }, 
+	        error: function(Hata){
+	            alert("Hata !");
+	        }
+        });
+	};	
+};
+function Detay(arguman){
+	$.ajax({
+        type: "post",
+        url: "",
+        data: {
+        	"ajaxDetay" : arguman,
+        csrfmiddlewaretoken: "{{ csrf_token }}"
+        },
+        dataType: "json",
+        success: function(Veri){
+        	$("#divListe").css("display","none");
+			$("#divDetay").css("display","block");
+        	$("#irsaliyeNo").html(Veri.ajaxIrsaliyeNo);
+        	$("#irsaliyeTipi").html(Veri.ajaxIrsaliyeTipi);
+			$("#duzenlenmeTarihi").html(Veri.ajaxDuzenlenmeTarihi);
+			$("#duzenlenmeSaati").html(Veri.ajaxDuzenlenmeSaati);
+			$("#sevkTarihi").html(Veri.ajaxSevkTarihi);
+			$("#sevkSaati").html(Veri.ajaxSevkSaati);
+			$("#teslimEden").html(Veri.ajaxTeslimEden);
+			$("#teslimAlan").html(Veri.ajaxTeslimAlan);
+			$("#teslimSaati").html(Veri.ajaxTeslimSaati);
+			$("#cariUnvani").html(Veri.ajaxCariUnvani);
+			$("#vergiDairesi").html(Veri.ajaxVergiDairesi);
+			$("#vergiNumarsi").html(Veri.ajaxVergiNumarasi);
+			$("#adres").html(Veri.ajaxAdres+"/"+Veri.ajaxIl+"/"+Veri.ajaxIlce);
+			$("#tel1").html(Veri.ajaxTel1);
+			$("#faturaHareketleri tbody tr").fadeOut().remove();
+			for(var i=0;i<Veri.irsaliyeHareketleriList.length;i++){
+				$("#faturaHareketleri tbody").append('\
+					<tr>\
+						<th style="width: 25%;">Ürün</th>\
+						<td id="stokKodu" style="width: 75%;">'+Veri.irsaliyeHareketleriList[i][0]+'</td>\
+					</tr>\
+					<tr>\
+						<th>Miktar</th>\
+						<td id="nitelik">'+Veri.irsaliyeHareketleriList[i][1]+'</td>\
+					</tr>\
+					<tr>\
+						<th>Nitelik</th>\
+						<td id="nitelik">'+Veri.irsaliyeHareketleriList[i][2]+'</td>\
+					</tr>\
+					<tr>\
+						<th>Birim Fiyat</th>\
+						<td id="birimFiyat">'+Veri.irsaliyeHareketleriList[i][3]+'</td>\
+					</tr>\
+					<tr>\
+						<th>İskonto Orani</th>\
+						<td id="iskontoOrani">'+Veri.irsaliyeHareketleriList[i][4]+'</td>\
+					</tr>\
+					<tr>\
+						<th>Kdv Orani</th>\
+						<td id="kdvOrani">'+Veri.irsaliyeHareketleriList[i][5]+'</td>\
+					</tr>\
+					<tr>\
+						<td colspan="2" style="background-color: #89C4F4"></td>\
+					</tr>\
+				')
+			};
+        }, 
+        error: function(Hata){
+            alert("Hata !");
+        }
+    });
+};
+$("#iptalEdilenler").click(function(){
+	if($("#iptalEdilenler").val() == "İptal Edilen İrsaliyeler"){
+		$("#iptalEdilenler").val("İrsaliye Listesi");
+		$("#header").html("İptal Edilen İrsaliyeler Listesi");
+		$("#irsaliyeTablosu").css("display","none");
+		$("#iptalEdilenlerTablosu").css("display","block");
+	}else{
+		$("#iptalEdilenler").val("İptal Edilen İrsaliyeler");
+		$("#header").html("İrsaliye Listesi");
+		$("#iptalEdilenlerTablosu").css("display","none");
+		$("#irsaliyeTablosu").css("display","block");
+	};
+});
+function Geri(){
+	$("#divDetay").css("display","none");
+	$("#divListe").css("display","block");
+};
+</script>
+{% endblock %}

@@ -1,0 +1,66 @@
+{% extends 'base.html' %}
+{% block pagetitle %}{{ block.super }} - ÇekSenet Tanımlamaları {% endblock %}
+{% block body  %}
+<div class="container-fluid">
+	<div class="w-box">
+		<div class="w-box-header">
+			<div align="Center">
+				<span>ÇekSenet Tanımlamaları Ekranı</span>
+			</div>
+		</div>
+		<div class="w-box-content">
+			<table id="test" class="table table-bordered" style="overflow: auto;width: 100%;height: 100%;">
+				<tbody>
+					<tr>
+						<th style="width: 30%;">Bordro&nbsp;Açılış&nbsp;Numarasını&nbsp;Giriniz</th>
+						<td style="width: 70%;">
+							<input type="text" id="bordroNo" value="{{sqlOdemeAraciNo.BordroNo}}" key="1" class="form-control">
+						</td>
+					</tr>
+					<tr>
+						<th>Çek&nbsp;Açılış&nbsp;Numarasını&nbsp;Giriniz</th>
+						<td>
+							<input type="text" id="cekNo" value="{{sqlOdemeAraciNo.CekNo}}" key="2" class="form-control">
+						</td>
+					</tr>
+					<tr>
+						<th>Senet&nbsp;Açılış&nbsp;Numarasını&nbsp;Giriniz</th>
+						<td>
+							<input type="text" id="senetNo" value="{{sqlOdemeAraciNo.SenetNo}}" key="3" class="form-control">
+						</td>
+					</tr>
+					<tr>
+						<th></th>
+						<td>
+							<button class="btn btn-success fa fa-save" style="width: 100%;" onclick="Kaydet();" title="Kaydet"></button>
+						</td>
+					</tr>
+				</tbody>
+			</table>
+		</div>	
+	</div>
+</div>
+<script type="text/javascript">
+function Kaydet(){
+	if(confirm("Kaydedilsin mi ?") == true){
+		$.ajax({
+	        type: "post",
+	        url: "",
+	        data: {
+	        	"ajaxBordroNo" : $("#bordroNo").val(),
+	        	"ajaxCekNo"    : $("#cekNo").val(),
+	        	"ajaxSenet"    : $("#senetNo").val(),
+	        csrfmiddlewaretoken: "{{ csrf_token }}"
+	        },
+	        dataType: "json",
+	        success: function(Veri){
+	        	location = "/ceksenet/cekbordro";
+	        }, 
+	        error: function(Hata){
+	            alert("Hata !");
+	        }
+	    });
+	};
+};
+</script>
+{% endblock %}

@@ -1,0 +1,282 @@
+{% extends 'base.html' %}
+{% block pagetitle %}{{ block.super }} - Stok Listesi {% endblock %}
+{% block body  %}
+<div class="container-fluid" id="divListe">
+	<div class="w-box">
+		<div class="w-box-header">
+			<div align="Center">Stok Listesi Ekranı</div>
+		</div>
+		<div class="w-box-content"  style="overflow: auto;width: 100%;height: 100%;">
+			<table class="table table-bordered" id="datatable">
+				<thead>
+					<tr>
+						<th>Stok Adi</th>
+						<th>Miktar</th>
+						<th>Alış Fiyati</th>
+						<th>Satış Fiyati</th>
+						<th>İşlemler</th>
+					</tr>
+				</thead>
+				<tbody align="Center">
+				{% for listele in sqlListele %}
+					<tr id="{{ listele.id }}">
+						<td>{{ listele.StokAdi }}</td>
+						<td>{{ listele.StokMiktar }}</td>
+						<td>{{ listele.AlisFiyati }}</td>
+						<td>{{ listele.SatisFiyati }}</td>
+						<td>
+							{% if islemlerKontrol.IsStokDetay == True %}
+							<button class="btn btn-info fa fa-search" onclick="Detay('{{listele.id}}');" title="Detay"></button>
+							{% endif %}
+							{% if islemlerKontrol.IsStokGuncelle == True %}
+							<button class="btn btn-warning fa fa-pencil" onclick="Guncelle('{{ listele.id }}');" title="Güncelle"></button>
+							{% endif %}
+							{% if islemlerKontrol.IsStokSil == True %}
+							<button class="btn btn-danger fa fa-trash" onclick="Sil('{{ listele.id }}');" title="Sil"></button>
+							{% endif %}
+						</td>
+					</tr>
+				{% endfor %}	
+				</tbody>
+			</table>		
+		</div>
+	</div>
+</div>
+<div class="container-fluid"  id="divDetay"  style="display: none;">
+	<div class="w-box" style="margin-top: 1%; margin-bottom: 1%;"  id="DivAnaTablo">
+		<div align="left">
+			<button class="btn btn-warning fa fa-long-arrow-left geri" style="margin-bottom: 5px;width: 25%" title="Geri"></button>
+		</div>
+		<div class="w-box-header">
+			<div align="Center">
+				<span>Stok Detay Ekranı</span>
+			</div>
+		</div>
+		<div class="w-box-content">
+			<table class="table table-bordered">
+                <tbody>
+					<tr>	
+						<th style="width: 25%">Stok Kodu</th>
+						<td id="stokKodu" style="width: 75%"></td>
+					</tr>
+					<tr>	
+						<th>Stok Adı</th>
+						<td id="stokAdi"></td>
+					</tr>
+					<tr>	
+						<th>Nitelik</th>
+						<td id="stokNitelik"></td>
+					</tr>
+					<tr>	
+						<th>Miktar</th>
+						<td id="stokMiktar"></td>
+					</tr>
+					<tr>	
+						<th>Alış Fiyatı</th>
+						<td id="alisFiyati"></td>
+					</tr>
+					<tr>	
+						<th>Satış Fiyatı</th>
+						<td id="satisFiyati"></td>
+					</tr>
+					<tr>	
+						<th>Kdv Oranı %</th>
+						<td id="kdvOrani"></td>
+					</tr>
+					<tr>	
+						<th>Stok Kaydı Oluşturan</th>
+						<td id="stokKaydiOlusturan"></td>
+					</tr>
+					<tr>
+						<th>Stok Kayıt Tarihi</th>
+						<td id="stokKayitTarihi"></td>
+					</tr>
+					<tr>	
+						<th>Stok Kaydı Güncelleyen</th>
+						<td id="stokKaydiDuzenleyen"></td>
+					</tr>
+					<tr>
+						<th>Stok Güncelleme Tarihi</th>
+						<td id="stokDuzenlemeTarihi"></td>
+					</tr>								
+				</tbody>
+            </table>             
+		</div>
+	</div>
+</div>
+<div class="container-fluid"  id="divGuncelle" style="display: none;">
+	<div class="w-box" style="margin-top: 1%; margin-bottom: 1%;">
+		<div class="w-box-header">
+			<div align="Center">
+				<span>Stok Düzenleme Ekranı</span>
+			</div>
+		</div>
+	<div class="w-box-content">
+		<table class="table table-bordered">
+			<tr>
+				<th style="width: 25%;">Stok Kodu</th>
+				<td style="width: 75%;">
+					<input type="text" id="stokKoduGuncelle" class="form-control" required="">	
+				</td>
+			</tr>
+			<tr>
+				<th>Stok Adı</th>	
+				<td>
+					<input type="text" id="stokAdiGuncelle" class="form-control" required="">
+				</td>
+			</tr>
+			<tr>
+				<th>Nitelik</th>	
+				<td>
+					<select id="stokNitelikGuncelle" class="form-control" required="">
+						<option value="">Seçiniz</option>
+						<option value="Adet">Adet</option>
+			    		<option value="Kg">Kg</option>
+			    		<option value="Gr">Gr</option>
+			    		<option value="Lt">Lt</option>
+					</select>	
+				</td>
+			</tr>
+			<tr>
+				<th>Miktar</th>	
+				<td>
+					<input type="text" id="stokMiktarGuncelle" class="form-control" required="">
+				</td>
+			</tr>
+			<tr>
+				<th>Alış Fiyatı</th>	
+				<td>
+					<input type="decimal" id="alisFiyatiGuncelle" class="form-control" required="">
+				</td>
+			</tr>
+			<tr>
+				<th>Satış Fiyatı</th>	
+				<td>
+					<input type="decimal" id="satisFiyatiGuncelle" class="form-control" required="">
+				</td>
+			</tr>
+			<tr>
+				<th>Kdv Oranı&nbsp;&nbsp;%</th>
+				<td>
+					<input type="number" id="kdvOraniGuncelle" class="form-control" required="">
+				</td>
+			</tr>
+			<tr>
+				<td colspan="2">
+					<button class="btn btn-warning fa fa-long-arrow-left geri" style="width: 48%;" title="Geri"></button>
+					<button id="kaydet" key="" class="btn btn-success fa fa-save" style="width: 50%;" onclick="Kaydet();" title="Kaydet"></button>
+				</td>
+			</tr>	
+		</table>
+	</div>
+</div>
+<script>
+function Guncelle(arguman){
+	if(confirm("Düzenleme Ekranı Açılsın mı ?") == true){
+		$.ajax({
+	        type: "post",
+	        url: "",
+	        data: {
+	        	"ajaxGuncelle" : arguman,
+	        csrfmiddlewaretoken: "{{ csrf_token }}"
+	        },
+	        dataType: "json",
+	        success: function(Veri){
+	        	$("#divListe").css("display","none");
+	        	$("#divGuncelle").css("display","block");
+	        	$("#kaydet").attr("key",Veri.ajaxStokIdGuncelle);
+				$("#stokKoduGuncelle").val(Veri.ajaxStokKoduGuncelle);
+				$("#stokAdiGuncelle").val(Veri.ajaxStokAdiGuncelle);
+				$("#stokNitelikGuncelle").val(Veri.ajaxStokNitelikGuncelle);
+				$("#stokMiktarGuncelle").val(Veri.ajaxStokMiktarGuncelle);
+				$("#alisFiyatiGuncelle").val(Veri.ajaxAlisFiyatiGuncelle);
+				$("#satisFiyatiGuncelle").val(Veri.ajaxSatisFiyatiGuncelle);
+				$("#kdvOraniGuncelle").val(Veri.ajaxKdvOraniGuncelle);
+	        }, 
+	        error: function(Hata){
+	            alert("Hata !");
+	        }
+        });
+	};
+};
+function Kaydet(){
+	if(confirm("Stok Kaydı Güncelleniyor ! Onaylıyor musunuz ?") == true){
+		$.ajax({
+	        type: "post",
+	        url: "",
+	        data: {
+	        	"ajaxGuncelleKaydet" : $("#kaydet").attr("key"),
+	        	"ajaxStokKodu"       : $("#stokKoduGuncelle").val(),
+	        	"ajaxStokAdi"        : $("#stokAdiGuncelle").val(),
+	        	"ajaxStokNitelik"    : $("#stokNitelikGuncelle").val(),
+	        	"ajaxStokMiktar"     : $("#stokMiktarGuncelle").val(),
+	        	"ajaxAlisFiyati"     : $("#alisFiyatiGuncelle").val(),
+	        	"ajaxSatisFiyati"    : $("#satisFiyatiGuncelle").val(),
+	        	"ajaxKdvOrani"       : $("#kdvOraniGuncelle").val(),
+	        csrfmiddlewaretoken: "{{ csrf_token }}"
+	        },
+	        dataType: "json",
+	        success: function(Veri){
+	        	location = "/stok/listele";
+	        }, 
+	        error: function(Hata){
+	            alert("Hata !");
+	        }
+        });
+	};
+};
+function Detay(arguman){
+	$.ajax({
+        type: "post",
+        url: "",
+        data: {
+        	"ajaxDetay" : arguman,
+        csrfmiddlewaretoken: "{{ csrf_token }}"
+        },
+        dataType: "json",
+        success: function(Veri){
+        	$("#divListe").css("display","none");
+        	$("#divDetay").css("display","block");
+			$("#stokKodu").html(Veri.ajaxStokKodu);
+			$("#stokAdi").html(Veri.ajaxStokAdi);
+			$("#stokNitelik").html(Veri.ajaxStokNitelik);
+			$("#stokMiktar").html(Veri.ajaxStokMiktar);
+			$("#alisFiyati").html(Veri.ajaxAlisFiyati);
+			$("#satisFiyati").html(Veri.ajaxSatisFiyati);
+			$("#kdvOrani").html(Veri.ajaxKdvOrani);
+			$("#stokKaydiOlusturan").html(Veri.ajaxStokKaydiOlusturan);
+			$("#stokKayitTarihi").html(Veri.ajaxStokKayitTarihi);
+			$("#stokKaydiDuzenleyen").html(Veri.ajaxStokKaydiDuzenleyen);
+			$("#stokDuzenlemeTarihi").html(Veri.ajaxStokDuzenlemeTarihi);
+        }, 
+        error: function(Hata) {
+            alert("Hata !");
+        }
+    });
+};
+function Sil(arguman){
+	if(confirm("Stok Kaydı Silinsin mi ?") == true){
+		$.ajax({
+	        type: "post",
+	        url: "",
+	        data: {
+	        	"ajaxSil" : arguman,
+	        csrfmiddlewaretoken: "{{ csrf_token }}"
+	        },
+	        dataType: "json",
+	        success: function(Veri){
+				$('#'+arguman+'').fadeOut().remove();
+	        }, 
+	        error: function(Hata) {
+	            alert("Hata !");
+	        }
+        });
+	};
+};
+$(".geri").click(function(){
+	$("#divDetay").css("display","none");
+	$("#divGuncelle").css("display","none");
+	$("#divListe").css("display","block");
+});
+</script>
+{% endblock %}

@@ -1,0 +1,60 @@
+{% extends 'base.html' %}
+{% block pagetitle %}{{ block.super }} - Giriş {% endblock %}
+{% block body  %}
+<div class="container" style="width: 340px; margin-top: 1%; margin-bottom: 1%;">
+	<div class="alert alert-danger">
+		<div align="center">
+			<label>Sisteme giriş yapınız !</label>
+		</div>
+	</div>
+	<div class="alert alert-info">	
+		<div align="center">
+			<div class="form-group">
+				<label></label>
+			</div>
+	 		<div class="form-group">
+				<i class="glyphicon glyphicon-share-alt"></i>
+				<input type="text" id="kullaniciAdi" placeholder="Kullanıcı Adı">
+			</div>	
+			<div class="form-group">	
+				<i class="glyphicon glyphicon-lock"></i>
+				<input type="password" id="kullaniciParola" placeholder="Parola">	
+	 		</div>
+	 		<div class="form-group">
+	 			<i class="glyphicon glyphicon-lock"></i>
+	 			<input type="text" value="{{ capce }}" align="Center" disabled="">
+	 		</div>
+	 		<div class="form-group">	
+				<i class="glyphicon glyphicon-share-alt"></i>
+				<input type="text" id="capce" placeholder="Yukarıdaki Kodu Giriniz !">	
+	 		</div>
+	 		<div class="form-group">
+				<input type="button" value="Giriş Yap" class="btn btn-info" style="width: 70%;" onclick="GirisYap();">
+			</div>	
+		</div>
+	</div>	
+</div>
+<script type="text/javascript">
+function GirisYap(){
+	$.ajax({
+        type: "post",
+        url: "",
+        data: {
+        	"ajaxKullaniciAdi"    : $("#kullaniciAdi").val(),
+        	"ajaxKullaniciParola" : $("#kullaniciParola").val(),
+        	"ajaxCapce"           : $("#capce").val(),
+        csrfmiddlewaretoken: "{{ csrf_token }}"
+        },
+        dataType: "json",
+        success: function(Veri){
+        	if(Veri.ajaxMesaj == true){
+        		location = "/anasayfa";
+        	}else{alert(Veri.ajaxMesaj);};
+        }, 
+        error: function(Hata){
+            alert("Hata !");
+        }
+    });
+};
+</script>
+{% endblock %}

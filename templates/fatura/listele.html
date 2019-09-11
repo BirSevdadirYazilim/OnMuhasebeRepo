@@ -1,0 +1,296 @@
+{% extends 'base.html' %}
+{% block pagetitle %}{{ block.super }} - Fatura Listesi {% endblock %}
+{% block body  %}
+<div id="divListe" class="container-fluid">
+	<div class="w-box">
+		<input type="button" value="İptal Edilen Faturalar" id="iptalEdilenler" class="btn btn-primary">
+		<div class="w-box-header">
+			<div align="Center"><span id="header">Fatura Listesi Ekranı</span></div>
+		</div>	
+		<div class="w-box-content" id="faturaTablosu" style="overflow: auto;width: 100%;height: 100%;">
+			<table class="table table-bordered" id="datatable">
+				<thead>
+					<tr>
+						<th>Fatura Seri</th>
+						<th>Fatura Sira</th>
+						<th>Fatura Tipi</th>
+						<th>İşlem Tarihi</th>
+						<th>İşlemler</th>
+					</tr>
+				</thead>
+				<tbody align="Center">
+				{% for fatura in sqlFatura %}
+					<tr id="{{ fatura.FaturaSeri }}{{ fatura.FaturaSira }}">
+						<td>{{ fatura.FaturaSeri }}</td>
+						<td>{{ fatura.FaturaSira }}</td>
+						{% if fatura.FaturaTipi == "1" %}
+							<td>Satış Faturası</td>
+						{% elif fatura.FaturaTipi == "2" %}
+							<td>Alış Faturası</td>
+						{% endif %}		
+						<td>{{ fatura.IslemTarihi }}</td>
+						<td>
+							{% if islemlerKontrol.IsFaturaDetay == True %}
+							<button class="btn btn-info fa fa-search" onclick="Detay('{{ fatura.id }}');" title="Detay"></button>
+							{% endif %}
+							{% if islemlerKontrol.IsFaturaIptalEt == True %}
+							<button class="btn btn-danger fa fa-close" onclick="IptalEt('{{ fatura.FaturaSeri }}','{{ fatura.FaturaSira }}');" title="İptal Et"></button>
+							{% endif %}
+							{% if islemlerKontrol.IsFaturaIrsaliye == True %}
+								{% if fatura.IsTransferCache == False %}
+								<button id="irsaliye" class="btn btn-primary fa fa-list-ol" onclick="Irsaliye('{{ fatura.FaturaSeri }}','{{ fatura.FaturaSira }}');" title="İrsaliye"></button>
+								{% endif %}
+							{% endif %}	
+						</td>
+					</tr>
+				{% endfor %}	
+				</tbody>
+			</table>		
+		</div>	
+		<div class="w-box-content" style="display: none; overflow: auto;width: 100%;height: 100%;" id="iptalEdilenlerTablosu">
+			<table class="table table-bordered" id="datatable2">
+				<thead>
+					<tr>
+						<th>Fatura Seri</th>
+						<th>Fatura Sira</th>
+						<th>Fatura Tipi</th>
+						<th>İşlem Tarihi</th>
+						<th>İşlem</th>
+					</tr>
+				</thead>
+				<tbody align="Center">
+				{% for faturaIsCanceled in sqlFaturaIsCanceled %}
+					<tr id="{{ faturaIsCanceled.FaturaSeri }}{{ faturaIsCanceled.FaturaSira }}">
+						<td>{{ faturaIsCanceled.FaturaSeri }}</td>
+						<td>{{ faturaIsCanceled.FaturaSira }}</td>
+						{% if faturaIsCanceled.FaturaTipi == "1" %}
+							<td>Satış Faturası</td>
+						{% elif faturaIsCanceled.FaturaTipi == "2" %}
+							<td>Alış Faturası</td>
+						{% endif %}
+						<td>{{ faturaIsCanceled.IslemTarihi }}</td>
+						<td>
+							{% if islemlerKontrol.IsFaturaDetay == True %}
+							<button class="btn btn-info fa fa-search" onclick="Detay('{{ faturaIsCanceled.id }}');" title="Detay"></button>
+							{% endif %}
+							{% if islemlerKontrol.IsFaturaSil == True %}
+							<button class="btn btn-danger fa fa-trash" onclick="Sil('{{ faturaIsCanceled.FaturaSeri }}','{{ faturaIsCanceled.FaturaSira }}');" title="Sil"></button>
+							{% endif %}
+						</td>
+					</tr>
+				{% endfor %}	
+				</tbody>
+			</table>		
+		</div>
+	</div>	
+</div>
+<div id="divDetay" class="container-fluid" style="display: none;">
+	<div class="w-box" style="margin-top: 1%; margin-bottom: 1%;">
+		<button class="btn btn-warning fa fa-long-arrow-left" style="margin-bottom: 5px;width: 25%" onclick="Geri();" title="Geri"></button>
+		<div class="w-box-header">
+			<div align="Center">
+				<span>Fatura Detay Ekranı</span>
+			</div>
+		</div>
+		<div class="w-box-content">
+			<table class="table table-bordered">
+                <thead>
+					<tr>
+						<th style="width: 25%">Fatura Seri</th>
+						<td id="faturaSeri" style="width: 75%"></td>
+					</tr>
+					<tr>	
+						<th>Fatura Sira</th>
+						<td id="faturaSira"></td>
+					</tr>
+					<tr>	
+						<th>Fatura Tipi</th>
+						<td id="faturaTipi"></td>
+					</tr>
+					<tr>	
+						<th>Fatura Tarihi</th>
+						<td id="islemTarihi"></td>
+					</tr>
+					<tr>	
+						<th>Toplam Brüt Tutar</th>
+						<td id="toplamBrutTutar"></td>
+					</tr>
+					<tr>	
+						<th>Toplam Kdv</th>
+						<td id="toplamKdv"></td>
+					</tr>
+
+					<tr>
+						<th>Cari Ünvani</th>
+						<td id="cariUnvani"></td>
+					</tr>
+					<tr>	
+						<th>Vergi Dairesi</th>
+						<td id="vergiDairesi"></td>
+					</tr>
+					<tr>	
+						<th>Vergi Numarası</th>
+						<td id="vergiNumarasi"></td>
+					</tr>
+					<tr>	
+						<th>Adres</th>
+						<td id="adres"></td>
+					</tr>
+					<tr>	
+						<th>Tel1</th>
+						<td id="tel1"></td>
+					</tr>						
+				</thead>
+			</table>	
+			<table id="faturaHareketleri" class="table table-bordered" style="margin-top: 10px;">
+				<tbody></tbody>
+			</table>          
+		</div>
+	</div>
+</div>
+<script type="text/javascript">
+function IptalEt(argument1,argument2){
+	if (confirm("Fatura İptal Ediliyor ! Onaylıyor musunuz ?") == true) {
+		$.ajax({
+	        type: "post",
+	        url: "",
+	        data: {
+	        	"ajaxFaturaSeriIptal"  : argument1,
+	        	"ajaxFaturaSiraIptal"  : argument2,
+	        csrfmiddlewaretoken: "{{ csrf_token }}"
+	        },
+	        dataType: "json",
+	        success: function(Veri){
+	        	$("#"+argument1+""+argument2+"").fadeOut().remove();
+	        }, 
+	        error: function(hata) {
+	            alert(hata);
+	        }
+        });
+	};	
+};
+function Sil(argument1,argument2){
+	if (confirm("İptal Edilen Fatura Siliniyor ! Onaylıyor musunuz ?") == true) {
+		$.ajax({
+	        type: "post",
+	        url: "",
+	        data: {
+	        	"ajaxFaturaSeriSil"  : argument1,
+	        	"ajaxFaturaSiraSil"  : argument2,
+	        csrfmiddlewaretoken: "{{ csrf_token }}"
+	        },
+	        dataType: "json",
+	        success: function(Veri){
+	        	$("#"+argument1+""+argument2+"").fadeOut().remove();
+	        }, 
+	        error: function(hata) {
+	            alert(hata);
+	        }
+        });
+	};	
+};
+function Irsaliye(argument1,argument2){
+	if (confirm("İrsaliye Kaydı Oluşturulsun mu ?") == true) {
+		$.ajax({
+	        type: "post",
+	        url: "",
+	        data: {
+	        	"ajaxFaturaSeriIrsaliye"  : argument1,
+	        	"ajaxFaturaSiraIrsaliye"  : argument2,
+	        csrfmiddlewaretoken: "{{ csrf_token }}"
+	        },
+	        dataType: "json",
+	        success: function(Veri){ 
+	        	location = "/irsaliye/olustur/";
+	        }, 
+	        error: function(hata) {
+	            alert(hata);
+	        }
+        });
+	};	
+};
+function Detay(argument){
+	$.ajax({
+        type: "post",
+        url: "",
+        data: {
+        	"ajaxDetay" : argument,
+        csrfmiddlewaretoken: "{{ csrf_token }}"
+        },
+        dataType: "json",
+        success: function(Veri){
+        	$("#divListe").css("display","none");
+        	$("#divDetay").css("display","block");
+        	$("#faturaSeri").html(Veri.ajaxFaturaSeri);
+        	$("#faturaSeri").html(Veri.ajaxFaturaSeri);
+        	$("#faturaSira").html(Veri.ajaxFaturaSira);
+        	$("#faturaTipi").html(Veri.ajaxFaturaTipi);
+        	$("#islemTarihi").html(Veri.ajaxIslemTarihi);
+        	$("#toplamBrutTutar").html(Veri.ajaxToplamBrutTutar);
+        	$("#toplamKdv").html(Veri.ajaxToplamKdv);
+        	$("#cariUnvani").html(Veri.ajaxCariUnvani);
+        	$("#vergiDairesi").html(Veri.ajaxVergiDairesi);
+        	$("#vergiNumarasi").html(Veri.ajaxVergiNumarasi);
+        	$("#adres").html(Veri.ajaxAdres+"/"+Veri.ajaxIl+"/"+Veri.ajaxIlce);
+        	$("#tel1").html(Veri.ajaxTel1);
+        	for(var i=0;i<Veri.faturaHareketleriList.length;i++){
+				$("#faturaHareketleri tbody").append('\
+					<tr>\
+						<th style="width: 25%;">Ürün</th>\
+						<td id="stokKodu" style="width: 75%;">'+Veri.faturaHareketleriList[i][0]+'</td>\
+					</tr>\
+					<tr>\
+						<th>Miktar</th>\
+						<td id="miktar">'+Veri.faturaHareketleriList[i][1]+'</td>\
+					</tr>\
+					<tr>\
+						<th>Nitelik</th>\
+						<td id="nitelik">'+Veri.faturaHareketleriList[i][2]+'</td>\
+					</tr>\
+					<tr>\
+						<th>Birim Fiyat</th>\
+						<td id="birimFiyat">'+Veri.faturaHareketleriList[i][3]+'</td>\
+					</tr>\
+					<tr>\
+						<th>İskonto Orani</th>\
+						<td id="iskontoOrani">'+Veri.faturaHareketleriList[i][4]+'</td>\
+					</tr>\
+					<tr>\
+						<th>Kdv Orani</th>\
+						<td id="kdvOrani">'+Veri.faturaHareketleriList[i][5]+'</td>\
+					</tr>\
+					<tr>\
+						<td colspan="2" style="background-color: #89C4F4"></td>\
+					</tr>\
+					')
+			}
+        }, 
+        error: function(Hata) {
+            alert("Hata !");
+        }
+    });
+};
+function Geri(){
+	$("#divDetay").css("display","none");
+	$("#divListe").css("display","block");
+	$("#faturaHareketleri tbody tr ").fadeOut().remove();
+};
+$(".closeX").click(function(){
+	$("#myModal").css("display","none");
+	$("#myModal").attr("class","modal fade");
+});
+$("#iptalEdilenler").click(function(){
+	if($("#iptalEdilenler").val() == "İptal Edilen Faturalar"){
+		$("#iptalEdilenler").val("Fatura Listesi");
+		$("#header").html("İptal Edilen Fatura Listesi");
+		$("#faturaTablosu").css("display","none");
+		$("#iptalEdilenlerTablosu").css("display","block");
+	}else{
+		$("#iptalEdilenler").val("İptal Edilen Faturalar");
+		$("#header").html("Fatura Listesi");
+		$("#iptalEdilenlerTablosu").css("display","none");
+		$("#faturaTablosu").css("display","block");
+	}
+});
+</script>
+{% endblock %}

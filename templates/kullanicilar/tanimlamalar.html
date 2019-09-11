@@ -1,0 +1,948 @@
+{% extends 'base.html' %}
+{% block pagetitle %}{{ block.super }} - Kullanıcı Tanımlamaları {% endblock %}
+{% block body  %}
+<div class="container-fluid">
+	<div class="w-box">
+		<div class="w-box-header">
+			<div align="Center">
+				<span>Kullanici Grubları Tanımlama Ekranı</span>
+			</div>
+		</div>
+		<div class="w-box-content">
+			<table class="table table-bordered" style="overflow: auto;width: 100%;height: 100%;">
+				<tbody>
+					<tr>
+						<th>Kullanıcı&nbsp;Grupları</th>
+						<td>
+							<select class="form-control">
+								<option value="" selected="">Seçiniz</option>
+								{% for kullaniciGrubuModel in varKullaniciGrubuModel %}
+								<option value="{{ kullaniciGrubuModel.KullaniciGrubuKodu }}">{{ kullaniciGrubuModel.KullaniciGrubu }}</option>
+								{% endfor %}
+							</select>
+						</td>
+					</tr>
+					<tr>
+						<th style="width: 25%;">Grup&nbsp;Kodu</th>
+						<td style="width: 75%;">
+							<input type="text" id="kullaniciGrubuKodu" value="" class="form-control" placeholder="Kullanıcı Grubu Kodu Ekle">
+						</td>
+					</tr>
+					<tr>
+						<th style="width: 25%;">Grup&nbsp;İsmi</th>
+						<td style="width: 75%;">
+							<input type="text" id="kullaniciGrubu" value="" class="form-control" placeholder="Kullanıcı Grubu Ekle">
+						</td>
+					</tr>
+					<tr>
+						<th></th>
+						<td>
+							<button class="btn btn-success fa fa-save" style="width: 100%;" onclick="KaydetKGrubu();" title="Kaydet"></button>
+						</td>
+					</tr>
+				</tbody>
+			</table>
+		</div>
+	</div>
+		<div class="w-box" style="margin-top: 1%;">
+		<div class="w-box-header">
+			<div align="Center">
+				<span>Kullanıcı Tipi Yetkileri </span>
+			</div>
+		</div>
+		<div class="w-box-content">
+			<table class="table table-bordered">
+				<tbody>
+					<tr>
+						<th style="width: 25%;">Kullanıcı&nbsp;Tipleri</th>
+						<td style="width: 75%;">
+							<select id="kullaniciTipleri" class="form-control">
+								<option value="" selected="">Seçiniz</option>
+								{% for kullaniciTipiModel in varKullaniciTipiModel %}
+								<option value="{{ kullaniciTipiModel.KullaniciTipiKodu }}">{{ kullaniciTipiModel.KullaniciTipi }}</option>
+								{% endfor %}
+							</select>
+						</td>
+					</tr>
+				</tbody>
+			</table>
+			<div style="overflow: auto;width: 100%;height: 100%;">
+			<table class="table table-bordered">
+				<thead>
+					<tr>
+						<th style="width: 15%;">
+							<div align="Center">Moduller</div>
+						</th>
+						<th colspan="12" style="width: 85%;">
+							<div align="Center">Yetkiler</div>
+						</th>
+					</tr>
+				</thead>
+				<tbody>
+					<tr id="modulYetkileri">
+						<th>
+							<div align="Center">Modül Yetkileri</div>
+						</th>
+					</tr>
+					<tr id="kullanicilarModulu">
+						<th>
+							<div align="Center">Kullanıcılar Modülü Yetkileri</div>
+						</th>
+					</tr>
+					<tr id="kasaModulu">
+						<th>
+							<div align="Center">Kasa Modülü Yetkileri</div>
+						</th>
+					</tr>
+					<tr id="kasaHareketleriModulu">
+						<th>
+							<div align="Center">Kasa Modülü Kasa Hareketleri Yetkileri</div>
+						</th>
+					</tr>
+					<tr id="bankaModulu">
+						<th>
+							<div align="Center">Banka Modülü Yetkileri</div>
+						</th>
+					</tr>
+					<tr id="bankaHareketleriModulu">
+						<th>
+							<div align="Center">Banka Modülü Banka Hareketleri Yetkileri</div>
+						</th>
+					</tr>
+					<tr id="cekSenetModulu">
+						<th>
+							<div align="Center">ÇekSenet Modülü Yetkileri</div>
+						</th>
+					</tr>
+					<tr id="faturaModulu">
+						<th>
+							<div align="Center">Fatura Modülü Yetkileri</div>
+						</th>
+					</tr>
+					<tr id="cariModulu">
+						<th>
+							<div align="Center">Cari Modülü Yetkileri</div>
+						</th>
+					</tr>
+					<tr id="cariHareketleriModulu">
+						<th>
+							<div align="Center">Cari Modülü Cari Hareketleri Yetkileri</div>
+						</th>
+					</tr>
+					<tr id="irsaliyeModulu">
+						<th>
+							<div align="Center">İrsaliye Modülü Yetkileri</div>
+						</th>
+					</tr>
+					<tr id="siparisModulu">
+						<th>
+							<div align="Center">Sipariş Modülü Yetkileri</div>
+						</th>
+					</tr>
+					<tr id="stokModulu">
+						<th>
+							<div align="Center">Stok Modülü Yetkileri</div>
+						</th>
+					</tr>
+					<tr id="stokHareketleriModulu">
+						<th>
+							<div align="Center">Stok Modülü Stok Hareketleri Yetkileri</div>
+						</th>
+					</tr>
+					<tr id="tanimlamalarModulu">
+						<th>
+							<div align="Center">Tanımlama Yetkileri</div>
+						</th>
+					</tr>
+				</tbody>
+			</table>
+			</div>
+		</div>
+	</div>
+	
+	<div class="w-box" style="margin-top: 1%; margin-bottom: 1%;">
+		<div class="w-box-header">
+			<div align="Center">
+				<span>Kullanıcı Tipleri Tanımlama ve Yetkilendirme Ekranı</span>
+			</div>
+		</div>
+		<div class="w-box-content">
+			<table class="table table-bordered" style="overflow: auto;width: 100%;height: 100%;">
+				<tbody>
+					<tr>
+						<th style="width: 25%;">Kullanıcı&nbsp;Tipi&nbsp;Kodu&nbsp;Ekle</th>
+						<td style="width: 75%;">
+							<input type="text" id="kullaniciTipiKodu" class="form-control" placeholder="Kullanıcı Tipi Kodu Ekle">
+						</td>
+					</tr>
+					<tr>
+						<th style="width: 25%;">Kullanıcı&nbsp;Tipi&nbsp;Ekle</th>
+						<td style="width: 75%;">
+							<input type="text" id="kullaniciTipi" value="" class="form-control" placeholder="Kullanıcı Tipi Ekle">
+						</td>
+					</tr>
+				</tbody>
+			</table>
+			<div style="overflow: auto; width: 100%;height: 100%;">
+	 			<table class="table table-bordered">
+	 				<tr align="Center">
+	 					<td colspan="11">
+	 						<label>Bu Kullanıcı Tipi Hangi Modülleri Görüntülesin ?</label>
+	 					</td>
+	 				</tr>
+	 				<tr>
+	 					<td align="Center">
+	 						<input type="checkbox" id="isAnaSayfa" value="0" class="clickHG">
+	 						&nbsp;&nbsp;Anasayfa
+		 				</td>
+		 				<td align="Center">
+		 					<input type="checkbox" id="isCari" value="0" class="clickHG">
+	 						&nbsp;&nbsp;Cari
+		 				</td>
+		 				<td align="Center">
+		 					<input type="checkbox" id="isKasa" value="0" class="clickHG">
+	 						&nbsp;&nbsp;Kasa
+		 				</td>
+		 				<td align="Center">
+		 					<input type="checkbox" id="isBanka" value="0" class="clickHG">
+	 						&nbsp;&nbsp;Banka
+		 				</td>
+		 				<td align="Center">
+		 					<input type="checkbox" id="isCekSenet" value="0" class="clickHG">
+	 						&nbsp;&nbsp;ÇekSenet
+	 					</td>	
+		 				<td  align="Center">
+		 					<input type="checkbox" id="isSiparis" value="0" class="clickHG">
+	 						&nbsp;&nbsp;Sipariş
+		 				</td>
+		 				<td align="Center">
+		 					<input type="checkbox" id="isFatura" value="0" class="clickHG">
+	 						&nbsp;&nbsp;Fatura
+		 				</td>
+		 				<td align="Center">
+		 					<input type="checkbox" id="isIrsaliye" value="0" class="clickHG">
+	 						&nbsp;&nbsp;İrsaliye
+		 				</td>
+		 				<td align="Center">
+		 					<input type="checkbox" id="isStok" value="0" class="clickHG">
+	 						&nbsp;&nbsp;Stok
+		 				</td>
+		 				<td align="Center">
+		 					<input type="checkbox" id="isKullanicilar" value="0" class="clickHG">
+	 						&nbsp;&nbsp;Kullanıcılar
+		 				</td>
+		 				<td align="Center">
+		 					<input type="checkbox" id="isTanimlamalar" value="0" class="clickHG">
+	 						&nbsp;&nbsp;Tanımlamalar
+		 				</td>
+		 			</tr>	
+	 			</table>
+	 		</div>
+	 		<div style="overflow: auto; width: 100%;height: 100%;">
+	 			<table class="table table-bordered">
+	 				<tr align="Center">
+	 					<td colspan="9">
+	 						<label>Kullanıcılar Modülü Yetkileri</label>
+	 					</td>
+	 				</tr>
+	 				<tr>
+		 				<td align="Center">
+		 					<input type="checkbox" id="isKullaniciOlustur" value="0" class="clickHG">
+	 						&nbsp;&nbsp;Kullanıcı Oluştur
+		 				</td>
+		 				<td align="Center">
+		 					<input type="checkbox" id="isKullaniciListele" value="0" class="clickHG">
+	 						&nbsp;&nbsp;Kullanıcı Listele
+		 				</td>
+		 				<td align="Center">
+		 					<input type="checkbox" id="isKullaniciDetay" value="0" class="clickHG">
+	 						&nbsp;&nbsp;Kullanıcı Detay
+		 				</td>
+		 				<td align="Center">
+		 					<input type="checkbox" id="isKullaniciGuncelle" value="0" class="clickHG">
+	 						&nbsp;&nbsp;Kullanıcı Guncelle
+	 					</td>
+	 					<td align="Center">
+	 						<input type="checkbox" id="isKullaniciSil" value="0" class="clickHG">
+	 						&nbsp;&nbsp;Kullanıcı Sil
+	 					</td>
+		 			</tr>	
+	 			</table>
+	 		</div>
+	 		<div style="overflow: auto; width: 100%;height: 100%;">
+	 			<table class="table table-bordered">
+	 				<tr align="Center">
+	 					<td colspan="9">
+	 						<label>Cari Modülü Yetkileri</label>
+	 					</td>
+	 				</tr>
+	 				<tr>
+		 				<td align="Center">
+		 					<input type="checkbox" id="isCariOlustur" value="0" class="clickHG">
+	 						&nbsp;&nbsp;Cari Oluştur
+		 				</td>
+		 				<td align="Center">
+		 					<input type="checkbox" id="isCariListele" value="0" class="clickHG">
+	 						&nbsp;&nbsp;Cari Listele
+		 				</td>
+		 				<td align="Center">
+		 					<input type="checkbox" id="isCariDetay" value="0" class="clickHG">
+	 						&nbsp;&nbsp;Cari Detay
+		 				</td>
+		 				<td align="Center">
+		 					<input type="checkbox" id="isCariGuncelle" value="0" class="clickHG">
+	 						&nbsp;&nbsp;Cari Güncelle
+	 					</td>
+	 					<td align="Center">
+	 						<input type="checkbox" id="isCariSil" value="0" class="clickHG">
+	 						&nbsp;&nbsp;Cari Sil
+	 					</td>
+	 				</tr>	
+	 				<tr>
+		 				<td align="Center">
+		 					<input type="checkbox" id="isCariHareketleriListele" value="0" class="clickHG">
+	 						&nbsp;&nbsp;Cari Hareketleri Listele
+		 				</td>
+		 				<td align="Center">
+		 					<input type="checkbox" id="isCariHareketleriDetay" value="0" class="clickHG">
+	 						&nbsp;&nbsp;Cari Hareketleri Detay
+		 				</td>
+		 			</tr>
+	 			</table>
+	 		</div>
+	 		<div style="overflow: auto; width: 100%;height: 100%;">
+	 			<table class="table table-bordered">
+	 				<tr align="Center">
+	 					<td colspan="9">
+	 						<label>Kasa Modülü Yetkileri</label>
+	 					</td>
+	 				</tr>
+	 				<tr>
+		 				<td align="Center">
+		 					<input type="checkbox" id="isKasaOlustur" value="0" class="clickHG">
+	 						&nbsp;&nbsp;Kasa Oluştur
+		 				</td>
+		 				<td align="Center">
+		 					<input type="checkbox" id="isKasaListele" value="0" class="clickHG">
+	 						&nbsp;&nbsp;Kasa Listele
+		 				</td>
+		 				<td align="Center">
+		 					<input type="checkbox" id="isKasaDetay" value="0" class="clickHG">
+	 						&nbsp;&nbsp;Kasa Detay
+		 				</td>
+		 				<td align="Center">
+		 					<input type="checkbox" id="isKasaGuncelle" value="0" class="clickHG">
+	 						&nbsp;&nbsp;Kasa Güncelle
+	 					</td>
+	 					<td align="Center">
+	 						<input type="checkbox" id="isKasaSil" value="0" class="clickHG">
+	 						&nbsp;&nbsp;Kasa Sil
+	 					</td>
+	 				</tr>	
+	 				<tr>
+		 				<td align="Center">
+		 					<input type="checkbox" id="isKasaHareketleriOlustur" value="0" class="clickHG">
+	 						&nbsp;&nbsp;Kasa Hareketleri Oluştur
+		 				</td>
+		 				<td align="Center">
+		 					<input type="checkbox" id="isKasaHareketleriListele" value="0" class="clickHG">
+	 						&nbsp;&nbsp;Kasa Hareketleri Listele
+		 				</td>
+		 				<td align="Center">
+		 					<input type="checkbox" id="isKasaHareketleriDetay" value="0" class="clickHG">
+	 						&nbsp;&nbsp;Kasa Hareketleri Detay
+		 				</td>
+		 				<td align="Center">
+		 					<input type="checkbox" id="isKasaHareketleriIptalEt" value="0" class="clickHG">
+	 						&nbsp;&nbsp;Kasa Hareketleri İptal Et
+	 					</td>
+	 					<td align="Center">
+	 						<input type="checkbox" id="isKasaHareketleriSil" value="0" class="clickHG">
+	 						&nbsp;&nbsp;Kasa Hareketleri Sil
+	 					</td>
+		 			</tr>
+	 			</table>
+	 		</div>
+	 		<div style="overflow: auto; width: 100%;height: 100%;">
+	 			<table class="table table-bordered">
+	 				<tr align="Center">
+	 					<td colspan="9">
+	 						<label>Banka Modülü Yetkileri</label>
+	 					</td>
+	 				</tr>
+	 				<tr>
+		 				<td align="Center">
+		 					<input type="checkbox" id="isBankaOlustur" value="0" class="clickHG">
+	 						&nbsp;&nbsp;Banka Oluştur
+		 				</td>
+		 				<td align="Center">
+		 					<input type="checkbox" id="isBankaListele" value="0" class="clickHG">
+	 						&nbsp;&nbsp;Banka Listele
+		 				</td>
+		 				<td align="Center">
+		 					<input type="checkbox" id="isBankaDetay" value="0" class="clickHG">
+	 						&nbsp;&nbsp;Banka Detay
+		 				</td>
+		 				<td align="Center">
+		 					<input type="checkbox" id="isBankaGuncelle" value="0" class="clickHG">
+	 						&nbsp;&nbsp;Banka Güncelle
+	 					</td>
+	 					<td align="Center">
+	 						<input type="checkbox" id="isBankaSil" value="0" class="clickHG">
+	 						&nbsp;&nbsp;Banka Sil
+	 					</td>
+	 				</tr>	
+	 				<tr>
+		 				<td align="Center">
+		 					<input type="checkbox" id="isBankaHareketleriOlustur" value="0" class="clickHG">
+	 						&nbsp;&nbsp;Banka Hareketleri Oluştur
+		 				</td>
+		 				<td align="Center">
+		 					<input type="checkbox" id="isBankaHareketleriListele" value="0" class="clickHG">
+	 						&nbsp;&nbsp;Banka Hareketleri Listele
+		 				</td>
+		 				<td align="Center">
+		 					<input type="checkbox" id="isBankaHareketleriDetay" value="0" class="clickHG">
+	 						&nbsp;&nbsp;Banka Hareketleri Detay
+		 				</td>
+		 				<td align="Center">
+		 					<input type="checkbox" id="isBankaHareketleriIptalEt" value="0" class="clickHG">
+	 						&nbsp;&nbsp;Banka Hareketleri İptal Et
+	 					</td>
+	 					<td align="Center">
+	 						<input type="checkbox" id="isBankaHareketleriSil" value="0" class="clickHG">
+	 						&nbsp;&nbsp;Banka Hareketleri Sil
+	 					</td>
+		 			</tr>
+	 			</table>
+	 		</div>
+	 		<div style="overflow: auto; width: 100%;height: 100%;">
+	 			<table class="table table-bordered">
+	 				<tr align="Center">
+	 					<td colspan="9">
+	 						<label>ÇekSenet Modülü Yetkileri</label>
+	 					</td>
+	 				</tr>
+	 				<tr>
+		 				<td align="Center">
+		 					<input type="checkbox" id="isCekBordroOlustur" value="0" class="clickHG">
+	 						&nbsp;&nbsp;Çek Bordro Oluştur
+		 				</td>
+		 				<td align="Center">
+		 					<input type="checkbox" id="isCekListele" value="0" class="clickHG">
+	 						&nbsp;&nbsp;Çek Listele
+		 				</td>
+		 				<td align="Center">
+		 					<input type="checkbox" id="isCekDetay" value="0" class="clickHG">
+	 						&nbsp;&nbsp;Çek Detay
+		 				</td>
+		 				<td align="Center">
+		 					<input type="checkbox" id="isCekIslemler" value="0" class="clickHG">
+	 						&nbsp;&nbsp;Çek İşlemler
+	 					</td>
+	 					<td align="Center">
+	 						<input type="checkbox" id="isCekIptalEt" value="0" class="clickHG">
+	 						&nbsp;&nbsp;Çek İptal Et
+	 					</td>
+	 					<td align="Center">
+	 						<input type="checkbox" id="isCekSil" value="0" class="clickHG">
+	 						&nbsp;&nbsp;Çek Sil
+	 					</td>
+		 			</tr>
+		 			<tr>
+		 				<td align="Center">
+		 					<input type="checkbox" id="isSenetBordroOlustur" value="0" class="clickHG">
+	 						&nbsp;&nbsp;Senet Bordro Oluştur
+		 				</td>
+		 				<td align="Center">
+		 					<input type="checkbox" id="isSenetListele" value="0" class="clickHG">
+	 						&nbsp;&nbsp;Senet Listele
+	 					</td>
+	 					<td align="Center">
+	 						<input type="checkbox" id="isSenetDetay" value="0" class="clickHG">
+	 						&nbsp;&nbsp;Senet Detay
+	 					</td>
+	 					<td align="Center">
+	 						<input type="checkbox" id="isSenetIslemler" value="0" class="clickHG">
+	 						&nbsp;&nbsp;Senet İşlemler
+	 					</td>
+	 					<td align="Center">
+	 						<input type="checkbox" id="isSenetIptalEt" value="0" class="clickHG">
+	 						&nbsp;&nbsp;Senet İptal Et
+	 					</td>
+	 					<td align="Center">
+	 						<input type="checkbox" id="isSenetSil" value="0" class="clickHG">
+	 						&nbsp;&nbsp;Senet Sil
+	 					</td>
+		 			</tr>
+	 			</table>
+	 		</div>
+	 		<div style="overflow: auto; width: 100%;height: 100%;">
+	 			<table class="table table-bordered">
+	 				<tr align="Center">
+	 					<td colspan="9">
+	 						<label>Sipariş Modülü Yetkileri</label>
+	 					</td>
+	 				</tr>
+	 				<tr>
+		 				<td align="Center">
+		 					<input type="checkbox" id="isSiparisOlustur" value="0" class="clickHG">
+	 						&nbsp;&nbsp;Sipariş Oluştur
+		 				</td>
+		 				<td align="Center">
+		 					<input type="checkbox" id="isSiparisListele" value="0" class="clickHG">
+	 						&nbsp;&nbsp;Sipariş Listele
+		 				</td>
+		 				<td align="Center">
+		 					<input type="checkbox" id="isSiparisDetay" value="0" class="clickHG">
+	 						&nbsp;&nbsp;Sipariş Detay
+		 				</td>
+		 				<td align="Center">
+		 					<input type="checkbox" id="isSiparisIptalEt" value="0" class="clickHG">
+	 						&nbsp;&nbsp;Sipariş İptal Et
+	 					</td>
+	 					<td align="Center">
+	 						<input type="checkbox" id="isSiparisFatura" value="0" class="clickHG">
+	 						&nbsp;&nbsp;Sipariş Fatura
+	 					</td>
+	 					<td align="Center">
+	 						<input type="checkbox" id="isSiparisSil" value="0" class="clickHG">
+	 						&nbsp;&nbsp;Sipariş Sil
+	 					</td>
+		 			</tr>	
+	 			</table>
+	 		</div>
+	 		<div style="overflow: auto; width: 100%;height: 100%;">
+	 			<table class="table table-bordered">
+	 				<tr align="Center">
+	 					<td colspan="9">
+	 						<label>Fatura Modülü Yetkileri</label>
+	 					</td>
+	 				</tr>
+	 				<tr>
+		 				<td align="Center">
+		 					<input type="checkbox" id="isFaturaOlustur" value="0" class="clickHG">
+	 						&nbsp;&nbsp;Fatura Oluştur
+		 				</td>
+		 				<td align="Center">
+		 					<input type="checkbox" id="isFaturaListele" value="0" class="clickHG">
+	 						&nbsp;&nbsp;Fatura Listele
+		 				</td>
+		 				<td align="Center">
+		 					<input type="checkbox" id="isFaturaDetay" value="0" class="clickHG">
+	 						&nbsp;&nbsp;Fatura Detay
+		 				</td>
+		 				<td align="Center">
+		 					<input type="checkbox" id="isFaturaIptalEt" value="0" class="clickHG">
+	 						&nbsp;&nbsp;Fatura İptal Et
+	 					</td>
+	 					<td align="Center">
+	 						<input type="checkbox" id="isFaturaIrsaliye" value="0" class="clickHG">
+	 						&nbsp;&nbsp;Fatura İrsaliye
+	 					</td>
+	 					<td align="Center">
+	 						<input type="checkbox" id="isFaturaSil" value="0" class="clickHG">
+	 						&nbsp;&nbsp;Fatura Sil
+	 					</td>
+		 			</tr>	
+	 			</table>
+	 		</div>
+	 		<div style="overflow: auto; width: 100%;height: 100%;">
+	 			<table class="table table-bordered">
+	 				<tr align="Center">
+	 					<td colspan="9">
+	 						<label>İrsaliye Modülü Yetkileri</label>
+	 					</td>
+	 				</tr>
+	 				<tr>
+		 				<td align="Center">
+		 					<input type="checkbox" id="isIrsaliyeOlustur" value="0" class="clickHG">
+	 						&nbsp;&nbsp;İrsaliye Oluştur
+		 				</td>
+		 				<td align="Center">
+		 					<input type="checkbox" id="isIrsaliyeListele" value="0" class="clickHG">
+	 						&nbsp;&nbsp;İrsaliye Listele
+		 				</td>
+		 				<td align="Center">
+		 					<input type="checkbox" id="isIrsaliyeDetay" value="0" class="clickHG">
+	 						&nbsp;&nbsp;İrsaliye Detay
+		 				</td>
+		 				<td align="Center">
+		 					<input type="checkbox" id="isIrsaliyeIptalEt" value="0" class="clickHG">
+	 						&nbsp;&nbsp;İrsaliye İptal Et
+	 					</td>
+	 					<td align="Center">
+	 						<input type="checkbox" id="isIrsaliyeFatura" value="0" class="clickHG">
+	 						&nbsp;&nbsp;İrsaliye Fatura
+	 					</td>
+	 					<td align="Center">
+	 						<input type="checkbox" id="isIrsaliyeSil" value="0" class="clickHG">
+	 						&nbsp;&nbsp;İrsaliye Sil
+	 					</td>
+		 			</tr>	
+	 			</table>
+	 		</div>
+	 		<div style="overflow: auto; width: 100%;height: 100%;">
+	 			<table class="table table-bordered">
+	 				<tr align="Center">
+	 					<td colspan="9">
+	 						<label>Stok Modülü Yetkileri</label>
+	 					</td>
+	 				</tr>
+	 				<tr>
+		 				<td align="Center">
+		 					<input type="checkbox" id="isStokOlustur" value="0" class="clickHG">
+	 						&nbsp;&nbsp;Stok Oluştur
+		 				</td>
+		 				<td align="Center">
+		 					<input type="checkbox" id="isStokListele" value="0" class="clickHG">
+	 						&nbsp;&nbsp;Stok Listele
+		 				</td>
+		 				<td align="Center">
+		 					<input type="checkbox" id="isStokDetay" value="0" class="clickHG">
+	 						&nbsp;&nbsp;Stok Detay
+		 				</td>
+		 				<td align="Center">
+		 					<input type="checkbox" id="isStokGuncelle" value="0" class="clickHG">
+	 						&nbsp;&nbsp;Stok Güncelle
+	 					</td>
+	 					<td align="Center">
+	 						<input type="checkbox" id="isStokSil" value="0" class="clickHG">
+	 						&nbsp;&nbsp;Stok Sil
+	 					</td>
+	 				</tr>	
+	 				<tr>
+		 				<td align="Center">
+		 					<input type="checkbox" id="isStokHareketleriListele" value="0" class="clickHG">
+	 						&nbsp;&nbsp;Stok Hareketleri Listele
+		 				</td>
+		 				<td align="Center">
+		 					<input type="checkbox" id="isStokHareketleriDetay" value="0" class="clickHG">
+	 						&nbsp;&nbsp;Stok Hareketleri Detay
+		 				</td>
+		 			</tr>
+	 			</table>
+	 		</div>
+	 		<div style="overflow: auto; width: 100%;height: 100%;">
+	 			<table class="table table-bordered">
+	 				<tr align="Center">
+	 					<td colspan="9">
+	 						<label>Tanımlama Modülü Yetkileri</label>
+	 					</td>
+	 				</tr>
+	 				<tr>
+		 				<td align="Center">
+		 					<input type="checkbox" id="isAnasayfaTanimlamalari" value="0" class="clickHG">
+	 						&nbsp;&nbsp;Anasayfa Tanımlamaları
+		 				</td>
+		 				<td align="Center">
+		 					<input type="checkbox" id="isKasaTanimlamalari" value="0" class="clickHG">
+	 						&nbsp;&nbsp;Kasa Tanımlamaları
+		 				</td>
+		 				<td align="Center">
+		 					<input type="checkbox" id="isBankaTanimlamalari" value="0" class="clickHG">
+	 						&nbsp;&nbsp;Banka Tanımlamaları
+		 				</td>
+		 				<td align="Center">
+		 					<input type="checkbox" id="isCekSenetTanimlamalari" value="0" class="clickHG">
+	 						&nbsp;&nbsp;Çek-Senet Tanımlamaları
+	 					</td>
+	 				</tr>
+	 				<tr>
+	 					<td align="Center">
+	 						<input type="checkbox" id="isSiparisTanimlamalari" value="0" class="clickHG">
+	 						&nbsp;&nbsp;Sipariş Tanımlamaları
+	 					</td>
+		 				<td align="Center">
+		 					<input type="checkbox" id="isFaturaTanimlamalari" value="0" class="clickHG">
+	 						&nbsp;&nbsp;Fatura Tanımlamaları
+		 				</td>
+		 				<td align="Center">
+		 					<input type="checkbox" id="isIrsaliyeTanimlamalari" value="0" class="clickHG">
+	 						&nbsp;&nbsp;İrsaliye Tanımlamaları
+		 				</td>
+		 				<td align="Center">
+		 					<input type="checkbox" id="isKullaniciTanimlamalari" value="0" class="clickHG">
+	 						&nbsp;&nbsp;Kullanıcı Tanımlamaları
+		 				</td>
+		 			</tr>
+	 			</table>
+	 		</div>
+	 		<table class="table table-bordered">
+		 		<tbody>
+		 			<tr>
+						<td>
+							<button class="btn btn-success fa fa-save" style="width: 100%;" onclick="Kaydet();" title="Kaydet"></button>
+						</td>
+					</tr>
+		 		</tbody>
+		 	</table>
+		</div>	
+	</div>
+</div>
+<script type="text/javascript">
+$(".clickHG").click(function(){
+	if($(this).val() == "0"){
+		$(this).val("1");
+	}else{$(this).val("0");};
+});	
+$("#kullaniciTipleri").change(function(){
+	if($(this).val() != ""){
+		$.ajax({
+	        type: "post",
+	        url: "",
+	        data: {
+	        	"ajaxKullaniciTipleri" : $(this).val(),
+	        	csrfmiddlewaretoken: "{{ csrf_token }}"
+	        },
+	        dataType: "json",
+	        success: function(Veri){
+	    		$("#modulYetkileri td").remove();
+	    		for(var i=0;i<Veri.ajaxModulYetkileri.length;i++){
+	        		$("#modulYetkileri").append("\
+	        			<td>"+Veri.ajaxModulYetkileri[i]+"</td>\
+					");
+	        	};
+	    		$("#kullanicilarModulu td").remove();
+	    		for(var i=0;i<Veri.ajaxKullanicilarYetkileri.length;i++){
+	        		$("#kullanicilarModulu").append("\
+	        				<td>"+Veri.ajaxKullanicilarYetkileri[i]+"</td>\
+					");
+	        	};
+	        	$("#kasaModulu td").remove();
+	    		for(var i=0;i<Veri.ajaxKasaYetkileri.length;i++){
+	        		$("#kasaModulu").append("\
+	        			<td>"+Veri.ajaxKasaYetkileri[i]+"</td>\
+					");
+	        	};
+	        	$("#kasaHareketleriModulu td").remove();
+	    		for(var i=0;i<Veri.ajaxKasaHareketleriYetkileri.length;i++){
+	        		$("#kasaHareketleriModulu").append("\
+	        			<td>"+Veri.ajaxKasaHareketleriYetkileri[i]+"</td>\
+					");
+	        	};
+	        	$("#bankaModulu td").remove();
+	    		for(var i=0;i<Veri.ajaxBankaYetkileri.length;i++){
+	        		$("#bankaModulu").append("\
+	        			<td>"+Veri.ajaxBankaYetkileri[i]+"</td>\
+					");
+	        	};
+	        	$("#bankaHareketleriModulu td").remove();
+	    		for(var i=0;i<Veri.ajaxBankaHareketleriYetkileri.length;i++){
+	        		$("#bankaHareketleriModulu").append("\
+	        			<td>"+Veri.ajaxBankaHareketleriYetkileri[i]+"</td>\
+					");
+	        	};
+	        	$("#cariModulu td").remove();
+	    		for(var i=0;i<Veri.ajaxCariYetkileri.length;i++){
+	        		$("#cariModulu").append("\
+	        			<td>"+Veri.ajaxCariYetkileri[i]+"</td>\
+					");
+	        	};
+	        	$("#cariHareketleriModulu td").remove();
+	    		for(var i=0;i<Veri.ajaxCariHareketleriYetkileri.length;i++){
+	        		$("#cariHareketleriModulu").append("\
+	        			<td>"+Veri.ajaxCariHareketleriYetkileri[i]+"</td>\
+					");
+	        	};
+	        	$("#cekSenetModulu td").remove();
+	    		for(var i=0;i<Veri.ajaxCekSenetYetkileri.length;i++){
+	        		$("#cekSenetModulu").append("\
+	        			<td>"+Veri.ajaxCekSenetYetkileri[i]+"</td>\
+					");
+	        	};
+	        	$("#faturaModulu td").remove();
+	    		for(var i=0;i<Veri.ajaxFaturaYetkileri.length;i++){
+	        		$("#faturaModulu").append("\
+	        			<td>"+Veri.ajaxFaturaYetkileri[i]+"</td>\
+					");
+	        	};
+	        	$("#irsaliyeModulu td").remove();
+	    		for(var i=0;i<Veri.ajaxIrsaliyeYetkileri.length;i++){
+	        		$("#irsaliyeModulu").append("\
+	        			<td>"+Veri.ajaxIrsaliyeYetkileri[i]+"</td>\
+					");
+	        	};
+	        	$("#siparisModulu td").remove();
+	    		for(var i=0;i<Veri.ajaxSiparisYetkileri.length;i++){
+	        		$("#siparisModulu").append("\
+	        			<td>"+Veri.ajaxSiparisYetkileri[i]+"</td>\
+					");
+	        	};
+	        	$("#stokModulu td").remove();
+	    		for(var i=0;i<Veri.ajaxStokYetkileri.length;i++){
+	        		$("#stokModulu").append("\
+	        			<td>"+Veri.ajaxStokYetkileri[i]+"</td>\
+					");
+	        	};
+	        	$("#stokHareketleriModulu td").remove();
+	    		for(var i=0;i<Veri.ajaxStokHareketleriYetkileri.length;i++){
+	        		$("#stokHareketleriModulu").append("\
+	        			<td>"+Veri.ajaxStokHareketleriYetkileri[i]+"</td>\
+					");
+	        	};
+	        	$("#tanimlamalarModulu td").remove();
+	    		for(var i=0;i<Veri.ajaxTanimlamaYetkileri.length;i++){
+	        		$("#tanimlamalarModulu").append("\
+	        			<td>"+Veri.ajaxTanimlamaYetkileri[i]+"</td>\
+					");
+	        	};
+	        }, 
+	        error: function(Hata){
+	            alert("Hata !");
+	        }
+	    });
+	};
+});
+
+function KaydetKGrubu(){
+	if($("#kullaniciGrubuKodu").val() != "" && $("#kullaniciGrubu").val() != ""){
+		$.ajax({
+	        type: "post",
+	        url: "",
+	        data: {
+	        	"ajaxKullaniciGrubuKodu" : $("#kullaniciGrubuKodu").val(),
+	        	"ajaxKullaniciGrubu"     : $("#kullaniciGrubu").val(),
+	        	csrfmiddlewaretoken: "{{ csrf_token }}"
+	        },
+	        dataType: "json",
+	        success: function(Veri){
+	        	location = "/kullanicilar/kayit";
+	        }, 
+	        error: function(Hata){
+	            alert("Hata !");
+	        }
+	    });
+	};
+};
+function Kaydet(){
+	if(confirm("Kaydedilsin mi ?") == true){
+		if($("#kullaniciTipiKodu").val() != "" && $("#kullaniciTipi").val() != ""){
+			$.ajax({
+		        type: "post",
+		        url: "",
+		        data: {
+		        	"ajaxKullaniciTipiKodu" : $("#kullaniciTipiKodu").val(),
+		        	"ajaxKullaniciTipi"     : $("#kullaniciTipi").val(),
+		        	"ajaxIsAnaSayfa"        : $("#isAnaSayfa").val(),
+		        	"ajaxIsCari"            : $("#isCari").val(),
+		        	"ajaxIsKasa"            : $("#isKasa").val(),
+		        	"ajaxIsBanka"           : $("#isBanka").val(),
+		        	"ajaxIsCekSenet"        : $("#isCekSenet").val(),
+		        	"ajaxIsSiparis"         : $("#isSiparis").val(),
+		        	"ajaxIsFatura"          : $("#isFatura").val(),
+		        	"ajaxIsIrsaliye"        : $("#isIrsaliye").val(),
+		        	"ajaxIsStok"            : $("#isStok").val(),
+		        	"ajaxIsKullanicilar"    : $("#isKullanicilar").val(),
+		        	"ajaxIsTanimlamalar"    : $("#isTanimlamalar").val(),
+
+		        	"ajaxIsKullaniciOlustur"  : $("#isKullaniciOlustur").val(),
+		        	"ajaxIsKullaniciListele"  : $("#isKullaniciListele").val(),
+		        	"ajaxIsKullaniciDetay"    : $("#isKullaniciDetay").val(),
+		        	"ajaxIsKullaniciGuncelle" : $("#isKullaniciGuncelle").val(),
+		        	"ajaxIsKullaniciSil"      : $("#isKullaniciSil").val(),
+
+					"ajaxIsCariOlustur"  : $("#isCariOlustur").val(),
+		        	"ajaxIsCariListele"  : $("#isCariListele").val(),
+		        	"ajaxIsCariDetay"    : $("#isCariDetay").val(),
+		        	"ajaxIsCariGuncelle" : $("#isCariGuncelle").val(),
+		        	"ajaxIsCariSil"      : $("#isCariSil").val(),
+
+		        	"ajaxIsCariHareketleriListele" : $("#isCariHareketleriListele").val(),
+		        	"ajaxIsCariHareketleriDetay"   : $("#isCariHareketleriDetay").val(),
+
+		        	"ajaxIsKasaOlustur"  : $("#isKasaOlustur").val(),
+		        	"ajaxIsKasaListele"  : $("#isKasaListele").val(),
+		        	"ajaxIsKasaDetay"    : $("#isKasaDetay").val(),
+		        	"ajaxIsKasaGuncelle" : $("#isKasaGuncelle").val(),
+		        	"ajaxIsKasaSil"      : $("#isKasaSil").val(),
+
+		        	"ajaxIsKasaHareketleriOlustur" : $("#isKasaHareketleriOlustur").val(),
+		        	"ajaxIsKasaHareketleriListele" : $("#isKasaHareketleriListele").val(),
+		        	"ajaxIsKasaHareketleriDetay"   : $("#isKasaHareketleriDetay").val(),
+		        	"ajaxIsKasaHareketleriIptalEt" : $("#isKasaHareketleriIptalEt").val(),
+		        	"ajaxIsKasaHareketleriSil"     : $("#isKasaHareketleriSil").val(),
+
+		        	"ajaxIsBankaOlustur"  : $("#isBankaOlustur").val(),
+		        	"ajaxIsBankaListele"  : $("#isBankaListele").val(),
+		        	"ajaxIsBankaDetay"    : $("#isBankaDetay").val(),
+		        	"ajaxIsBankaGuncelle" : $("#isBankaGuncelle").val(),
+		        	"ajaxIsBankaSil"      : $("#isBankaSil").val(),
+
+		        	"ajaxIsBankaHareketleriOlustur"  : $("#isBankaHareketleriOlustur").val(),
+		        	"ajaxIsBankaHareketleriListele"  : $("#isBankaHareketleriListele").val(),
+		        	"ajaxIsBankaHareketleriDetay"    : $("#isBankaHareketleriDetay").val(),
+		        	"ajaxIsBankaHareketleriIptalEt" : $("#isBankaHareketleriIptalEt").val(),
+		        	"ajaxIsBankaHareketleriSil"      : $("#isBankaHareketleriSil").val(),
+
+		        	"ajaxIsCekBordroOlustur"   : $("#isCekBordroOlustur").val(),
+		        	"ajaxIsCekListele"         : $("#isCekListele").val(),
+		        	"ajaxIsCekDetay"           : $("#isCekDetay").val(),
+		        	"ajaxIsCekIslemler"        : $("#isCekIslemler").val(),
+		        	"ajaxIsCekIptalEt"         : $("#isCekIptalEt").val(),
+		        	"ajaxIsCekSil"             : $("#isCekSil").val(),
+		        	"ajaxIsSenetBordroOlustur" : $("#isSenetBordroOlustur").val(),
+		        	"ajaxIsSenetListele"       : $("#isSenetListele").val(),
+		        	"ajaxIsSenetDetay"         : $("#isSenetDetay").val(),
+		        	"ajaxIsSenetIslemler"      : $("#isSenetIslemler").val(),
+		        	"ajaxIsSenetIptalEt"       : $("#isSenetIptalEt").val(),
+		        	"ajaxIsSenetSil"           : $("#isSenetSil").val(),
+
+					"ajaxIsCeklerListele"   : $("#isCeklerListele").val(),
+		        	"ajaxIsCeklerDetay"     : $("#isCeklerDetay").val(),
+		        	"ajaxIsSenetlerListele" : $("#isSenetlerListele").val(),
+		        	"ajaxIsSenetlerDetay"   : $("#isSenetlerDetay").val(),
+
+		        	"ajaxIsSiparisOlustur" : $("#isSiparisOlustur").val(),
+		        	"ajaxIsSiparisListele" : $("#isSiparisListele").val(),
+		        	"ajaxIsSiparisDetay"   : $("#isSiparisDetay").val(),
+		        	"ajaxIsSiparisIptalEt" : $("#isSiparisIptalEt").val(),
+		        	"ajaxIsSiparisFatura"  : $("#isSiparisFatura").val(),
+		        	"ajaxIsSiparisSil"     : $("#isSiparisSil").val(),
+
+		        	"ajaxIsFaturaOlustur"  : $("#isFaturaOlustur").val(),
+		        	"ajaxIsFaturaListele"  : $("#isFaturaListele").val(),
+		        	"ajaxIsFaturaDetay"    : $("#isFaturaDetay").val(),
+		        	"ajaxIsFaturaIptalEt"  : $("#isFaturaIptalEt").val(),
+		        	"ajaxIsFaturaIrsaliye" : $("#isFaturaIrsaliye").val(),
+		        	"ajaxIsFaturaSil"      : $("#isFaturaSil").val(),
+
+		        	"ajaxIsIrsaliyeOlustur"  : $("#isIrsaliyeOlustur").val(),
+		        	"ajaxIsIrsaliyeListele"  : $("#isIrsaliyeListele").val(),
+		        	"ajaxIsIrsaliyeDetay"    : $("#isIrsaliyeDetay").val(),
+		        	"ajaxIsIrsaliyeIptalEt" : $("#isIrsaliyeIptalEt").val(),
+		        	"ajaxIsIrsaliyeFatura" : $("#isIrsaliyeFatura").val(),
+		        	"ajaxIsIrsaliyeSil"      : $("#isIrsaliyeSil").val(),
+
+		        	"ajaxIsStokOlustur"  : $("#isStokOlustur").val(),
+		        	"ajaxIsStokListele"  : $("#isStokListele").val(),
+		        	"ajaxIsStokDetay"    : $("#isStokDetay").val(),
+		        	"ajaxIsStokGuncelle" : $("#isStokGuncelle").val(),
+		        	"ajaxIsStokSil"      : $("#isStokSil").val(),
+
+		        	"ajaxIsStokHareketleriListele"  : $("#isStokHareketleriListele").val(),
+		        	"ajaxIsStokHareketleriDetay"    : $("#isStokHareketleriDetay").val(),
+
+		        	"ajaxIsAnasayfaTanimlamalari"  : $("#isAnasayfaTanimlamalari").val(),
+		        	"ajaxIsKasaTanimlamalari"  : $("#isKasaTanimlamalari").val(),
+		        	"ajaxIsBankaTanimlamalari"    : $("#isBankaTanimlamalari").val(),
+		        	"ajaxIsCekSenetTanimlamalari" : $("#isCekSenetTanimlamalari").val(),
+		        	"ajaxIsSiparisTanimlamalari"      : $("#isSiparisTanimlamalari").val(),
+		        	"ajaxIsFaturaTanimlamalari"  : $("#isFaturaTanimlamalari").val(),
+		        	"ajaxIsIrsaliyeTanimlamalari"  : $("#isIrsaliyeTanimlamalari").val(),
+		        	"ajaxIsKullaniciTanimlamalari"    : $("#isKullaniciTanimlamalari").val(),
+		        csrfmiddlewaretoken: "{{ csrf_token }}"
+		        },
+		        dataType: "json",
+		        success: function(Veri){
+		        	location = "/kullanicilar/kayit";
+		        }, 
+		        error: function(Hata){
+		            alert("Hata !");
+		        }
+		    });
+		};
+	};
+};
+</script>
+{% endblock %}

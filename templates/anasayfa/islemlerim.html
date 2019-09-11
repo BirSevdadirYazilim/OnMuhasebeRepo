@@ -1,0 +1,71 @@
+{% extends 'base.html' %}
+{% block pagetitle %}{{ block.super }} - İşlemlerim {% endblock %}
+{% block body  %}
+<div class="container-fluid">	
+	<div class="w-box">
+		<div class="w-box-header">
+			<div align="Center">
+				<span>Kullanici Oluşturma Ekranı</span>
+			</div>
+		</div>
+		<div class="w-box-content">
+	 		<table class="table table-bordered">
+	 			<tr>	
+	 				<th style="width: 25%;">Kullanıcı Adı</th>
+	 				<td style="width: 75%;">
+	 					<input type="text" id="kullaniciAdi" value="{{sqlKullanici.KullaniciAdi}}" class="form-control" placeholder="Kullanıcı Adı">
+	 				</td>
+	 			</tr>
+	 			<tr>	
+	 				<th>Parola</th>
+	 				<td>
+	 					<input type="password" id="kullaniciParola" class="form-control" placeholder="Parola">
+	 				</td>
+	 			</tr>
+	 			<tr>	
+	 				<th>Parola Doğrulama</th>
+	 				<td>
+	 					<input type="password" id="kullaniciParolaDogrulama" class="form-control" placeholder="Parola Doğrulama">
+	 				</td>
+	 			</tr>
+	 			<tr>
+	 				<th></th>
+		 			<td>
+	 					<button class="btn btn-success fa fa-save" style="width: 100%;" onclick="Kaydet();" title="Kaydet"></button>
+	 				</td>
+	 			</tr>	
+	 		</table>
+		</div>
+	</div>
+</div>
+<script type="text/javascript">
+function Kaydet(){
+	$.ajax({
+        type: "post",
+        url: "",
+        data: {
+        	"ajaxKullaniciAdi"     : $("#kullaniciAdi").val(),
+        	"ajaxKullaniciParola"  : $("#kullaniciParola").val(),
+        	"ajaxKullaniciParolaD" : $("#kullaniciParolaDogrulama").val(),
+        csrfmiddlewaretoken: "{{ csrf_token }}"
+        },
+        dataType: "json",
+        success: function(Veri){
+        	alert(Veri.ajaxMesaj);
+        }, 
+        error: function(hata) {
+            alert(hata);
+        }
+    });
+};	
+$('#kullaniciParolaDogrulama').keyup(function(){
+	if($('#kullaniciParola').val() && $('#kullaniciParolaDogrulama').val() != ""){
+		if($('#kullaniciParola').val() != $('#kullaniciParolaDogrulama').val()){
+			$('#kullaniciParolaDogrulama').css("border-color","#ff0505");
+		}else{
+			$('#kullaniciParolaDogrulama').css("border-color","#5cb85c");
+		}
+    };
+});	
+</script>
+{% endblock %}

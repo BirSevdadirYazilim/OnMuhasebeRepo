@@ -1,0 +1,222 @@
+{% extends 'base.html' %}
+{% block pagetitle %}{{ block.super }} - Banka Hareketleri {% endblock %}
+{% block body  %}
+<div id="divListe" class="container-fluid">
+	<div class="w-box">
+		<input type="button" value="İptal Edilen Banka Hareketleri" id="iptalEdilenler" class="btn btn-primary">
+		<div class="w-box-header">
+			<div align="Center">
+				<span>Banka Hareketleri Listesi Ekranı</span>
+			</div>
+		</div>
+		<div id="bankaHar" class="w-box-content" style="overflow: auto;width: 100%;height: 100%;">
+			<table class="table table-bordered" id="datatable">
+				<thead>
+					<tr>
+						<th>Banka Kodu</th>
+						<th>Dekont</th>
+						<th>Dekont Tarihi</th>
+						<th>Açıklama</th>
+						<th>İşlemler</th>
+					</tr>
+				</thead>
+				<tbody align="Center">
+				{% for bankaHareketler in sqlBankaHareketler %}
+					<tr id="{{ bankaHareketler.id }}">
+						<td>{{ bankaHareketler.BankaKodu }}</td>
+						{% if bankaHareketler.Dekont == "1" %}
+						<td>Tahsilat Dekontu</td>
+						{% elif bankaHareketler.Dekont == "2" %}
+						<td>Tediye Dekontu</td>
+						{% elif bankaHareketler.Dekont == "3" %}
+						<td>Banka Açılış Fişi</td>
+						{% endif %}
+						<td>{{ bankaHareketler.DekontTarihi }}</td>
+						<td>{{ bankaHareketler.Aciklama }}</td>
+						<td>
+							{% if islemlerKontrol.IsBankaHareketleriDetay == True %}
+							<button class="btn btn-info fa fa-search" onclick="Detay('{{ bankaHareketler.id }}')" title="Detay"></button>
+							{% endif %}
+							{% if islemlerKontrol.IsBankaHareketleriIptalEt == True %}
+							<button class="btn btn-danger fa fa-close" onclick="IptalEt('{{ bankaHareketler.id }}');" title="İptal Et"></button>
+							{% endif %}
+						</td>
+					</tr>
+				{% endfor %}	
+				</tbody>
+			</table>
+		</div>
+		<div id="iptalEdilenBankaHar" class="w-box-content" style="overflow: auto;width: 100%;height: 100%; display: none;">
+			<table class="table table-bordered" id="datatable2">
+				<thead>
+					<tr>
+						<th>Banka Kodu</th>
+						<th>Dekont</th>
+						<th>Dekont Tarihi</th>
+						<th>Açıklama</th>
+						<th>İşlemler</th>
+					</tr>
+				</thead>
+				<tbody align="Center">
+				{% for bankaHareketler in sqlBankaHareketleriIsCanceled %}
+					<tr id="{{ bankaHareketler.id }}">
+						<td>{{ bankaHareketler.BankaKodu }}</td>
+						{% if bankaHareketler.Dekont == "1" %}
+						<td>Tahsilat Dekontu</td>
+						{% elif bankaHareketler.Dekont == "2" %}
+						<td>Tediye Dekontu</td>
+						{% else %}
+						<td>{{ bankaHareketler.Dekont }}</td>
+						{% endif %}
+						<td>{{ bankaHareketler.DekontTarihi }}</td>
+						<td>{{ bankaHareketler.Aciklama }}</td>
+						<td>
+							{% if islemlerKontrol.IsBankaHareketleriDetay == True %}
+							<button class="btn btn-info fa fa-search" onclick="Detay('{{ bankaHareketler.id }}')" title="Detay"></button>
+							{% endif %}
+							{% if islemlerKontrol.IsBankaHareketleriSil == True %}
+							<button class="btn btn-danger fa fa-trash" onclick="Sil('{{ bankaHareketler.id }}');" title="Sil"></button>
+							{% endif %}
+						</td>
+					</tr>
+				{% endfor %}	
+				</tbody>
+			</table>
+		</div>
+	</div>
+</div>
+<div id="divDetay" class="container-fluid" style="display: none;">
+	<div class="w-box" style="margin-top: 1%; margin-bottom: 1%;">
+		<div align="left">
+			<button class="btn btn-warning fa fa-long-arrow-left" style="margin-bottom:5px; width: 25%;" onclick="Geri();" title="Geri"></button>
+		</div>
+		<div class="w-box-header">
+			<div align="Center"><span>Banka Hareketleri Detay Ekranı</span></div>
+		</div>
+		<div class="w-box-content">
+			<div class="row-fluid">
+				<div id="DivAnaTablo">
+					<table class="table table-bordered">
+	                    <tbody>
+	                    	<tr>	
+								<th>Cari/Banka</th>
+								<td id="cariUnvani"></td>
+							</tr>
+							<tr>
+								<th style="width: 25%;">Banka Kodu</th>
+								<td id="bankaKodu" style="width: 75%;"></td>
+							</tr>
+							<tr>	
+								<th>Dekont</th>
+								<td id="dekont"></td>
+							</tr>
+							<tr>	
+								<th>Dekont No</th>
+								<td id="dekontNo"></td>
+							</tr>
+							<tr>	
+								<th>Dekont Tarihi</th>
+								<td id="dekontTarihi"></td>
+							</tr>
+							<tr>	
+								<th>Borc</th>
+								<td id="bankaBorc"></td>
+							</tr>
+							<tr>	
+								<th>Alacak</th>
+								<td id="bankaAlacak"></td>
+							</tr>
+						</tbody>
+	                </table>             
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+<script type="text/javascript">
+$("#iptalEdilenler").click(function(){
+	if($("#iptalEdilenler").val() == "İptal Edilen Banka Hareketleri"){
+		$("#iptalEdilenler").val("Banka Hareketleri");
+		$("#header").html("İptal Edilen Banka Hareketleri");
+		$("#bankaHar").css("display","none");
+		$("#iptalEdilenBankaHar").css("display","block");
+	}else{
+		$("#iptalEdilenler").val("İptal Edilen Banka Hareketleri");
+		$("#header").html("Banka Hareketleri");
+		$("#iptalEdilenBankaHar").css("display","none");
+		$("#bankaHar").css("display","block");
+	};
+});
+function Detay(arguman){
+	$.ajax({
+        type: "post",
+        url: "",
+        data: {
+        	"ajaxDetay":arguman,
+        csrfmiddlewaretoken: "{{ csrf_token }}"
+        },
+        dataType: "json",
+        success: function(Veri){
+        	$("#divListe").css("display","none");
+        	$("#divDetay").css("display","block");
+        	$("#cariUnvani").html(Veri.ajaxCariUnvani);
+        	$("#bankaKodu").html(Veri.ajaxBankaKodu);
+        	$("#dekont").html(Veri.ajaxDekont);
+        	$("#dekontNo").html(Veri.ajaxDekontNo);
+        	$("#dekontTarihi").html(Veri.ajaxDekontTarihi);
+        	$("#bankaBorc").html(Veri.ajaxBankaBorc);
+        	$("#bankaAlacak").html(Veri.ajaxBankaAlacak);
+        }, 
+        error: function(Hata) {
+            alert("Hata !");
+        }
+    });
+};
+function Geri(){
+	$("#divDetay").css("display","none");
+	$("#divListe").css("display","block");  	
+};
+function IptalEt(arguman){
+	if(confirm("İptal Ediliyor ! Onaylıyor musunuz  ?") == true){
+		$.ajax({
+	        type: "post",
+	        url: "",
+	        data: {
+	        	"ajaxIptal" : arguman,
+	        csrfmiddlewaretoken: "{{ csrf_token }}"
+	        },
+	        dataType: "json",
+	        success: function(Veri){
+				$("#"+arguman+"").fadeOut().remove();
+	        }, 
+	        error: function(Hata) {
+	            alert("Hata !");
+	        }
+	    });
+	};
+};
+function Sil(arguman){
+	if(confirm("İptal Edilen Banka Hareketi Siliniyor ! Onaylıyor musunuz  ?") == true){
+		$.ajax({
+	        type: "post",
+	        url: "",
+	        data: {
+	        	"ajaxSil" : arguman,
+	        csrfmiddlewaretoken: "{{ csrf_token }}"
+	        },
+	        dataType: "json",
+	        success: function(Veri){
+				$("#"+arguman+"").fadeOut().remove();
+	        }, 
+	        error: function(Hata) {
+	            alert("Hata !");
+	        }
+	    });
+	};
+};
+</script>
+{% endblock %}
+
+
+
+ 

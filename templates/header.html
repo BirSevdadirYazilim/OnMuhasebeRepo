@@ -1,0 +1,339 @@
+<div class="navbar navbar-inverse navbar-fixed-top" role="banner">
+    <div class="container-fluid">
+        <div class="navbar-header">
+            <button class="navbar-toggle" type="button" data-toggle="collapse" data-target=".navbar-collapse">
+                <span class="sr-only"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </button>
+        </div>
+        <nav class="collapse navbar-collapse" role="navigation">
+        	<ul class="nav navbar-nav navbar-left">
+                <!--<li><img style='height:40px;' src="../../../static/img/icon3.png"></li>-->
+        		{% if modulYetkisi.IsAnaSayfa == True %}
+                <li>
+                    <table>
+                      <tr>
+                        <td>
+                          <i class="fa fa-home" aria-hidden="true" style="padding: 3px 9px;font-size: 40px; color: #fff"></i>
+                        </td>
+                      </tr>
+                      <tr>
+                        <td align="Center">
+                            <a href="{% url 'anasayfa:anasayfa' %}" style="color: #fff;">Anasayfa</a>
+                        </td>
+                      </tr>
+                    </table>
+                </li>
+                {% endif %}
+                {% if modulYetkisi.IsCari == True %}
+                <li>
+                    <table id="dropdownMenu1" data-toggle="dropdown">
+                      <tr>
+                        <td>
+                          <i class="fa fa-handshake-o" aria-hidden="true" style="padding: 3px 9px;font-size: 40px; color: #fff"></i>
+                        </td>
+                      </tr>
+                      <tr>
+                        <td align="Center">
+                            <a style="color: #fff;">Cari</a>
+                        </td>
+                      </tr>
+                    </table>
+                    <ul class="dropdown-menu" aria-labelledby="dropdownMenu1">
+                        <li>
+                            <a class="fa fa-plus" href="{% url 'cari:olustur' %}">&nbsp;Cari Oluştur</a>
+                        </li>
+                        <li>
+                            <a class="fa fa-list" href="{% url 'cari:listele' %}">&nbsp;Cari Listesi</a>
+                        </li>
+                        <li>
+                            <a class="fa fa-exchange" href="{% url 'cari:carihareketleri' %}">&nbsp;Cari Hareketleri</a>
+                        </li>
+                    </ul>
+                </li>
+                {% endif %}
+                {% if modulYetkisi.IsKasa == True %}  
+                <li>
+                    <table  id="dropdownMenu1" data-toggle="dropdown">
+                      <tr>
+                        <td>
+                          <i class="fa fa-briefcase" aria-hidden="true" style="padding: 3px 9px;font-size: 40px; color: #fff"></i>
+                        </td>
+                      </tr>
+                      <tr>
+                        <td align="Center">
+                            <a style="color: #fff;">Kasa</a>
+                        </td>
+                      </tr>
+                    </table>
+                    <ul class="dropdown-menu" aria-labelledby="dropdownMenu1">
+                        <li>
+                            <a class="fa fa-plus" href="{% url 'kasa:olustur' %}">&nbsp;Kasa Ekle</a>
+                        </li>
+                        <li>
+                            <a class="fa fa-list" href="{% url 'kasa:listele' %}">&nbsp;Kasalar</a>
+                        </li>     
+                        <li>
+                            <a class="fa fa-exchange" href="{% url 'kasa:giris-cikis' %}">&nbsp;Giriş-Çıkış</a>
+                        </li>
+                        <li>
+                            <a class="fa fa-exchange" href="{% url 'kasa:transfer' %}">&nbsp;Virman</a>
+                        </li>
+                        <li>
+                            <a class="fa fa-exchange" href="{% url 'kasa:hareketler' %}">&nbsp;Kasa Hareketleri</a>
+                        </li>
+                    </ul>
+                </li>
+                {% endif %}
+                {% if modulYetkisi.IsBanka == True %}
+                <li>
+                    <table  id="dropdownMenu1" data-toggle="dropdown">
+                      <tr>
+                        <td>
+                          <i class="fa fa-bank" aria-hidden="true" style="padding: 3px 9px;font-size: 40px; color: #fff"></i>
+                        </td>
+                      </tr>
+                      <tr>
+                        <td align="Center">
+                            <a style="color: #fff;">Banka</a>
+                        </td>
+                      </tr>
+                    </table>
+                    <ul class="dropdown-menu" aria-labelledby="dropdownMenu1">
+                        <li>
+                            <a class="fa fa-plus" href="{% url 'banka:olustur' %}">&nbsp;Banka Ekle</a>
+                        </li>
+                        <li>
+                            <a class="fa fa-list" href="{% url 'banka:listele' %}">&nbsp;Bankalar</a>
+                        </li>
+                        <li>
+                            <a class="fa fa-exchange" href="{% url 'banka:giris-cikis' %}">&nbsp;Giriş-Çıkış</a>
+                        </li>
+                        <li>
+                            <a class="fa fa-exchange" href="{% url 'banka:transfer' %}">&nbsp;Virman</a>
+                        </li>
+                        <li>
+                            <a class="fa fa-exchange" href="{% url 'banka:hareketler' %}">&nbsp;Banka Hareketleri</a>
+                        </li>
+                    </ul>
+                </li>
+                {% endif %}
+                {% if modulYetkisi.IsCekSenet == True %}  
+                <li>
+                    <table  id="dropdownMenu1" data-toggle="dropdown">
+                      <tr>
+                        <td>
+                          <i class="fa fa-money" aria-hidden="true" style="padding: 3px 9px;font-size: 40px; color: #fff"></i>
+                        </td>
+                      </tr>
+                      <tr>
+                        <td align="Center">
+                            <a style="color: #fff;">Çek-Senet</a>
+                        </td>
+                      </tr>
+                    </table>
+                    <ul class="dropdown-menu" aria-labelledby="dropdownMenu1">
+                        <li>
+                            <a class="fa fa-plus" href="{% url 'ceksenet:cekbordro' %}">&nbsp;Çek Bordro</a>
+                        </li>
+                        <li>
+                            <a class="fa fa-plus" href="{% url 'ceksenet:senetbordro' %}">&nbsp;Senet Bordro</a>
+                        </li>
+                        <li>
+                            <a class="fa fa-folder-open" href="{% url 'ceksenet:ceklerlistele' %}">&nbsp;Çekler</a>
+                        </li>
+                        <li>
+                            <a class="fa fa-folder-open" href="{% url 'ceksenet:senetlerlistele' %}">&nbsp;Senetler</a>
+                        </li>
+                    </ul>   
+                </li>
+                {% endif %}
+                {% if modulYetkisi.IsSiparis == True %}
+                <li>
+                    <table  id="dropdownMenu1" data-toggle="dropdown">
+                      <tr>
+                        <td>
+                          <i class="fa fa-list" aria-hidden="true" style="padding: 3px 9px;font-size: 40px; color: #fff"></i>
+                        </td>
+                      </tr>
+                      <tr>
+                        <td align="Center">
+                            <a style="color: #fff;">Sipariş</a>
+                        </td>
+                      </tr>
+                    </table>
+                    <ul class="dropdown-menu" aria-labelledby="dropdownMenu1">
+                        <li>
+                            <a class="fa fa-plus" href="{% url 'siparis:olustur' %}">&nbsp;Sipariş Oluştur</a>
+                        </li>
+                        <li>
+                            <a class="fa fa-list" href="{% url 'siparis:listele' %}">&nbsp;Siparişler</a>
+                        </li>
+                    </ul>   
+                </li>
+                {% endif %}
+                {% if modulYetkisi.IsFatura == True %}
+                <li>
+                    <table  id="dropdownMenu1" data-toggle="dropdown">
+                      <tr>
+                        <td>
+                          <i class="fa fa-list-alt" aria-hidden="true" style="padding: 3px 9px;font-size: 40px; color: #fff"></i>
+                        </td>
+                      </tr>
+                      <tr>
+                        <td align="Center">
+                            <a style="color: #fff;">Fatura</a>
+                        </td>
+                      </tr>
+                    </table>
+                    <ul class="dropdown-menu" aria-labelledby="dropdownMenu1">
+                        <li>
+                            <a class="fa fa-plus" href="{% url 'fatura:olustur' %}">&nbsp;Fatura Oluştur</a>
+                        </li>
+                        <li>
+                            <a class="fa fa-list" href="{% url 'fatura:listele' %}">&nbsp;Faturalar</a>
+                        </li>
+                    </ul>    
+                </li>
+                {% endif %}
+                {% if modulYetkisi.IsIrsaliye == True %} 
+                <li>
+                    <table  id="dropdownMenu1" data-toggle="dropdown">
+                      <tr>
+                        <td>
+                          <i class="fa fa-list-ol" aria-hidden="true" style="padding: 3px 9px;font-size: 40px; color: #fff"></i>
+                        </td>
+                      </tr>
+                      <tr>
+                        <td align="Center">
+                            <a style="color: #fff;">İrsaliye</a>
+                        </td>
+                      </tr>
+                    </table>
+                    <ul class="dropdown-menu" aria-labelledby="dropdownMenu1">
+                        <li>
+                            <a class="fa fa-plus" href="{% url 'irsaliye:olustur' %}">&nbsp;İrsaliye Oluştur&nbsp;</a>
+                        </li>
+                        <li>
+                            <a class="fa fa-list" href="{% url 'irsaliye:listele' %}">&nbsp;İrsaliyeler</a>
+                        </li>
+                    </ul>    
+                </li>
+                {% endif %}
+                {% if modulYetkisi.IsStok == True %}
+                <li>
+                    <table  id="dropdownMenu1" data-toggle="dropdown">
+                      <tr>
+                        <td>
+                          <i class="fa fa-industry" aria-hidden="true" style="padding: 3px 9px;font-size: 40px; color: #fff"></i>
+                        </td>
+                      </tr>
+                      <tr>
+                        <td align="Center">
+                            <a style="color: #fff;">Stok</a>
+                        </td>
+                      </tr>
+                    </table>
+                    <ul class="dropdown-menu" aria-labelledby="dropdownMenu1">
+                        <li>
+                            <a class="fa fa-plus" href="{% url 'stok:olustur' %}">&nbsp;Stok Oluştur</a>
+                        </li>
+                        <li>
+                            <a class="fa fa-list" href="{% url 'stok:listele' %}">&nbsp;Stoklar</a>
+                        </li>
+                        <li>
+                            <a class="fa fa-exchange" href="{% url 'stok:stokhareketleri' %}">&nbsp;Stok Hareketleri</a>
+                        </li>
+                    </ul>   
+                </li>
+                {% endif %}    
+            </ul>            
+            <ul class="nav navbar-nav navbar-right">
+                {% if modulYetkisi.IsTanimlamalar == True %}
+                <li>
+                    <table  id="dropdownMenu1" data-toggle="dropdown">
+                      <tr>
+                        <td>
+                          <i class="fa fa-indent" aria-hidden="true" style="padding: 3px 24px;font-size: 40px; color: #fff"></i>
+                        </td>
+                      </tr>
+                      <tr>
+                        <td align="Center">
+                            <a style="color: #fff;">Tanımlamalar</a>
+                        </td>
+                      </tr>
+                    </table>
+                    <ul class="dropdown-menu" aria-labelledby="dropdownMenu1">
+                        <li>
+                            <a class="fa fa-home" href="{% url 'anasayfa:tanimlamalar' %}">&nbsp;Anasayfa Tanımlamaları</a>
+                        </li>
+                        <li>
+                            <a class="fa fa-briefcase" href="{% url 'kasa:tanimlamalar' %}">&nbsp;Kasa Tanımlamaları</a>
+                        </li>
+                        <li>
+                            <a class="fa fa-bank" href="{% url 'banka:tanimlamalar' %}">&nbsp;Banka Tanımlamaları</a>
+                        </li>
+                        <li>
+                            <a class="fa fa-money" href="{% url 'ceksenet:tanimlamalar' %}">&nbsp;ÇekSenet Tanımlamaları</a>
+                        </li>
+                        <li>
+                            <a class="fa fa-list" href="{% url 'siparis:tanimlamalar' %}">&nbsp;Sipariş Tanımlamaları</a>
+                        </li>
+                        <li>
+                            <a class="fa fa-list-alt" href="{% url 'fatura:tanimlamalar' %}">&nbsp;Fatura Tanımlamaları</a>
+                        </li>
+                        <li>
+                            <a class="fa fa-list-ol" href="{% url 'irsaliye:tanimlamalar' %} ">&nbsp;İrsaliye Tanımlamaları</a>
+                        </li>
+                        <li>
+                            <a class="fa fa-users" href="{% url 'kullanicilar:tanimlamalar' %}">&nbsp;Kullanıcı Tanımlamaları</a>
+                        </li>
+                    </ul>
+                </li>
+                {% endif %}
+                {% if modulYetkisi.IsKullanicilar == True %}
+                <li>
+                    <table>
+                      <tr>
+                        <td>
+                          <i class="fa fa-users" aria-hidden="true" style="padding: 3px 15px;font-size: 40px; color: #fff"></i>
+                        </td>
+                      </tr>
+                      <tr>
+                        <td align="Center">
+                            <a href="{% url 'kullanicilar:listele' %}" style="color: #fff;">Kullanıcılar</a>
+                        </td>
+                      </tr>
+                    </table>
+                </li>
+                {% endif %}
+                {% if modulYetkisi.IsAnaSayfa == True %}
+                <li>
+                    <table  id="dropdownMenu1" data-toggle="dropdown">
+                      <tr>
+                        <td>
+                          <i class="fa fa-user-circle" aria-hidden="true" style="padding: 3px 9px;font-size: 40px; color: #fff"></i>
+                        </td>
+                      </tr>
+                      <tr>
+                        <td align="Center">
+                            <a style="color: #fff;">Hesabım</a>
+                        </td>
+                      </tr>
+                    </table>
+                    <ul class="dropdown-menu" aria-labelledby="dropdownMenu1">
+                        <li>
+                            <a href="{% url 'anasayfa:islemlerim' %}">Bana Özel</a>
+                        </li>
+                        <li>
+                            <a href="{% url 'kullanicilar:cikis' %}"> Çıkış</a>
+                        </li>
+                    </ul>
+                </li>
+                {% endif %}
+            </ul>
+        </nav>
+    </div>
+</div>

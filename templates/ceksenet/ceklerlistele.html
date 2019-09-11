@@ -1,0 +1,277 @@
+{% extends 'base.html' %}
+{% block pagetitle %}{{ block.super }} - Çek Listesi {% endblock %}
+{% block body  %}
+<div id="divListe" class="container-fluid">
+	<div class="w-box">
+		<div>
+			<input type="button" id="cekler" value="Verilen Çekler" class="btn btn-primary">
+		</div>
+		<div class="w-box-header">
+			<div align="Center">
+				<span id="header">Alınan Çekler Listesi Ekranı</span>
+			</div>
+		</div>
+		<div class="w-box-content" id="alinanCeklerTablo" style="overflow: auto;width: 100%;height: 100%;">
+			<table class="table table-bordered" id="datatable">
+				<thead>
+					<tr>
+						<th>Çek No</th>
+						<th>Borçlusu</th>
+						<th>Çek Vadesi</th>
+						<th>Çek Tutari</th>
+						<th>İşlem</th>
+					</tr>
+				</thead>
+				<tbody align="Center">
+				{% for alinanCekler in sqlAlinanCekler %}
+					<tr id="{{ alinanCekler.id }}">
+						<td>{{ alinanCekler.CekNo }}</td>
+						<td>{{ alinanCekler.CariKodu }}</td>
+						<td>{{ alinanCekler.Vade }}</td>
+						<td>{{ alinanCekler.Tutar }}</td>
+						<td>
+							{% if islemlerKontrol.IsCekDetay == True %}
+							<button class="btn btn-info fa fa-search" onclick="Detay('{{ alinanCekler.id }}');" title="Detay"></button>
+							{% endif %}
+							{% if islemlerKontrol.IsCekIptalEt == True %}
+							<button class="btn btn-danger fa fa-close" onclick="IptalEt('{{ alinanCekler.id }}');" title="İptal Et"></button>
+							{% endif %}
+							{% if islemlerKontrol.IsCekIslemler == True %}
+								{% if alinanCekler.IsTransferCache == False and alinanCekler.Tipi == "1"%} 
+								<button id="islemler" key="{{ alinanCekler.CekNo }}" key2="{{ alinanCekler.Tipi }}" class="btn btn-primary fa fa-th-list" onclick="Islemler();" title="İşlemler"></button>
+								{% endif %}
+							{% endif %}
+						</td>
+					</tr>
+				{% endfor %}	
+				</tbody>
+			</table>
+		</div>
+		<div class="w-box-content" id="verilenCeklerTablo" style="display: none; overflow: auto;width: 100%;height: 100%;">
+			<table class="table table-bordered" id="datatable2">
+				<thead>
+					<tr>
+						<th>Çek No</th>
+						<th>Alacaklısı</th>
+						<th>Çek Vadesi</th>
+						<th>Çek Tutari</th>
+						<th>İşlem</th>
+					</tr>
+				</thead>
+				<tbody align="Center">
+				{% for verilenCekler in sqlVerilenCekler %}
+					<tr id="{{ verilenCekler.id }}">
+						<td>{{ verilenCekler.CekNo }}</td>
+						<td>{{ verilenCekler.CariKodu }}</td>
+						<td>{{ verilenCekler.Vade }}</td>
+						<td>{{ verilenCekler.Tutar }}</td>
+						<td>
+							{% if islemlerKontrol.IsCekDetay == True %}
+							<button class="btn btn-info fa fa-search" onclick="Detay('{{ verilenCekler.id }}');" title="Detay"></button>
+							{% endif %}
+							{% if islemlerKontrol.IsCekIptalEt == True %}
+							<button class="btn btn-danger fa fa-close" onclick="IptalEt('{{ verilenCekler.id }}');" title="İptal Et"></button>
+							{% endif %}
+						</td>
+					</tr>
+				{% endfor %}	
+				</tbody>
+			</table>
+		</div>
+	</div>
+</div>
+<div id="divDetay" class="container-fluid" style="display: none;">
+	<div class="w-box" style="margin-top: 1%; margin-bottom: 1%;">
+		<div align="left">
+			<button class="btn btn-warning fa fa-long-arrow-left" style="margin-bottom:5px; width: 25%;" onclick="Geri();" title="Geri"></button>
+		</div>
+		<div class="w-box-header">
+			<div align="Center"><span>Çekler Detay Ekranı</span></div>
+		</div>
+		<div class="w-box-content">
+			<table class="table table-bordered">
+                <tbody>
+					<tr>
+						<th style="width: 25%;">Bordro No</th>
+						<td id="bordroNo" style="width: 75%;"></td>
+					</tr>
+					<tr>	
+						<th>Bordro Tarihi</th>
+						<td id="bordroTarihi"></td>
+					</tr>
+					<tr>	
+						<th>Çek No</th>
+						<td id="cekNo"></td>
+					</tr>
+					<tr>	
+						<th>Tipi</th>
+						<td id="tipi"></td>
+					</tr>
+					<tr>	
+						<th>Durum</th>
+						<td id="durum"></td>
+					</tr>
+					<tr>	
+						<th>Vade</th>
+						<td id="vade"></td>
+					</tr>
+					<tr>	
+						<th>Tutar</th>
+						<td id="tutar"></td>
+					</tr>
+					<tr>	
+						<th>Döviz</th>
+						<td id="doviz"></td>
+					</tr>
+					<tr>	
+						<th>Cari Ünvani</th>
+						<td id="cariKodu"></td>
+					</tr>
+					<tr>	
+						<th>Banka Adı</th>
+						<td id="bankaAdi"></td>
+					</tr>
+					<tr>	
+						<th>Şube Kodu</th>
+						<td id="subeKodu"></td>
+					</tr>
+					<tr>	
+						<th>Hesap No</th>
+						<td id="hesapNo"></td>
+					</tr>
+					<tr>	
+						<th>Ödeme Yeri</th>
+						<td id="odemeYeri"></td>
+					</tr>
+				</tbody>
+            </table>
+		</div>
+	</div>
+</div>
+<div class="container-fluid">
+	<div class="modal fade" id="myModal" tabindex="-1" style="display: none;">
+		<div class="modal-dialog">
+	    	<div class="modal-content">
+	      		<div class="modal-header">
+	        		<button type="button" class="close closeX"><span aria-hidden="true">&times;</span></button>
+	       			 <h4 align="Center" class="modal-title">İşlem Seçimi</h4>
+	      		</div>
+	      		<div class="modal-body" style="height: 100px;">
+	      			<div align="Center">
+	      				<label>Ödeme Aracı Çıkış İşlemi Ekranına Yönlendiriliyor ! Onaylıyor musunuz ?</label>
+	      			</div>
+	        		<table class="table table-bordered">
+	        			<tr>
+	        				<td align="left">
+	        					<input type="button" value="Daha Sonra" class="btn btn-info closeX" onclick="DahaSonra()">
+	        				</td>
+	        				<td align="right">
+	        					<input type="button" value="Onaylıyorum" class="btn btn-primary" onclick="Onaylıyorum()">
+	        				</td>
+	        			</tr>
+	        		</table>		
+	    		</div>
+		      	<div class="modal-footer">
+		        	<button type="button" class="btn btn-default closeX">İptal</button>
+		      	</div>
+	    	</div>
+	    </div>
+	</div>
+</div>
+<script type="text/javascript">
+$("#cekler").click(function(){
+	if($(this).val() == "Verilen Çekler"){
+		$("#header").html("Verilen Çekler Listesi Ekranı")
+		$(this).val("Alınan Çekler");
+		$("#alinanCeklerTablo").css("display","none");
+		$("#verilenCeklerTablo").css("display","block");
+	}else{
+		$("#header").html("Alınan Çekler Listesi Ekranı")
+		$(this).val("Verilen Çekler");
+		$("#alinanCeklerTablo").css("display","block");
+		$("#verilenCeklerTablo").css("display","none");
+	};
+	
+});
+function IptalEt(arguman){
+	if(confirm("Çek İptal Edilsin mi ?") == true){
+		$.ajax({
+	        type: "post",
+	        url: "",
+	        data: {
+	        	"ajaxCekIdIptal" : arguman,
+	        csrfmiddlewaretoken: "{{ csrf_token }}"
+	        },
+	        dataType: "json",
+	        success: function(Veri){
+	        	$("#"+arguman+"").fadeOut().remove()
+	        },
+	        error: function(Hata){
+	            alert("Hata !");
+	        }
+	    });
+	};
+};
+function Onaylıyorum(){
+	$.ajax({
+        type: "post",
+        url: "",
+        data: {
+        	"ajaxCekNo"   : $("#islemler").attr("key"),
+        	"ajaxCekTipi" : $("#islemler").attr("key2"),
+        csrfmiddlewaretoken: "{{ csrf_token }}"
+        },
+        dataType: "json",
+        success: function(Veri){
+            location = "/ceksenet/cekbordro/";
+        },
+        error: function(Hata){
+            alert("Hata !");
+        }
+    });
+};
+function Detay(arguman){
+	$.ajax({
+        type: "post",
+        url: "",
+        data: {
+        	"ajaxDetay" : arguman,
+        csrfmiddlewaretoken: "{{ csrf_token }}"
+        },
+        dataType: "json",
+        success: function(Veri){
+        	$("#divListe").css("display","none");
+        	$("#divDetay").css("display","block");
+            $("#bordroNo").html(Veri.ajaxBordroNo);
+            $("#bordroTarihi").html(Veri.ajaxBordroTarihi);
+            $("#cekNo").html(Veri.ajaxCekNo);
+            $("#tipi").html(Veri.ajaxTipi);
+            $("#durum").html(Veri.ajaxDurum);
+            $("#vade").html(Veri.ajaxVade);
+            $("#tutar").html(Veri.ajaxTutar);
+            $("#doviz").html(Veri.ajaxDoviz);
+            $("#cariKodu").html(Veri.ajaxCariKodu);
+            $("#bankaAdi").html(Veri.ajaxBankaAdi);
+            $("#subeKodu").html(Veri.ajaxSubeKodu);
+            $("#hesapNo").html(Veri.ajaxHesapNo);
+            $("#odemeYeri").html(Veri.ajaxOdemeYeri);
+        },
+        error: function(Hata){
+            alert("Hata !");
+        }
+    });
+};
+function Geri(){
+	$("#divDetay").css("display","none");
+	$("#divListe").css("display","block");
+};
+function Islemler(){
+	$("#myModal").css("display","block");
+	$("#myModal").attr("class","modal fade in");
+};
+$(".closeX").click(function(){
+	$("#myModal").css("display","none");
+	$("#myModal").attr("class","modal fade");
+});
+</script>
+{% endblock %}

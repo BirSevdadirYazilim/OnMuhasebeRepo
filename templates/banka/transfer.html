@@ -1,0 +1,163 @@
+{% extends 'base.html' %}
+{% block pagetitle %}{{ block.super }} - Hesaplar Arası Transfer {% endblock %}
+{% block body  %}
+<div class="container-fluid">
+	<div class="w-box">
+		<div class="w-box-header">
+			<div align="Center">
+				<span>Hesaplar Arası Transfer Oluşturma Ekranı</span>
+			</div>
+		</div>
+		<div class="w-box-content">
+	 		<table class="table table-bordered">
+	 			<tr>
+	 				<th>Giriş/Borç Hesabı</th>
+					<td>
+						<select id="borcHesabi" class="form-control requiredHg">
+							<option selected="" value="">Seçiniz</option>
+							{% for kasa in sqlKasa %}
+								<option value="{{ kasa.KasaKodu }}">{{ kasa.KasaAdi }}</option>
+							{% endfor %}
+							{% for banka in sqlBanka %}
+								<option value="{{ banka.BankaKodu }}">{{ banka.BankaAdi }}</option>
+							{% endfor %}
+						</select>
+					</td>
+					<th>Çıkış/Alacak Hesabı</th>
+	 				<td>
+	 					<select id="alacakHesabi" class="form-control requiredHg">
+	 						<option selected="" value="">Seçiniz</option>
+	 						{% for kasa in sqlKasa %}
+								<option value="{{ kasa.KasaKodu }}">{{ kasa.KasaAdi }}</option>
+							{% endfor %}
+	 						{% for banka in sqlBanka %}
+	 							<option value="{{ banka.BankaKodu }}">{{ banka.BankaAdi }}</option>
+	 						{% endfor %}
+	 					</select>
+	 				</td>
+	 			</tr>
+	 			<tr>	
+	 				<th style="width: 15%;">Dekont</th>
+	 				<td style="width: 30%;">
+	 					<select id="dekont" class="form-control requiredHg">
+	 						<option selected="" value="">Seçiniz</option>
+	 						<option value="1">Tahsilat Dekontu</option>
+	 						<option value="2">Tediye Dekontu</option>
+	 					</select>
+	 				</td>
+	 				<th style="width: 15%;" id="dekontNoTh">Dekont No</th>
+	 				<td style="width: 30%;">
+	 					<input type="text" id="dekontNo" class="form-control requiredHg" disabled="">
+	 				</td>
+	 			</tr>
+	 			<tr>	
+	 				<th>Dekont Tarihi</th>
+	 				<td>
+	 					<input type="date" id="dekontTarihi" value="{{ suan|date:'Y-m-d' }}" class="form-control requiredHg">
+	 				</td>
+	 				<th>Tutar</th>
+	 				<td>
+	 					<input type="text" id="tutar" class="form-control keypress-barrier" data-input-type="Decimal" placeholder="Tutar">
+	 				</td>
+	 				
+	 			</tr>
+	 			<tr>
+	 				<th>Açıklama</th>
+	 				<td colspan="2">
+	 					<input type="text" id="aciklama" class="form-control" placeholder="Açıklama">
+	 				</td>
+	 				<td>
+	 					<button class="btn btn-success fa fa-save" style="width: 100%;" onclick="Kaydet();" title="Kaydet"></button>
+	 				</td>
+	 			</tr>
+	 		</table>
+		</div> 	
+	</div>	
+</div>
+<script type="text/javascript">
+$("#dekont").change(function(){
+	if($(this).val() != "" && $("#borcHesabi").val() != "" && $("#alacakHesabi").val() != ""){
+		$("#dekontNo").val("");
+		$("#tutar").val("");
+		$.ajax({
+	        type: "post",
+	        url: "",
+	        data: {
+	 			"ajaxDekontKontrol" : $("#dekont").val(),
+	 			"ajaxTahDekNoBanka" : $("#borcHesabi").val(),
+	 			"ajaxTedDekNoBanka" : $("#alacakHesabi").val(),
+	        csrfmiddlewaretoken: "{{ csrf_token }}"
+	        },
+	        dataType: "json",
+	        success: function(Veri){
+	        	if(Veri.ajaxSqlDekontNo == null){
+        			if(confirm("Dekont Numarası Tanımlanmamış ! Tanımlamalar Sayfasına Yönlendirilsin mi ? ") == true){
+	        			location = "/banka/tanimlamalar";
+        			}else{alert("Dekont Numarası Tanımlamadan Kayıt Yapamazsınız !");};
+	        	}else if(Veri.ajaxSqlDekontNo == false){
+	        		alert("Banka Modülündesiniz ! Seçtiğiniz Hesaba Dekont Kesemezsiniz.")
+	        	}else{$('#dekontNo').val(Veri.ajaxSqlDekontNo);};
+	        }, 
+	        error: function(Hata){
+	            alert("Hata !");
+	        }
+	    });
+	};
+});
+$("#tutar").keyup(function(){
+	if($(this).val() != "" && $("#dekont").val() == "2"){
+		$.ajax({
+	        type: "post",
+	        url: "",
+	        data: {
+	        	"ajaxBakiyeKontrol"    : $(this).val(),
+	        	"ajaxBankaKoduKontrol" : $("#alacakHesabi").val(), 
+	        csrfmiddlewaretoken: "{{ csrf_token }}"
+	        },
+	        dataType: "json",
+	        success: function(Veri){
+	        	if(Veri.ajaxMesaj != ""){
+	        		alert(Veri.ajaxMesaj);
+	        		$("#tutar").val("")
+	        	};
+	        }, 
+	        error: function(Hata){
+	            alert("Hata !");
+	        }
+        });
+	};
+});
+function Kaydet(){
+	Required();
+	if(confirm("Kaydedilsin mi") == true){
+		$.ajax({
+	        type: "post",
+	        url: "",
+	        data: {
+	        	"ajaxborcHesabi"   : $("#borcHesabi").val(),
+	        	"ajaxAlacakHesabi" : $("#alacakHesabi").val(),
+	        	"ajaxDekont"       : $("#dekont").val(),
+	        	"ajaxDekontNo"     : $("#dekontNo").val(),
+	        	"ajaxDekontTarihi" : $("#dekontTarihi").val(),
+	        	"ajaxTutar"        : $("#tutar").val(),
+	        	"ajaxAciklama"     : $("#aciklama").val(), 
+	        csrfmiddlewaretoken: "{{ csrf_token }}"
+	        },
+	        dataType: "json",
+	        success: function(Veri){
+	        	if(Veri.ajaxMesaj == "1"){
+	        		location = "/banka/hareketler";
+	        	}else if(Veri.ajaxMesaj == false){
+	        		if(confirm("Bu İşleme Karşılık Gelen Dekont Otomatik Olarak Kesilecektir Ancak Makbuz Numarası Tanımlanmamış ! Tanımlamalar Sayfasına Yönlendirilsin mi ? ") == true){
+	        				location = "/banka/tanimlamalar";
+	        		}else{alert("Dekont Numarası Tanımlamadan Kayıt Yapamazsınız !");};
+	        	}else{alert(Veri.ajaxMesaj);};
+	        }, 
+	        error: function(Hata){
+	            alert("Hata !");
+	        }
+        });
+	};
+};
+</script>
+{% endblock %}

@@ -1,0 +1,126 @@
+{% extends 'base.html' %}
+{% block pagetitle %}{{ block.super }} - Banka Oluştur {% endblock %}
+{% block body  %}
+<div class="container-fluid">
+	<div class="w-box">
+		<div class="w-box-header">
+			<div align="Center">
+				<span>Banka Oluşturma Ekranı</span>
+			</div>
+		</div>
+		<div class="w-box-content">
+	 		<table class="table table-bordered">
+	 			<tr>
+	 				<th style="width: 25%;">Banka Kodu</th>
+	 				<td style="width: 25%;">
+	 					<input type="text" id="bankaKodu" class="form-control requiredHg" placeholder="Banka Kodu">
+	 				</td>
+	 				<th>Banka Adı</th>
+	 				<td>
+	 					<input type="text" id="bankaAdi" class="form-control requiredHg" placeholder="Banka Adı">
+	 				</td>
+	 			</tr>
+	 			<tr>
+	 				<th>Banka Şube</th>
+	 				<td>
+	 					<input type="text" id="bankaSube" class="form-control requiredHg" placeholder="Banka Şube">
+	 				</td>
+	 				<th>Banka Açılış Bakiyesi</th>
+	 				<td>
+	 					<input type="text" id="bankaAcilisBakiyesi" class="form-control keypress-barrier requiredHg" data-input-type="Decimal" placeholder="Banka Açılış Bakiyesi">
+	 				</td>
+	 			</tr>
+	 			<tr>
+	 				<th>Yetkili</th>
+	 				<td>
+	 					<input type="text" id="bankaYetkilisi" class="form-control" placeholder="Yetkili">
+	 				</td>
+	 				<th>Adres</th>
+	 				<td>
+	 					<input type="text" id="bankaAdres" class="form-control requiredHg" placeholder="Adres">
+	 				</td>
+	 			</tr>
+	 			<tr>
+	 				<th>İl</th>
+	 				<td>
+	 					<input type="text" id="bankaIl" class="form-control requiredHg" placeholder="Banka İl">
+	 				</td>
+	 				<th>İlçe</th>
+	 				<td>
+	 					<input type="text" id="bankaIlce" class="form-control requiredHg" placeholder="Banka İlçe">
+	 				</td>
+	 			</tr>
+	 			<tr>	
+	 				<th>Tel1</th>
+	 				<td>
+	 					<input type="text" id="bankaTel1" class="form-control keypress-barrier requiredHg" data-input-type="Phone" placeholder="Tel1">
+	 				</td>
+	 				<th>Tel2</th>
+	 				<td>
+	 					<input type="text" id="bankaTel2" class="form-control keypress-barrier"  data-input-type="Phone" placeholder="Tel2">
+	 				</td>
+	 			</tr>
+	 			<tr>	
+	 				<th>Hesap No</th>
+	 				<td>
+	 					<input type="text" id="bankaHesapNo" class="form-control keypress-barrier requiredHg" data-input-type="Number" placeholder="Hesap No">
+	 				</td>
+	 				<th>Iban No</th>
+	 				<td>
+	 					<input type="text" id="bankaIbanNo" class="form-control requiredHg" placeholder="Iban No">
+	 				</td>
+	 			</tr>
+	 			<tr>
+	 				<th>Banka Açılış Tarihi</th>
+	 				<td>
+	 					<input type="date" id="bankaAcilisTarihi" value="{{ suan|date:'Y-m-d' }}" class="form-control requiredHg">
+	 				</td>
+	 				<td colspan="2">
+	 					<button class="btn btn-success fa fa-save" style="width: 100%;" onclick="Kaydet();" title="Kaydet"></button>
+	 				</td>
+	 			</tr>
+	 		</table>
+		</div> 	
+	</div>	
+</div>
+<script type="text/javascript">
+function Kaydet(){
+	Required();
+	if(confirm("Kaydedilsin mi ?") == true){
+		$.ajax({
+	        type: "post",
+	        url: "",
+	        data: {
+	        	"ajaxBankaKodu"           : $("#bankaKodu").val(),
+	        	"ajaxBankaAdi"            : $("#bankaAdi").val(),
+	        	"ajaxBankaSube"           : $("#bankaSube").val(),
+	        	"ajaxBankaAcilisBakiyesi" : $("#bankaAcilisBakiyesi").val(),
+	        	"ajaxBankaAdres"          : $("#bankaAdres").val(),
+	        	"ajaxBankaIl"             : $("#bankaIl").val(),
+	        	"ajaxBankaIlce"           : $("#bankaIlce").val(),
+	        	"ajaxBankaTel1"           : $("#bankaTel1").val(),
+	        	"ajaxBankaTel2"           : $("#bankaTel2").val(),
+	        	"ajaxBankaHesapNo"        : $("#bankaHesapNo").val(),
+	        	"ajaxBankaIbanNo"         : $("#bankaIbanNo").val(),
+	        	"ajaxBankaYetkilisi"      : $("#bankaYetkilisi").val(),
+	        	"ajaxBankaAcilisTarihi"   : $("#bankaAcilisTarihi").val(), 
+	        csrfmiddlewaretoken: "{{ csrf_token }}"
+	        },
+	        dataType: "json",
+	        success: function(Veri){
+	        	if(Veri.ajaxMesaj == "1"){
+	        		location = "/banka/listele";
+	        	}else{alert(Veri.ajaxMesaj);};
+	        }, 
+	        error: function(Hata){
+	            alert("Hata !");
+	        }
+        });
+	};
+};
+</script>
+{% endblock %}
+
+
+
+ 

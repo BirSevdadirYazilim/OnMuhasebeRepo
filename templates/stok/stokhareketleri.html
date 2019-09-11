@@ -1,0 +1,134 @@
+{% extends 'base.html' %}
+{% block pagetitle %}{{ block.super }} - Stok Hareketleri {% endblock %}
+{% block body  %}
+<div class="container-fluid" id="divListe">
+	<div class="w-box">
+		<div class="w-box-header">
+			<div align="Center">Stok Hareketleri Listesi Ekranı</div>
+		</div>
+		<div class="w-box-content"  style="overflow: auto;width: 100%;height: 100%;">
+			<table class="table table-bordered" id="datatable">
+				<thead>
+					<tr>
+						<th>Stok Adi</th>
+						<th>Miktar</th>
+						<th>Alış Fiyati</th>
+						<th>Satış Fiyati</th>
+						<th>İşlem</th>
+					</tr>
+				</thead>
+				<tbody align="Center">
+				{% for stokHareketleri in sqlStokHareketleri %}
+					<tr>
+						<td>{{ stokHareketleri.StokAdi }}</td>
+						<td>{{ stokHareketleri.StokMiktar }}</td>
+						{% if stokHareketleri.AlisFiyati != None %}
+							<td>{{ stokHareketleri.AlisFiyati }}</td>
+						{% else %}
+							<td></td>
+						{% endif %}
+						{% if stokHareketleri.SatisFiyati != None %}
+							<td>{{ stokHareketleri.SatisFiyati }}</td>
+						{% else %}
+							<td></td>
+						{% endif %}
+						<td>
+							{% if islemlerKontrol.IsStokHareketleriDetay == True %}
+							<button class="btn btn-info fa fa-search" onclick="Detay('{{ stokHareketleri.id }}');" title="Detay"></button>
+							{% endif %}
+						</td>
+					</tr>
+				{% endfor %}	
+				</tbody>
+			</table>		
+		</div>
+	</div>
+</div>
+<div class="container-fluid"  id="divDetay" style="display: none;">
+	<div class="w-box" style="margin-top: 1%; margin-bottom: 1%"  id="DivAnaTablo">
+		<div align="left">
+			<button class="btn btn-warning fa fa-long-arrow-left" style="margin-bottom: 5px;width: 25%" onclick="Geri();" title="Geri"></button>
+		</div>
+		<div class="w-box-header">
+			<div align="Center">
+				<span>Stok Hareketleri Detay Ekranı</span>
+			</div>
+		</div>
+		<div class="w-box-content">
+			<table class="table table-bordered">
+                <tbody>
+					<tr>	
+						<th style="width: 25%">Stok Kodu</th>
+						<td id="stokKodu" style="width: 75%"></td>
+					</tr>
+					<tr>	
+						<th>Stok Adı</th>
+						<td id="stokAdi"></td>
+					</tr>
+					<tr>	
+						<th>Nitelik</th>
+						<td id="stokNitelik"></td>
+					</tr>
+					<tr>	
+						<th>Miktar</th>
+						<td id="stokMiktar"></td>
+					</tr>
+					<tr>	
+						<th>Alış Fiyatı</th>
+						<td id="alisFiyati"></td>
+					</tr>
+					<tr>	
+						<th>Satış Fiyatı</th>
+						<td id="satisFiyati"></td>
+					</tr>
+					<tr>	
+						<th>Son İskonto Oranı %</th>
+						<td id="sonIskontoOrani"></td>
+					</tr>
+					<tr>	
+						<th>Stok Hareketi Oluşturan</th>
+						<td id="stokHareketiOlusturan"></td>
+					</tr>
+					<tr>
+						<th>Stok Hareket Tarihi</th>
+						<td id="stokHareketTarihi"></td>
+					</tr>								
+				</tbody>
+            </table>             
+		</div>
+	</div>
+</div>
+<script type="text/javascript">
+function Detay(arguman){
+	$.ajax({
+        type: "post",
+        url: "",
+        data: {
+        	"ajaxDetay" : arguman,
+        csrfmiddlewaretoken: "{{ csrf_token }}"
+        },
+        dataType: "json",
+        success: function(Veri){
+        	$("#divListe").css("display","none");
+        	$("#divDetay").css("display","block");
+			$("#stokKodu").html(Veri.ajaxStokKodu);
+			$("#stokAdi").html(Veri.ajaxStokAdi);
+			$("#stokNitelik").html(Veri.ajaxStokNitelik);
+			$("#stokMiktar").html(Veri.ajaxStokMiktar);
+			$("#alisFiyati").html(Veri.ajaxAlisFiyati);
+			$("#satisFiyati").html(Veri.ajaxSatisFiyati);
+			$("#sonIskontoOrani").html(Veri.ajaxSonIskontoOrani);
+			$("#stokHareketiOlusturan").html(Veri.ajaxStokHareketiOlusturan);
+			$("#stokHareketTarihi").html(Veri.ajaxStokHareketTarihi);
+        },
+        error: function(Hata) {
+            alert("Hata !");
+        }
+    });
+};
+function Geri(argument){
+	$('#divDetay').css("display","none");
+	$('#divListe').css("display","block");
+};
+</script>
+{% endblock %}

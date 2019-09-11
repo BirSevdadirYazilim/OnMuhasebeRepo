@@ -1,0 +1,112 @@
+{% extends 'base.html' %}
+{% block pagetitle %}{{ block.super }} - Stok Oluştur {% endblock %}
+{% block body  %}
+<div class="container-fluid">
+	<div class="w-box">
+		<div class="w-box-header">
+			<div align="Center">
+				<span>Stok Kartı Oluşturma Ekranı</span>
+			</div>
+		</div>
+		<div class="w-box-content">	
+			<table class="table table-bordered">	
+				<tr>
+					<th style="width: 15%;">Stok Kodu</th>
+					<td style="width: 25%;">
+						<input type="text" id="stokKodu" class="form-control requiredHg" placeholder="Stok Kodu">
+					</td>
+					<th style="width: 15%;">Stok Adı</th>
+					<td style="width: 25%;">
+						<input type="text" id="stokAdi" class="form-control requiredHg" placeholder="Stok Adı">
+					</td>
+				</tr>
+				<tr>	
+					<th>Nitelik</th>
+					<td>
+						<select id="stokNitelik" class="form-control requiredHg">
+				    		<option selected value="">Seçiniz</option>
+				    		<option value="Adet">Adet</option>
+				    		<option value="Kg">Kg</option>
+				    		<option value="Gr">Gr</option>
+				    		<option value="Lt">Lt</option>
+			    		</select>
+					</td>
+					<th>Miktar</th>
+					<td>
+						<input type="text" id="stokMiktar" class="form-control  keypress-barrier requiredHg" placeholder="Miktar" data-input-type="Number">
+					</td>
+				</tr>	
+				<tr>
+					<th>Alış Fiyatı</th>
+					<td>
+						<input type="text" id="alisFiyati" class="form-control  keypress-barrier requiredHg" placeholder="Alış Fiyatı" data-input-type="Decimal">
+					</td>
+					<th>Satış Fiyatı</th>
+					<td>
+						<input type="text" id="satisFiyati" class="form-control  keypress-barrier requiredHg" placeholder="Satış Fiyatı" data-input-type="Decimal">
+					</td>
+				</tr>
+				<tr>	
+					<th>Kdv Oranı&nbsp;&nbsp;%</th>
+					<td>
+						<select id="kdvOrani" class="form-control requiredHg">
+							<option value="" selected="">Seçiniz</option>
+							<option value="1">1</option>
+							<option value="8">8</option>
+							<option value="18">18</option>
+						</select>
+					</td>
+					<th>Stok Kayıt Tarihi</th>
+					<td>
+						<input type="date" id="kayitTarihi" class="form-control" value="{{ suan|date:'Y-m-d' }}">
+					</td>
+				</tr>
+				<tr>
+					<td colspan="4">
+						<button class="btn btn-success fa fa-save" align="Center" style="width: 100%;" title="Kaydet" onclick="Kaydet();"></button>
+					</td>
+				</tr>
+			</table>
+		</div>
+	</div>
+</div>
+<script type="text/javascript">
+function Kaydet(){
+	if(confirm("Kaydedilsin mi ?") == true){
+		Required();
+		$.ajax({
+	        type: "post",
+	        url: "",
+	        data: {
+	        	"ajaxStokKodu"		  : $("#stokKodu").val(),
+	        	"ajaxStokAdi"		  : $("#stokAdi").val(),
+	        	"ajaxStokNitelik"	  : $("#stokNitelik").val(),
+	        	"ajaxStokMiktar"	  : $("#stokMiktar").val(),
+	        	"ajaxAlisFiyati"	  : $("#alisFiyati").val(),
+	        	"ajaxSatisFiyati"	  : $("#satisFiyati").val(),
+	        	"ajaxKdvOrani"		  : $("#kdvOrani").val(),
+	        	"ajaxKayitTarihi"	  : $("#kayitTarihi").val(),
+	        csrfmiddlewaretoken: "{{ csrf_token }}"
+	        },
+	        dataType: "json",
+	        success: function(Veri){
+	        	if(Veri.ajaxMesaj == "1"){
+	            	location = "/stok/listele";
+	        	}else{
+	        		alert(Veri.ajaxMesaj);
+	        		//if(Veri.ajaxMesaj == "Bu Stok Kodu Kullanılıyor !"){
+		        		//$("#stokKodu").val("");
+		        	//};
+		        	//if(Veri.ajaxMesaj == "Bu Stok Adı Kullanılıyor !"){
+		            	//$("#stokAdi").val("");
+		        	//};
+	        	};
+	        }, 
+	        error: function(hata) {
+	            alert(hata);
+	        }
+        });
+	};
+};	
+</script>
+{% endblock %}

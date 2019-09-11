@@ -1,0 +1,154 @@
+{% extends 'base.html' %}
+{% block pagetitle %}{{ block.super }} - Kasa Giriş-Çıkış İşlemleri {% endblock %}
+{% block body  %}
+<div class="container-fluid">
+	<div class="w-box">
+		<div class="w-box-header">
+			<div align="Center">
+				<span>Kasa Giriş-Çıkış İşlemleri Ekranı</span>
+			</div>
+		</div>
+		<div class="w-box-content">
+	 		<table class="table table-bordered">
+	 			<tr>
+	 				<th>Kasa Adı</th>
+	 				<td>
+	 					<select id="kasaKodu" class="form-control requiredHg">
+	 						<option selected="" value="">Seçiniz</option>
+	 						{% for kasa in sqlKasa %}
+	 							<option value="{{ kasa.KasaKodu }}">{{ kasa.KasaAdi }}</option>
+	 						{% endfor %}
+	 					</select>
+	 				</td>
+	 				<th>Cari</th>
+	 				<td>
+	 					<select id="cariUnvani" class="form-control requiredHg">
+	 						<option selected value="">Seçiniz</option>
+					    	{% for cari in sqlCari %}
+					    		<option value="{{cari.CariKodu}}">{{cari.CariUnvani}}</option>
+					    	{% endfor %}	
+						</select>
+	 				</td>
+	 			</tr>
+	 			<tr>	
+	 				<th style="width: 15%;">Makbuz</th>
+	 				<td style="width: 30%;">
+	 					<select id="makbuz" class="form-control requiredHg">
+	 						<option selected="" value="">Seçiniz</option>
+	 						<option value="1">Tahsilat Makbuzu</option>
+	 						<option value="2">Tediye Makbuzu</option>
+	 					</select>
+	 				</td>
+	 				<th style="width: 15%;" id="makbuzNoTh">Makbuz No</th>
+	 				<td style="width: 30%;">
+	 					<input type="text" id="makbuzNo" class="form-control requiredHg" disabled="">
+	 				</td>
+	 			</tr>
+	 			<tr>	
+	 				<th>Makbuz Tarihi</th>
+	 				<td>
+	 					<input type="date" id="makbuzTarihi" value="{{ suan|date:'Y-m-d' }}" class="form-control requiredHg">
+	 				</td>
+	 				<th>Tutar</th>
+	 				<td>
+	 					<input type="text" id="tutar" class="form-control keypress-barrier" data-input-type="Decimal" placeholder="Tutar">
+	 				</td>
+	 			</tr>
+	 			<tr>
+	 				<th>Açıklama</th>
+	 				<td colspan="2">
+	 					<input type="text" id="aciklama" class="form-control" placeholder="Açıklama">
+	 				</td>
+	 				<td>
+	 					<button class="btn btn-success fa fa-save" style="width: 100%;" onclick="Kaydet();"></button>
+	 				</td>
+	 			</tr>
+	 		</table>
+		</div> 	
+	</div>	
+</div>
+<script type="text/javascript">
+$("#makbuz").change(function(){
+	if($(this).val() != "" && $("#kasaKodu").val() != ""){
+		$("#makbuzNo").val("");
+		$("#tutar").val("");
+		$.ajax({
+	        type: "post",
+	        url: "",
+	        data: {
+	        	"ajaxKasaMakbuzNoKontrol" : $("#kasaKodu").val(),
+	        	"ajaxMakbuzNoKontrol"     : $("#makbuz").val(),
+	        csrfmiddlewaretoken: "{{ csrf_token }}"
+	        },
+	        dataType: "json",
+	        success: function(Veri){
+        		if(Veri.ajaxSqlMakbuzNo == null){
+        			if(confirm("Makbuz Numarası Tanımlanmamış ! Tanimlama Sayfasına Yönlendirilsin mi ? ") == true){
+	        			location = "/kasa/tanimlamalar";
+        			}else{alert("Makbuz Numarası Tanımlanmadan Kayıt Yapamazsınız !");};
+	        	}else{$("#makbuzNo").val(Veri.ajaxSqlMakbuzNo);};
+	        }, 
+	        error: function(Hata){
+	            alert("Hata !");
+	        }
+	    });
+	};
+});
+$("#tutar").keyup(function(){
+	if($(this).val() != "" && $("#kasaKodu").val() != "" && $("#makbuz").val() == "2"){
+		$.ajax({
+	        type: "post",
+	        url: "",
+	        data: {
+	        	"ajaxBakiyeKontrol"   : $(this).val(),
+	        	"ajaxKasaKoduKontrol" : $("#kasaKodu").val(), 
+	        csrfmiddlewaretoken: "{{ csrf_token }}"
+	        },
+	        dataType: "json",
+	        success: function(Veri){
+	        	if(Veri.ajaxMesaj != ""){
+	        		alert(Veri.ajaxMesaj);
+	        		$("#tutar").val("");
+	        	};
+	        }, 
+	        error: function(Hata){
+	            alert("Hata !");
+	        }
+        });
+	};
+});
+function Kaydet(){
+	Required();
+	if(confirm("Kaydedilsin mi ?") == true){
+		$.ajax({
+	        type: "post",
+	        url: "",
+	        data: {
+	        	"ajaxKasaKodu"     : $("#kasaKodu").val(),
+	        	"ajaxMakbuz"       : $("#makbuz").val(),
+	        	"ajaxMakbuzNo"     : $("#makbuzNo").val(),
+	        	"ajaxMakbuzTarihi" : $("#makbuzTarihi").val(),
+	        	"ajaxTutar"        : $("#tutar").val(),
+	        	"ajaxAciklama"     : $("#aciklama").val(),
+	        	"ajaxCariUnvani"   : $("#cariUnvani").val(), 
+	        csrfmiddlewaretoken: "{{ csrf_token }}"
+	        },
+	        dataType: "json",
+	        success: function(Veri){
+	        	if(Veri.ajaxMesaj == "1"){
+	        		location = "/kasa/hareketler";
+	        	}else{alert(Veri.ajaxMesaj);};
+	        	
+	        }, 
+	        error: function(hata) {
+	            alert(hata);
+	        }
+        });
+	};
+};
+</script>
+{% endblock %}
+
+
+
+ 

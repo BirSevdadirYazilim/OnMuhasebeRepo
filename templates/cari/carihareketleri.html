@@ -1,0 +1,86 @@
+{% extends 'base.html' %}
+{% block pagetitle %}{{ block.super }} - Cari Hareketleri {% endblock %}
+{% block body  %}
+<div class="container-fluid">
+	<div class="w-box" id="3">
+		<div class="w-box-header">
+			<div align="Center"><span>Cari Hareketleri Ekranı</span></div>
+		</div>
+		<div class="w-box-content" style="overflow: auto;width: 100%;height: 100%;">
+			<table class="table table-bordered" id="datatable">
+				<thead>
+					<tr>
+						<th>Cari Kodu</th>
+						<th>Tarih</th>
+						<th>Belge</th>
+						<th>Belge No</th>
+						<th>İşlem</th>
+					</tr>
+				</thead>
+				<tbody align="Center">
+					{% for cari in cariHareketleri %}
+						<tr>
+							<td>{{ cari.CariKodu }}</td>
+							<td>{{ cari.IslemTarihi|date:'Y-m-d' }}</td>
+							<td>{{ cari.Islem }}</td>
+							<td>{{ cari.IslemNo }}</td>
+							<td>
+								{% if islemlerKontrol.IsCariHareketleriDetay == True %}
+								<button class="btn btn-info fa fa-search" id="detay" onclick="Detay('{{ cari.Hesap }}','{{ cari.id }}')"></button>
+								{% endif %}
+							</td>
+						</tr>
+					{% endfor %}							
+				</tbody>
+			</table>
+		</div>
+	</div>
+	<div id="detayTablo" class="w-box" style="display: none;">
+		<div align="left">
+			<input type="button" value="Geri" class="btn btn-warning" style="width: 25%;" onclick="Geri();">
+		</div>
+		<div class="w-box-header">
+			<div align="Center"><span>Cari Hareketleri Detay Ekranı</span></div>
+		</div>
+		<div class="w-box-content">
+			<table id="detay" class="table table-bordered">
+				<tbody></tbody>
+			</table>             
+		</div>
+	</div>
+</div>
+<script type="text/javascript">
+function Detay(parametre1,parametre2){
+	$.ajax({
+        type: "post",
+        url: "",
+        data: {
+        	"ajaxDetay"      : parametre2,
+        	"ajaxDetayHesap" : parametre1,
+        csrfmiddlewaretoken: "{{ csrf_token }}"
+        },
+        dataType: "json",
+        success: function(Veri){
+        	$("#detay tbody tr").remove()
+        	for(var i=0;i<Veri.kolonAdiListesi.length;i++){
+        		$("#detay tbody").append("\
+        			<tr>\
+        				<th style='width:25%;'>"+Veri.kolonAdiListesi[i]+"</th>\
+        				<td style='width:75%;'>"+Veri.belgeBilgileri[i]+"</td>\
+        			</tr>\
+				");
+        	};
+        }, 
+        error: function(Hata){
+            alert("Hata !");
+        }
+    });
+    $("#3").css("display","none");
+	$("#detayTablo").css("display","block");
+};
+function Geri(){
+	$("#detayTablo").css("display","none");
+	$("#3").css("display","block");
+};
+</script>
+{% endblock %}

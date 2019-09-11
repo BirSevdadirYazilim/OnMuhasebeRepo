@@ -1,0 +1,349 @@
+{% extends 'base.html' %}
+{% block pagetitle %}{{ block.super }} - Sipariş Oluştur {% endblock %}
+{% block body  %}
+<div class="container-fluid">
+	<div class="w-box">
+		<div class="w-box-header">
+			<div align="Center">
+				<span>Sipariş Oluşturma Ekranı</span>
+			</div>
+		</div>
+		<div class="w-box-content">
+			<div style="overflow: auto;width: 100%;height: 100%;">
+			<table class="table table-bordered">
+				<thead>
+					<tr>
+						<th>Cari&nbsp;Seç</th>
+						<th>Tarih</th>
+						<th>Sipariş&nbsp;Tipi</th>
+						<th>Sipariş&nbsp;Fişi&nbsp;No</th>
+					</tr>
+				</thead>
+				<tbody>
+					<tr>
+					<td> 
+						<select id="cariKodu" class="form-control requiredHg">
+					    	<option selected value="">Seçiniz</option>
+					    		{% for cari in sqlCari %}
+					    		<option value="{{ cari.CariKodu }}">{{ cari.CariUnvani }}</option>
+					    		{% endfor %}
+					    </select>
+					</td>
+					<td>
+						<input type="date" id="siparisTarihi" value="{{ suan|date:'Y-m-d' }}" class="form-control requiredHg">
+					</td>
+					<td>
+						<select id="siparisTipi" class="form-control requiredHg">
+							<option selected="" value="">Seçiniz</option>
+							<option value="1">Verilen Sipariş</option>
+							<option value="2">Alınan Sipariş</option>
+						</select>
+					</td>
+					<td>
+						<input type="text" id="siparisFisiNo" class="form-control keypress-barrier requiredHg" placeholder="Sipariş Fişi No" data-input-type="Number" disabled="">
+					</td>
+					</tr>
+					<tr>
+						<th>Brüt&nbsp;Toplam&nbsp;Tutar</th>
+						<th>Toplam&nbsp;Kdv</th>
+						<th>Ödenecek&nbsp;Tutar</th>
+						<th colspan="2"></th>
+					</tr>
+					<tr>
+						<td>
+							<input type="text" id="toplamBrutTutar" value="0"  class="form-control" disabled="">
+						</td>
+						<td>
+							<input type="text" id="toplamKdv" value="0" class="form-control" disabled="">
+						</td>
+						<td>
+							<input type="text" id="odenecekTutar" class="form-control" value="0" required="" disabled="">
+						</td>
+						<td colspan="2">
+							<button class="btn btn-success fa fa-save" style="width: 100%;" title="Kaydet" onclick="Kaydet();"></button>
+						</td>
+					</tr>
+				</tbody>	
+			</table>
+			</div>
+			<div style="overflow: auto;width: 100%;height: 100%;">
+			<table id="tablo" class="table table-bordered" style="margin-top: 1%; margin-bottom: 1%;">
+				<thead>
+					<tr>
+						<th>Stok Adı</th>
+					    <th>Miktar</th>
+					    <th>Nitelik</th>
+						<th>Birim Fiyat</th>	
+						<th>İsk. Orani %</th>
+						<th>İsk. Tutari</th>
+						<th>Kdv Orani %</th>
+						<th>Kdv Tutari</th>
+						<th>Brüt Tutar</th>
+						<th>İşlem</th>
+					</tr>
+				</thead>
+				<tbody>	
+					<tr>
+						<td>
+							<select id="stokAdi" class="form-control requiredHg">
+					    	<option selected value="">Seçiniz</option>
+					    	{% for stok in sqlStok %}
+					    		<option value="{{ stok.StokKodu }}">{{ stok.StokAdi }}</option>
+					    	{% endfor %}
+					    	</select>
+						</td>
+						<td>
+							<input type="text" id="miktar" class="form-control keypress-barrier requiredHg" placeholder="Miktar" data-input-type="Decimal">
+						</td>
+						<td>
+							<input type="text" id="nitelik" class="form-control requiredHg" placeholder="Nitelik" disabled="">
+						</td>
+						<td>
+							<input type="text" id="birimFiyat" class="form-control keypress-barrier requiredHg" placeholder="Birim Fiyat" data-input-type="Decimal" disabled="">
+						</td>
+						<td>
+							<input type="text" id="iskontoOrani" value="0"class="form-control keypress-barrier" placeholder="İskonto Orani %" data-input-type="Number">
+						</td>
+						<td>
+							<input type="text" id="iskontoTutari" value="0" class="form-control keypress-barrier" placeholder="İskonto Tutari" data-input-type="Decimal" disabled="">
+						</td>
+						<td>
+							<input type="text" id="kdvOrani" class="form-control keypress-barrier requiredHg" placeholder="Kdv Orani %" data-input-type="Number" disabled="">
+						</td>
+						<td>
+							<input type="text" id="kdvTutari" class="form-control keypress-barrier requiredHg" placeholder="Kdv Tutari" data-input-type="Decimal" disabled="">
+						</td>
+						<td>
+							<input type="text" id="brutTutar" class="form-control keypress-barrier requiredHg" placeholder="Brüt Tutar" data-input-type="Decimal" disabled="">
+						</td>
+						<td>
+							<button class="btn btn-info fa fa-plus" title="Ekle" onclick="Ekle();"></button>
+						</td>
+					</tr>	
+				</tbody>
+			</table>
+			</div>
+		</div>				
+	</div>	
+</div>
+<script type="text/javascript">
+// Siparis Tipi Secimi
+$("#siparisTipi").change(function (){
+	if($(this).val() != ""){
+		$.ajax({
+	        type: "post",
+	        url: "",
+	        data: {
+	        	"siparisTipi" : $(this).val(),
+	        csrfmiddlewaretoken: "{{ csrf_token }}"
+	        },
+	        dataType: "json",
+	        success: function(Veri){
+	        	if(Veri.siparisFisiNo != ""){
+	        		$("#siparisFisiNo").val(Veri.siparisFisiNo);
+	        	}else{
+	        		if(confirm("Siparis Fişi Numarası Tanımlanmamış ! Tanımlama Sayfasına Yönlendirilsin mi ?") == true){
+	        			location = "/siparis/tanimlamalar";
+	        		}else{alert("Sipariş Fişi Numarası Tanımlamadan Kayıt Yapamazsınız !")};
+	        	};
+	        }, 
+	        error: function(hata){
+	            alert("Hata !");
+	        }
+        });
+	};
+});
+// Siparis Tipi Secimi
+//Stok Secimi
+$("#stokAdi").change(function (){
+	$("#miktar").val("");
+	$("#birimFiyat").val("");
+    $("#kdvOrani").val("");
+    $("#nitelik").val("");
+    $("#iskontoOrani").val("0");
+    $("#iskontoTutari").val("");
+    $("#kdvTutari").val("");
+    $("#brutTutar").val("");
+	if($("#siparisTipi").val() != ""){
+		$.ajax({
+	        type: "post",
+	        url: "",
+	        data: {
+	        	"ajaxStokKodu"    : $(this).val(),
+	        	"ajaxSiparisTipi" : $("#siparisTipi").val(),
+	        csrfmiddlewaretoken: "{{ csrf_token }}"
+	        },
+	        dataType: "json",
+	        success: function(Veri){
+        		$("#birimFiyat").val(Veri.birimFiyati);
+	            $("#kdvOrani").val(Veri.sqlStokKdvOrani);
+	            $("#nitelik").val(Veri.sqlStokNitelik);
+	        },
+	        error: function(hata){
+	            alert("Hata !");
+	        }
+        });
+	}else{alert("Sipariş Tipini Seçiniz !");};
+});
+//Stok Secimi
+//Siparis Hareketi Ekleme
+function Ekle(){
+	Required();
+	$.ajax({
+        type: "post",
+        url: "",
+        data: {
+        	"ajaxSiparisFisNoEkle"  : $("#siparisFisiNo").val(),
+        	"ajaxSiparisTipiEkle"   : $("#siparisTipi").val(),
+        	"ajaxSiparisTarihiEkle" : $("#siparisTarihi").val(),
+        	"ajaxStokKoduEkle"      : $("#stokAdi").val(),
+        	"ajaxMiktarEkle"        : $("#miktar").val(),
+        	"ajaxNitelikEkle"       : $("#nitelik").val(),
+        	"ajaxBirimFiyatEkle"    : $("#birimFiyat").val(),
+        	"ajaxIskontoOraniEkle"  : $("#iskontoOrani").val(),
+        	"ajaxKdvOraniEkle"      : $("#kdvOrani").val(),
+        csrfmiddlewaretoken: "{{ csrf_token }}"
+        },
+        dataType: "json",
+        success: function(Veri){
+        	if(Veri.ajaxMesaj == "1"){
+        		$('#tablo tbody').append('\
+	        		<tr class="class" id="'+Veri.sqlId+'">\
+	        			<td>'+Veri.sqlStokKodu+'</td>\
+	        			<td class="miktar">'+Veri.sqlMiktar+'</td>\
+	        			<td class="nitelik">'+Veri.sqlNitelik+'</td>\
+	        			<td class="birimFiyat">'+Veri.sqlBirimFiyat+'</td>\
+	        			<td class="iskontoOrani">'+Veri.sqlIskontoOrani+'</td>\
+	        			<td>'+$('#iskontoTutari').val()+'</td>\
+	        			<td class="kdvOrani">'+Veri.sqlKdvOrani+'</td>\
+	        			<td class="kdvTutari">'+$('#kdvTutari').val()+'</td>\
+	        			<td class="brutTutar">'+$('#brutTutar').val()+'</td>\
+	        			<td>\
+	        			<button class="btn btn-danger fa fa-trash" id="sil" onclick="UrunSil('+Veri.sqlId+');" title="Sil"></button>\
+	        			</td>\
+	        		</tr>');
+        		TopTut();
+        	}else{alert(Veri.ajaxMesaj);};
+        },
+        error: function(hata){
+            alert("Ürün Ekleme Hata!!");
+        }
+    });
+};
+//Siparis Hareketi Ekleme
+//Siparis Olusturma
+function Kaydet(){
+	Required();
+	if($(".class").html() != undefined){
+		if(confirm("Kaydedilsin mi ?") == true){
+			$.ajax({
+		        type: "post",
+		        url: "",
+		        data: {
+		        	"ajaxCariKodu"        : $('#cariKodu').val(),
+		        	"ajaxSiparisFisiNo"   : $('#siparisFisiNo').val(),
+		        	"ajaxSiparisTipi"     : $('#siparisTipi').val(),
+		        	"ajaxToplamBrutTutar" : $('#toplamBrutTutar').val(),
+		        	"ajaxToplamKdv"       : $('#toplamKdv').val(),
+		        	"ajaxSiparisTarihi"   : $('#siparisTarihi').val(),
+		        csrfmiddlewaretoken: "{{ csrf_token }}"
+		        },
+		        dataType: "json",
+		        success: function(Veri){
+		        	if(Veri.ajaxMesaj == "1"){
+		        		location = "/siparis/listele/";	
+		        	}else{alert(Veri.ajaxMesaj);};
+		        }, 
+		        error: function(hata){
+		            alert("Hata !");
+		        }
+	        });
+		};
+	}else{alert("Lütfen Önce Ekleme Yapınız !")};
+};
+//Siparis Olusturma
+//Urun Silme
+function UrunSil(arguman){
+	$.ajax({
+        type: "post",
+        url: "",
+        data: {
+        	"ajaxSil" : arguman,
+        csrfmiddlewaretoken: "{{ csrf_token }}"
+        },
+        dataType: "json",
+        success: function(Veri){ 
+            $("#"+arguman+"").fadeOut().remove();
+            TopTut();  
+        },
+        error: function(Hata){
+            alert("Hata !");
+        }
+    });
+};
+//Urun Silme
+//Hesaplamalar
+$("#miktar").keyup(function(){
+	if($(this).val() != "" && $("#siparisTipi").val() == "2"){
+		$.ajax({
+	        type: "post",
+	        url: "",
+	        data: {
+	        	"ajaxMiktarKontrol"   : $(this).val(),
+	        	"ajaxStokKoduKontrol" : $("#stokAdi").val(),
+	        csrfmiddlewaretoken: "{{ csrf_token }}"
+	        },
+	        dataType: "json",
+	        success: function(Veri){
+	        	if(Veri.ajaxMesaj == "1"){
+	        		alert("Yetersiz Stok")
+	        		$("#miktar").val("")
+	        	};
+	        },
+	        error: function(Hata){
+	            alert("Hata !");
+	        }
+	    });
+	};
+	var miktar = $("#miktar").val();
+	var birimFiyat = $("#birimFiyat").val();
+	var iskontosuzTutar = miktar * birimFiyat
+	$("#iskontoOrani").keyup(function(){
+		var iskontoOrani = $("#iskontoOrani").val();
+		if (iskontoOrani != ""){
+			var iskontoTutari = iskontosuzTutar * (iskontoOrani/100);
+			$("#iskontoTutari").val(iskontoTutari);
+			var kalan = iskontosuzTutar - iskontoTutari
+			var kdvOrani = $("#kdvOrani").val();
+			var kdvTutari = kalan * (kdvOrani/100);
+			$("#kdvTutari").val(kdvTutari);
+			//var MalHizmetTutari = kalan + kdvTutari
+			$("#brutTutar").val(kalan);
+		};
+	});
+	var kdvOrani = $("#kdvOrani").val();
+	var kdvTutari = iskontosuzTutar * (kdvOrani/100);
+	$("#kdvTutari").val(kdvTutari);
+	//var MalHizmetTutari = iskontosuzTutar + kdvTutari
+	$("#brutTutar").val(iskontosuzTutar);			
+});
+//Hesaplamalar
+//Toplam Hesaplar
+function TopTut(){
+	var hesapBrutTutar = 0;
+	$("td.brutTutar").each(function(){
+		hesapBrutTutar +=  parseFloat($(this).html());
+	});
+	$("#toplamBrutTutar").val(hesapBrutTutar);
+	var hesapKdvTutari = 0;
+	$("td.kdvTutari").each(function(){
+		hesapKdvTutari +=  parseFloat($(this).html());
+	});
+	$("#toplamKdv").val(hesapKdvTutari);
+
+	$("#odenecekTutar").val(parseFloat($("#toplamBrutTutar").val()) + hesapKdvTutari);
+};
+//Toplam Hesaplar
+</script>
+{% endblock %}
+
